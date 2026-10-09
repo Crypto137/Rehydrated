@@ -15,7 +15,7 @@ include(generated/rexglue.cmake)
 # Sources
 set(REHYDRATED_SOURCES
     src/main.cpp
-)
+ "src/hooks.cpp")
 
 if(WIN32)
     add_executable(rehydrated WIN32 ${REHYDRATED_SOURCES})

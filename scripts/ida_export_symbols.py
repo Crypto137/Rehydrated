@@ -34,17 +34,14 @@ def build():
             continue
 
         fields = []
-        if name:
-            fields.append("name = %s" % format_str(name))
+        fields.append("name = %s" % format_str(name))
 
-        if not fields:
-            continue
         lines.append("0x%08X = { %s }" % (ea, ", ".join(fields)))
         count += 1
     return "\n".join(lines) + "\n", count
 
 def main():
-    path = ida_kernwin.ask_file(1, "rehydrated_symbols.toml", "Save symbol TOML")
+    path = ida_kernwin.ask_file(1, "functions.toml", "Save function TOML")
     if not path:
         return
     text, count = build()

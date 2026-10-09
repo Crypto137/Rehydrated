@@ -1,0 +1,5 @@
+[[midasm_hook]]
+address = 0x828DA598
+name = "RehydratedHook_SGameInitializeGame"
+registers = ["r3"]
+after_instruction = false

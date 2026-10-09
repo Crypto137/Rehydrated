@@ -5,6 +5,7 @@
 0x82311698 = { name = "Blizzard__File__Exists" }
 0x82317AC0 = { name = "Blizzard__Thread__GetLocalStorage" }
 0x82318138 = { name = "TlsCallback_0" }
+0x8231E0D8 = { name = "Blizzard__Time__Milliseconds" }
 0x8231E4B8 = { name = "Blizzard__Lock__MutexEnter" }
 0x8231E4F8 = { name = "Blizzard__Lock__MutexLeave" }
 0x8231EA60 = { name = "System_Using__Intern" }
@@ -14,6 +15,7 @@
 0x8233D150 = { name = "CGameDisposeGame" }
 0x8233D4C8 = { name = "CGameInitializeGame" }
 0x8233E5F0 = { name = "ClientIdle" }
+0x82345B60 = { name = "Console__Online__PartyGetPlayerAccountAndHero" }
 0x8236C678 = { name = "FontGroupDef__GetMaxCount" }
 0x8236CAD8 = { name = "FontGroupDef__FontGroupDef" }
 0x82375308 = { name = "TextureGroupDef__GetMaxCount" }
@@ -36,6 +38,7 @@
 0x825740F8 = { name = "ControlSchemeDefinitionGroupDef__GetMaxCount" }
 0x825748B0 = { name = "ControlSchemeDefinitionGroupDef__ControlSchemeDefinitionGroupDef" }
 0x825AF388 = { name = "ClientMessageReceiveGameMessage" }
+0x825B47F8 = { name = "UIStartup_GetInitialWorld" }
 0x825B4B48 = { name = "LightGroupDef__GetMaxCount" }
 0x825B4CE8 = { name = "LightGroupDef__LightGroupDef" }
 0x825DA808 = { name = "ParticleGroupDef__GetMaxCount" }
@@ -90,12 +93,25 @@
 0x826B9EB0 = { name = "SNOFileAddEntry" }
 0x826BAC78 = { name = "sOpenSNOPacks" }
 0x826BBAC0 = { name = "SNOFilesInitialize" }
+0x826BBBE0 = { name = "SNOFilesDispose" }
 0x826BC1D8 = { name = "XTypeDescriptor__Byteswap" }
 0x826C1B78 = { name = "SNOGlobals__SNOGlobals" }
+0x826C1EF8 = { name = "GlobalSNOGet" }
 0x826C2100 = { name = "GlobalSNOListRefresh" }
 0x826CABD8 = { name = "AppDispose" }
+0x826CAC78 = { name = "GameParamsSetDefault" }
+0x826CB618 = { name = "GameSetActiveGameCommonData" }
 0x826CB6A0 = { name = "sFileSystemInitialize" }
+0x826CB8F0 = { name = "FileSystemDisposeForApp" }
+0x826CBBA0 = { name = "GameParamsGetGameSeed" }
 0x826CBC20 = { name = "sGroupDefinitionsCreateForApp" }
+0x826CBCC8 = { name = "sGroupDefinitionsDisposeForApp" }
+0x826CC798 = { name = "_GameServerCodeEnter" }
+0x826CC918 = { name = "GameServerCodeLeave_Tracked" }
+0x826CC9E8 = { name = "GameQueueGameStart" }
+0x826CCF90 = { name = "GameStartMenu" }
+0x826CD0F0 = { name = "GameStartServer" }
+0x826CD3B0 = { name = "GamePlayWorld" }
 0x826CD6E8 = { name = "AppInitialize" }
 0x826CE4F0 = { name = "AppIdle" }
 0x826CECA8 = { name = "FileSystemInitializeForApp" }
@@ -169,6 +185,7 @@
 0x826DD118 = { name = "GroupDefinition__GetFallbackDataSNO" }
 0x826DD960 = { name = "GroupDefinition__GroupDefinition" }
 0x826DDD78 = { name = "GroupDefinition__SNOWriteSNOFile" }
+0x826DF0B0 = { name = "GroupDefinition__DisposeSNOMap" }
 0x826DF108 = { name = "GroupDefinition__SetDefinition" }
 0x826DF228 = { name = "GroupDefinition__sCreate" }
 0x826DFB78 = { name = "GroupDefinition__Init" }
@@ -176,6 +193,7 @@
 0x826E0FF0 = { name = "GroupDefinition__New" }
 0x826E1348 = { name = "GroupDefinition__LockR" }
 0x826E2258 = { name = "ThreadSafeDef__ThreadSafeDef" }
+0x826E39B8 = { name = "TDataArrayDispose_DefDataElement_DefDataElementID" }
 0x826E3C08 = { name = "TDataArrayCreateTracked_DefDataElement_DefDataElementID" }
 0x826E3CA8 = { name = "TDataArrayCreateTracked_PendingDefDataElement_DefDataElementID" }
 0x826E46D0 = { name = "StringListGroupDef__GetMaxCount" }
@@ -185,6 +203,8 @@
 0x8273E400 = { name = "GameBalanceGroupDef__GameBalanceGroupDef" }
 0x827410E8 = { name = "WorldGroupDef__GetMaxCount" }
 0x82741248 = { name = "WorldGroupDef__WorldGroupDef" }
+0x8274DD08 = { name = "D3__Hero__SavedDefinition__SavedDefinition" }
+0x8274DEB0 = { name = "D3__Hero__SavedDefinition__dtor_SavedDefinition" }
 0x8276FAD8 = { name = "SubsystemsDispose" }
 0x8276FB40 = { name = "SubsystemsInitialize" }
 0x82780310 = { name = "Console__IO__OpenArchive" }
@@ -269,6 +289,7 @@
 0x82881128 = { name = "blz__vector_SNOEntry__ctor" }
 0x828813B8 = { name = "SNOMLGetTypeFromClassName" }
 0x82881450 = { name = "SNOMLInitialize" }
+0x828814B0 = { name = "SNOMLDispose" }
 0x82881760 = { name = "SNOMLGetTypeFromSNOGroup" }
 0x82882030 = { name = "AccoladeGroupDef__GetMaxCount" }
 0x82882080 = { name = "AccoladeGroupDef__AccoladeGroupDef" }
@@ -284,6 +305,15 @@
 0x82884070 = { name = "ConversationListGroupDef__ConversationListGroupDef" }
 0x82884B88 = { name = "AdventureGroupDef__GetMaxCount" }
 0x82884BC0 = { name = "AdventureGroupDef__AdventureGroupDef" }
+0x828B8FC0 = { name = "LuaScriptPushExecutingScript" }
+0x828BAE20 = { name = "LuaScriptInstanceNotifyEvent" }
+0x828BD220 = { name = "sScriptCloseInstance" }
+0x828BD488 = { name = "sLuaTickScriptInstance" }
+0x828CB7C0 = { name = "ReplayStartRecordedGame" }
+0x828CC568 = { name = "ReplayTestStart" }
+0x828CECF8 = { name = "SGameManager__SGameManager" }
+0x828CF360 = { name = "SGameManager__InitializeForApp" }
+0x828CF3E0 = { name = "SGameManager__DisposeForApp" }
 0x828D0428 = { name = "AIBehaviorGroupDef__GetMaxCount" }
 0x828D0430 = { name = "AIStateGroupDef__GetMaxCount" }
 0x828D0470 = { name = "AIBehaviorGroupDef__AIBehaviorGroupDef" }
@@ -292,8 +322,10 @@
 0x828D0F70 = { name = "ConductorGroupDef__ConductorGroupDef" }
 0x828D2128 = { name = "ScriptGroupDef__GetMaxCount" }
 0x828D2530 = { name = "ScriptGroupDef__ScriptGroupDef" }
+0x828D6428 = { name = "TraceStat" }
 0x828DA598 = { name = "SGameInitializeGame" }
 0x828DAA28 = { name = "SGameDisposeGame" }
+0x8290DB90 = { name = "PowerForceStop" }
 0x82A72D40 = { name = "ExitProgram" }
 0x82A73458 = { name = "DisplayErrorMessage" }
 0x82A735E8 = { name = "SigmaCurrentlyHandlingError" }
@@ -322,6 +354,7 @@
 0x82A7F468 = { name = "FileExists" }
 0x82A7F6D0 = { name = "FileWrite" }
 0x82A7FA30 = { name = "FileReferenceInit" }
+0x82A80870 = { name = "Stopwatch__Reset" }
 0x82A82C38 = { name = "XLocaleToString" }
 0x82A82CE8 = { name = "UnicodeText__SetLocale" }
 0x82A82CF8 = { name = "UnicodeText__GetCurrentLocale" }
@@ -340,7 +373,9 @@
 0x82A97F48 = { name = "XDecoder__GetBytesAligned8" }
 0x82A98818 = { name = "DataArrayTrackerInit" }
 0x82AA0A10 = { name = "XVarInitialize" }
+0x82AA2438 = { name = "XVarUint32__XVarUint32" }
 0x82AA59A0 = { name = "ErrorManagerBlizzardErrorData__AddMetadata" }
 0x82AAA700 = { name = "Blizzard__String__MemCopy" }
 0x82AAFB58 = { name = "_sprintf" }
+0x82B3CE80 = { name = "lua_resume" }
 0x82F868A0 = { name = "GLOBAL__sub_I_UnicodeText_cpp" }
