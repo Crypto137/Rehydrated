@@ -1,6 +1,6 @@
 # Rehydrated
 
-Rehydrated is a ReXGlue based recompilation project for the vanilla version Diablo 3 (C1.0.0.17339).
+Rehydrated is a ReXGlue based recompilation project for the vanilla version of Diablo 3 (C1.0.0.17339, disc image MD5 `3360CCDA2970F81AD75DE8EC02D2AE1E`). This targets the vanilla version specifically, and not later Ultimate Evil Edition releases that include the Reaper of Souls expansion.
 
 Currently in early experimental state: the game runs, but nothing exciting beyond that.
 
