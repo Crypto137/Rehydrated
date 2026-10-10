@@ -22,7 +22,9 @@
 0x82375A88 = { name = "TextureGroupDef__TextureGroupDef" }
 0x8237DBD8 = { name = "ShaderGroupDef__GetMaxCount" }
 0x8237DE28 = { name = "ShaderGroupDef__ShaderGroupDef" }
+0x823A6B90 = { name = "LocalPlayerGet" }
 0x823B10A8 = { name = "ClientProcessIncomingMessagesForCurrentTick" }
+0x823B15D0 = { name = "ClientPutMessageOnIncomingQueue" }
 0x82435C40 = { name = "ShaderMapGroupDef__GetMaxCount" }
 0x82435F38 = { name = "ShaderMapGroupDef__ShaderMapGroupDef" }
 0x8244A1A8 = { name = "Prefs__Load" }
@@ -37,6 +39,7 @@
 0x82562EA8 = { name = "WeatherGroupDef__WeatherGroupDef" }
 0x825740F8 = { name = "ControlSchemeDefinitionGroupDef__GetMaxCount" }
 0x825748B0 = { name = "ControlSchemeDefinitionGroupDef__ControlSchemeDefinitionGroupDef" }
+0x825AE110 = { name = "ClientMessageReceiveAllMessage" }
 0x825AF388 = { name = "ClientMessageReceiveGameMessage" }
 0x825B47F8 = { name = "UIStartup_GetInitialWorld" }
 0x825B4B48 = { name = "LightGroupDef__GetMaxCount" }
@@ -198,6 +201,8 @@
 0x826E3CA8 = { name = "TDataArrayCreateTracked_PendingDefDataElement_DefDataElementID" }
 0x826E46D0 = { name = "StringListGroupDef__GetMaxCount" }
 0x826E4D70 = { name = "StringListGroupDef__StringListGroupDef" }
+0x826E5500 = { name = "sStringListFetchInternal" }
+0x826E57E0 = { name = "StringListFetch" }
 0x82733980 = { name = "KeyGetCompressor" }
 0x8273DAE8 = { name = "GameBalanceGroupDef__GetMaxCount" }
 0x8273E400 = { name = "GameBalanceGroupDef__GameBalanceGroupDef" }
@@ -205,6 +210,7 @@
 0x82741248 = { name = "WorldGroupDef__WorldGroupDef" }
 0x8274DD08 = { name = "D3__Hero__SavedDefinition__SavedDefinition" }
 0x8274DEB0 = { name = "D3__Hero__SavedDefinition__dtor_SavedDefinition" }
+0x82763660 = { name = "PlayerGetByControllerIndex" }
 0x8276FAD8 = { name = "SubsystemsDispose" }
 0x8276FB40 = { name = "SubsystemsInitialize" }
 0x82780310 = { name = "Console__IO__OpenArchive" }
@@ -326,6 +332,9 @@
 0x828DA598 = { name = "SGameInitializeGame" }
 0x828DAA28 = { name = "SGameDisposeGame" }
 0x8290DB90 = { name = "PowerForceStop" }
+0x82954FC8 = { name = "PacketGetPlayerIndex" }
+0x82955660 = { name = "sServerReceiveIncomingQueue" }
+0x829E2DC0 = { name = "ServerMessageReceive" }
 0x82A72D40 = { name = "ExitProgram" }
 0x82A73458 = { name = "DisplayErrorMessage" }
 0x82A735E8 = { name = "SigmaCurrentlyHandlingError" }

@@ -28,11 +28,26 @@ void HydraHook_SGameInitializeGame(PPCRegister& r3)
 
 // Network
 
-void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
+void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3)
 {
     const int* pMessage = MemoryUtils::GetHostPtr<int>(r3.u32);
 
     GameMessageType eType = static_cast<GameMessageType>(MemoryUtils::Byteswap(pMessage[1]));
 
-    REXLOG_INFO("ClientMessageReceiveGameMessage(): eType={}", GameMessageTypeToName(eType));
+    REXLOG_INFO("ClientMessageReceiveAllMessage(): eType={}", GameMessageTypeToName(eType));
+}
+
+void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
+{
+    // not using this for anything yet
+}
+
+void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)
+{
+    int nPlayerIndex = MemoryUtils::Byteswap(r3.s32);
+    const int* pMessage = MemoryUtils::GetHostPtr<int>(r4.u32);
+
+    GameMessageType eType = static_cast<GameMessageType>(MemoryUtils::Byteswap(pMessage[1]));
+
+    REXLOG_INFO("ServerMessageReceive(): eType={}", GameMessageTypeToName(eType));
 }

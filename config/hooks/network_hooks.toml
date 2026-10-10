@@ -1,7 +1,23 @@
+# Hooks ClientMessageReceiveAllMessage, which processes incoming
+# network messages as soon as they arrive to the client.
+[[midasm_hook]]
+address = 0x825AE110
+name = "HydraHook_ClientMessageReceiveAllMessage"
+registers = ["r3"]
+after_instruction = false
+
 # Hooks ClientMessageReceiveGameMessage, which processes
 # incoming network messages on a game thread.
 [[midasm_hook]]
 address = 0x825AF388
 name = "HydraHook_ClientMessageReceiveGameMessage"
 registers = ["r3"]
+after_instruction = false
+
+# Hooks ServerMessageReceive, which processes incoming
+# network messages when they arrive to the server.
+[[midasm_hook]]
+address = 0x829E2DC0
+name = "HydraHook_ServerMessageReceive"
+registers = ["r3", "r4"]
 after_instruction = false
