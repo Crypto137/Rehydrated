@@ -2,4 +2,10 @@
 
 #include <rex/ppc.h>
 
-void RehydratedHook_SGameInitializeGame(PPCRegister& r3);
+// Game
+
+void HydraHook_SGameInitializeGame(PPCRegister& r3);
+
+// Network
+
+void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3);

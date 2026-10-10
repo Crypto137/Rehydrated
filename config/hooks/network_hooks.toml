@@ -1,0 +1,7 @@
+# Hooks ClientMessageReceiveGameMessage, which processes
+# incoming network messages on a game thread.
+[[midasm_hook]]
+address = 0x825AF388
+name = "HydraHook_ClientMessageReceiveGameMessage"
+registers = ["r3"]
+after_instruction = false

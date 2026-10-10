@@ -11,5 +11,6 @@ out_directory_path = "generated/default"
 includes = [
 	"config/functions_unresolved.toml",
 	"config/functions.toml",
-	"config/hooks/game_hooks.toml"
+	"config/hooks/game_hooks.toml",
+	"config/hooks/network_hooks.toml"
 ]

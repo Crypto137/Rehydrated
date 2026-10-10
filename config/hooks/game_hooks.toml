@@ -1,5 +1,7 @@
+# Hooks SGameInitializeGame, which is called when a game instance
+# is initialized with GameParams server-side.
 [[midasm_hook]]
 address = 0x828DA598
-name = "RehydratedHook_SGameInitializeGame"
+name = "HydraHook_SGameInitializeGame"
 registers = ["r3"]
 after_instruction = false
