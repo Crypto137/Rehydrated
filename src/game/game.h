@@ -1,7 +1,5 @@
 #pragma once
 
-namespace Hydra {
-
 struct GameParams
 {
 	unsigned int bValid;
@@ -43,5 +41,3 @@ struct GameParams
 	unsigned int idSGame;
 	unsigned int dword3B4;
 };
-
-}  // namespace Hydra

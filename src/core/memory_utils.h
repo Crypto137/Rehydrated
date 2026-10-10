@@ -2,9 +2,9 @@
 
 #include <rex/system/kernel_state.h>
 
-namespace Rehydrated {
+namespace MemoryUtils {
 
-template <typename T> inline T* at(u32 va)
+template <typename T> inline T* GetHostPtr(u32 va)
 {
 	auto* memory = REX_KERNEL_MEMORY();
 	if (!memory || !va)
@@ -13,4 +13,4 @@ template <typename T> inline T* at(u32 va)
 	return memory->template TranslateVirtual<T*>(va);
 }
 
-}  // namespace Rehydrated
+}  // namespace MemoryUtils
