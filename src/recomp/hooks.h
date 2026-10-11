@@ -12,4 +12,6 @@ void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3);
 
 void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3);
 
+void HydraHook_PostNetworkInitializeForApp();
+
 void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4);

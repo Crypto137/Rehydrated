@@ -17,10 +17,4 @@ inline T* GetHostPtr(u32 va)
     return memory->template TranslateVirtual<T*>(va);
 }
 
-template <typename T>
-inline T Byteswap(T value)
-{
-    return std::byteswap(value);
-}
-
 }  // namespace MemoryUtils

@@ -12,17 +12,24 @@
 0x8231EB50 = { name = "Blizzard__Using__Register" }
 0x8231EB80 = { name = "Blizzard__Using__StartUsing" }
 0x8231EBB0 = { name = "Blizzard__Using__StopUsing" }
+0x8231F4D0 = { name = "Blizzard__Util__CRC32" }
 0x8233D150 = { name = "CGameDisposeGame" }
 0x8233D4C8 = { name = "CGameInitializeGame" }
 0x8233E5F0 = { name = "ClientIdle" }
 0x82345B60 = { name = "Console__Online__PartyGetPlayerAccountAndHero" }
 0x8236C678 = { name = "FontGroupDef__GetMaxCount" }
 0x8236CAD8 = { name = "FontGroupDef__FontGroupDef" }
+0x8236D710 = { name = "ComplexTypeDescriptor__SizeOf" }
+0x8236D918 = { name = "ComplexTypeDescriptor__CalculateNetworkBitCounts" }
+0x8236D928 = { name = "ComplexTypeDescriptor__Contains64BitSubfields" }
+0x8236D978 = { name = "ComplexTypeDescriptor__Contains128BitSubfields" }
 0x82375308 = { name = "TextureGroupDef__GetMaxCount" }
 0x82375A88 = { name = "TextureGroupDef__TextureGroupDef" }
 0x8237DBD8 = { name = "ShaderGroupDef__GetMaxCount" }
 0x8237DE28 = { name = "ShaderGroupDef__ShaderGroupDef" }
+0x8239A888 = { name = "CTrickleInitializeForApp" }
 0x823A6B90 = { name = "LocalPlayerGet" }
+0x823B0D60 = { name = "ClientInitializeForApp" }
 0x823B10A8 = { name = "ClientProcessIncomingMessagesForCurrentTick" }
 0x823B15D0 = { name = "ClientPutMessageOnIncomingQueue" }
 0x82435C40 = { name = "ShaderMapGroupDef__GetMaxCount" }
@@ -81,6 +88,7 @@
 0x826B35D8 = { name = "SNOFilesGetLocalePath" }
 0x826B3860 = { name = "SNOFileLoadTextFile" }
 0x826B3CD0 = { name = "sApplyHotfix" }
+0x826B4038 = { name = "SNOGetCoreDataHash" }
 0x826B5258 = { name = "SNOFileHeader__SNOFileHeader" }
 0x826B5490 = { name = "SNOFileClose" }
 0x826B5DC8 = { name = "SNOFileWriteHeader" }
@@ -215,6 +223,9 @@
 0x8276FB40 = { name = "SubsystemsInitialize" }
 0x82780310 = { name = "Console__IO__OpenArchive" }
 0x8278BF38 = { name = "XDecoder__Get" }
+0x8278C980 = { name = "ComplexTypeDescriptor__Encode" }
+0x8278CA18 = { name = "ComplexTypeDescriptor__Decode" }
+0x8278CB08 = { name = "ComplexTypeDescriptor__CreateFieldHash" }
 0x8278F260 = { name = "TypeDescriptorClass_DT_INT__Encode" }
 0x8278F2F8 = { name = "TypeDescriptorClass_DT_INT__Decode" }
 0x82791AB8 = { name = "SFileOpenArchive" }
@@ -239,6 +250,10 @@
 0x827D2C48 = { name = "PowerGroupDef__PowerGroupDef" }
 0x827E9210 = { name = "LevelAreaGroupDef__GetMaxCount" }
 0x827E9480 = { name = "LevelAreaGroupDef__LevelAreaGroupDef" }
+0x827EC578 = { name = "NetworkDisposeForApp" }
+0x827EC5D8 = { name = "NetworkGetProtocolHash" }
+0x827EC960 = { name = "GoogleLogHandler" }
+0x827ECA10 = { name = "NetworkInitializeForApp" }
 0x827ED6F8 = { name = "GetGameMessageTypeAndSize" }
 0x827EF160 = { name = "EncodeMessage" }
 0x827EF2A0 = { name = "DecodeMessage" }
@@ -263,6 +278,8 @@
 0x82812DD0 = { name = "SNOFilesAsyncIsLocking" }
 0x82816978 = { name = "AnimSetGroupDef__GetMaxCount" }
 0x828169C8 = { name = "AnimSetGroupDef__AnimSetGroupDef" }
+0x82817018 = { name = "TypeDescriptorClass_DT_INT__SizeOf" }
+0x828171F8 = { name = "TypeDescriptorClass_DT_INT__CalculateNetworkBitCounts" }
 0x828256B8 = { name = "ConversationGroupDef__GetMaxCount" }
 0x82825F08 = { name = "ConversationGroupDef__ConversationGroupDef" }
 0x82827748 = { name = "LoreGroupDef__GetMaxCount" }
@@ -297,6 +314,7 @@
 0x82881450 = { name = "SNOMLInitialize" }
 0x828814B0 = { name = "SNOMLDispose" }
 0x82881760 = { name = "SNOMLGetTypeFromSNOGroup" }
+0x82881E78 = { name = "XSocketGetMyIPAddress" }
 0x82882030 = { name = "AccoladeGroupDef__GetMaxCount" }
 0x82882080 = { name = "AccoladeGroupDef__AccoladeGroupDef" }
 0x828822E0 = { name = "TreasureClassGroupDef__GetMaxCount" }
@@ -334,6 +352,9 @@
 0x8290DB90 = { name = "PowerForceStop" }
 0x82954FC8 = { name = "PacketGetPlayerIndex" }
 0x82955660 = { name = "sServerReceiveIncomingQueue" }
+0x829B88A8 = { name = "XServerInitializeForApp" }
+0x829B91C0 = { name = "TDataArrayCreateTracked_ServerSocketContainer_int" }
+0x829B9280 = { name = "TelnetConsoleInitializeForApp" }
 0x829E2DC0 = { name = "ServerMessageReceive" }
 0x82A72D40 = { name = "ExitProgram" }
 0x82A73458 = { name = "DisplayErrorMessage" }
@@ -358,6 +379,7 @@
 0x82A78B38 = { name = "ErrorManagerSetLogStreamFilename" }
 0x82A7C100 = { name = "Blizzard__Memory__Shutdown" }
 0x82A7C348 = { name = "XFourCC__StringToValue" }
+0x82A7C8E8 = { name = "Math__LogBase2" }
 0x82A7F210 = { name = "FileReference__FileReference" }
 0x82A7F298 = { name = "FileReferenceGetPath" }
 0x82A7F468 = { name = "FileExists" }
@@ -367,6 +389,11 @@
 0x82A82C38 = { name = "XLocaleToString" }
 0x82A82CE8 = { name = "UnicodeText__SetLocale" }
 0x82A82CF8 = { name = "UnicodeText__GetCurrentLocale" }
+0x82A84B48 = { name = "XNetAddress__operator_equals" }
+0x82A84C68 = { name = "XNetAddress__FromString" }
+0x82A881B8 = { name = "XTypeDescriptor__GetField" }
+0x82A88258 = { name = "XTypeDescriptor__CreateFieldHash" }
+0x82A8D8F8 = { name = "TypeDescriptorField__CalculateNetworkBitCounts" }
 0x82A8DC00 = { name = "TypeDescriptorField__TypeDescriptorField_Dynamic" }
 0x82A8DE18 = { name = "TypeDescriptorField__TypeDescriptorField" }
 0x82A8DFA8 = { name = "FixedArrayTypeDescriptorField__FixedArrayTypeDescriptorField" }
@@ -387,4 +414,5 @@
 0x82AAA700 = { name = "Blizzard__String__MemCopy" }
 0x82AAFB58 = { name = "_sprintf" }
 0x82B3CE80 = { name = "lua_resume" }
+0x82B64CA0 = { name = "google__protobuf__SetLogHandler" }
 0x82F868A0 = { name = "GLOBAL__sub_I_UnicodeText_cpp" }
