@@ -1,10 +1,11 @@
 #include "recomp/hooks.h"
+
+#include <rex/logging.h>
+
+#include "core/memory_utils.h"
 #include "game/game.h"
 #include "game/network.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
-#include "core/memory_utils.h"
-
-#include <rex/logging.h>
 
 // Game
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "game/sigma/type_descriptor/type_descriptor_field.h"
-
 #include <rex/system/xtypes.h>
+
+#include "game/sigma/type_descriptor/type_descriptor_field.h"
 
 struct XTypeDescriptor
 {
