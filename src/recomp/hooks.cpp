@@ -1,11 +1,16 @@
 #include "recomp/hooks.h"
 
+#include <rex/cvar.h>
 #include <rex/logging.h>
 
 #include "core/memory_utils.h"
 #include "game/game.h"
 #include "game/network.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
+#include "recomp/static_data_dumper.h"
+
+REXCVAR_DEFINE_BOOL(dump_type_descriptors, false, "Development", "Dumps type descriptors on boot")
+    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
 // Game
 
@@ -46,9 +51,13 @@ void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
 
 void HydraHook_PostNetworkInitializeForApp()
 {
-    rex::TypedGuestPointer<ComplexTypeDescriptor>* pRegistrationHead = MemoryUtils::GetHostPtr<rex::TypedGuestPointer<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
+    rex::TypedGuestPointer<ComplexTypeDescriptor> pRegistrationHead = *MemoryUtils::GetHostPtr<rex::TypedGuestPointer<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
 
-    ComplexTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<ComplexTypeDescriptor>(*pRegistrationHead);
+    bool dumpTypeDescriptors = REXCVAR_GET(dump_type_descriptors);
+    if (dumpTypeDescriptors)
+        StaticDataDumper::DumpTypeDescriptors(pRegistrationHead, "TypeDescriptors.bin");
+
+    ComplexTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<ComplexTypeDescriptor>(pRegistrationHead);
     while (ptTypeDesc)
     {
         REXLOG_INFO("ComplexTypeDescriptor: szName={}, nVersion={}, nFieldCount={}, dwFlags=0x{:08X}",
