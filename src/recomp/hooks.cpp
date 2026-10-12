@@ -52,6 +52,18 @@ void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
     // not using this for anything yet
 }
 
+void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)
+{
+    int nPlayerIndex = static_cast<int>(r3.s32);
+    const int* pMessage = MemoryUtils::GetHostPtr<int>(r4.u32);
+
+    GameMessageType eType = static_cast<GameMessageType>(rex::byte_swap(pMessage[1]));
+
+    REXLOG_INFO("ServerMessageReceive(): [{}] eType={}", nPlayerIndex, GameMessageTypeToName(eType));
+}
+
+// Subsystem
+
 void HydraHook_PostNetworkInitializeForApp()
 {
     if (REXCVAR_GET(dump_type_descriptors))
@@ -63,12 +75,7 @@ void HydraHook_PostNetworkInitializeForApp()
     REXLOG_INFO("NetworkInitializeForApp() finished");
 }
 
-void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)
+void HydraHook_PostFastAttribInitializeForApp()
 {
-    int nPlayerIndex = static_cast<int>(r3.s32);
-    const int* pMessage = MemoryUtils::GetHostPtr<int>(r4.u32);
-
-    GameMessageType eType = static_cast<GameMessageType>(rex::byte_swap(pMessage[1]));
-
-    REXLOG_INFO("ServerMessageReceive(): [{}] eType={}", nPlayerIndex, GameMessageTypeToName(eType));
+    REXLOG_INFO("FastAttribInitializeForApp() finished");
 }

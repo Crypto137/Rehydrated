@@ -1,0 +1,13 @@
+# Hooks NetworkInitializeForApp just before it returns.
+[[midasm_hook]]
+address = 0x827ECB60
+name = "HydraHook_PostNetworkInitializeForApp"
+registers = []
+after_instruction = false
+
+# Hooks FastAttribInitializeForApp just before it returns.
+[[midasm_hook]]
+address = 0x82737164
+name = "HydraHook_PostFastAttribInitializeForApp"
+registers = []
+after_instruction = false

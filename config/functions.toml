@@ -31,6 +31,7 @@
 0x823A6B90 = { name = "LocalPlayerGet" }
 0x823B0D60 = { name = "ClientInitializeForApp" }
 0x823B10A8 = { name = "ClientProcessIncomingMessagesForCurrentTick" }
+0x823B12F0 = { name = "ClientSendOutgoingMessages" }
 0x823B15D0 = { name = "ClientPutMessageOnIncomingQueue" }
 0x82435C40 = { name = "ShaderMapGroupDef__GetMaxCount" }
 0x82435F38 = { name = "ShaderMapGroupDef__ShaderMapGroupDef" }
@@ -211,7 +212,18 @@
 0x826E4D70 = { name = "StringListGroupDef__StringListGroupDef" }
 0x826E5500 = { name = "sStringListFetchInternal" }
 0x826E57E0 = { name = "StringListFetch" }
+0x82732B18 = { name = "KeyGetAggregationOperator" }
+0x82732B38 = { name = "KeyGetDataType" }
+0x82732B58 = { name = "KeyGetSyncFlags" }
+0x82732C10 = { name = "StringToAttrib" }
+0x82732D58 = { name = "sCompileAttrib_GetAttrib" }
+0x827330C0 = { name = "FastAttributeBBECompileAttrib" }
+0x82733960 = { name = "KeyGetParamType" }
 0x82733980 = { name = "KeyGetCompressor" }
+0x82734A30 = { name = "BBEFastAttribDependenciesCallback" }
+0x82734AA0 = { name = "sCompileFormula" }
+0x82736EC8 = { name = "FastAttribInitializeForApp" }
+0x827371B8 = { name = "FastAttribDisposeForApp" }
 0x8273DAE8 = { name = "GameBalanceGroupDef__GetMaxCount" }
 0x8273E400 = { name = "GameBalanceGroupDef__GameBalanceGroupDef" }
 0x827410E8 = { name = "WorldGroupDef__GetMaxCount" }
@@ -254,6 +266,7 @@
 0x827EC5D8 = { name = "NetworkGetProtocolHash" }
 0x827EC960 = { name = "GoogleLogHandler" }
 0x827ECA10 = { name = "NetworkInitializeForApp" }
+0x827ECE48 = { name = "PacketBufferFree" }
 0x827ED6F8 = { name = "GetGameMessageTypeAndSize" }
 0x827EF160 = { name = "EncodeMessage" }
 0x827EF2A0 = { name = "DecodeMessage" }
@@ -280,6 +293,7 @@
 0x828169C8 = { name = "AnimSetGroupDef__AnimSetGroupDef" }
 0x82817018 = { name = "TypeDescriptorClass_DT_INT__SizeOf" }
 0x828171F8 = { name = "TypeDescriptorClass_DT_INT__CalculateNetworkBitCounts" }
+0x82823F20 = { name = "TagNameToTag" }
 0x828256B8 = { name = "ConversationGroupDef__GetMaxCount" }
 0x82825F08 = { name = "ConversationGroupDef__ConversationGroupDef" }
 0x82827748 = { name = "LoreGroupDef__GetMaxCount" }
@@ -301,6 +315,12 @@
 0x828781D8 = { name = "SNOGroupGetInfo" }
 0x82878238 = { name = "SNOGroupGetName" }
 0x82878328 = { name = "SNOGroupRegister" }
+0x8287E190 = { name = "sPushOps" }
+0x8287E400 = { name = "BBEEvaluate" }
+0x8287ED50 = { name = "BBEFromString" }
+0x8287F588 = { name = "BBEIdentifierTranslate" }
+0x8287FD48 = { name = "TokenizedIdentifier__TokenizedIdentifier" }
+0x8287FDE8 = { name = "TokenizedIdentifier__dtor_TokenizedIdentifier" }
 0x8287FE68 = { name = "BossEncounterGroupDef__GetMaxCount" }
 0x8287FF08 = { name = "BossEncounterGroupDef__BossEncounterGroupDef" }
 0x828801B8 = { name = "SNOTOC__GetMPQFilename" }
@@ -329,6 +349,7 @@
 0x82884070 = { name = "ConversationListGroupDef__ConversationListGroupDef" }
 0x82884B88 = { name = "AdventureGroupDef__GetMaxCount" }
 0x82884BC0 = { name = "AdventureGroupDef__AdventureGroupDef" }
+0x8289CB38 = { name = "PowerTagBBEIdentifierCompile" }
 0x828B8FC0 = { name = "LuaScriptPushExecutingScript" }
 0x828BAE20 = { name = "LuaScriptInstanceNotifyEvent" }
 0x828BD220 = { name = "sScriptCloseInstance" }
@@ -347,11 +368,14 @@
 0x828D2128 = { name = "ScriptGroupDef__GetMaxCount" }
 0x828D2530 = { name = "ScriptGroupDef__ScriptGroupDef" }
 0x828D6428 = { name = "TraceStat" }
+0x828D9ED8 = { name = "sServerIdle" }
 0x828DA598 = { name = "SGameInitializeGame" }
 0x828DAA28 = { name = "SGameDisposeGame" }
 0x8290DB90 = { name = "PowerForceStop" }
 0x82954FC8 = { name = "PacketGetPlayerIndex" }
 0x82955660 = { name = "sServerReceiveIncomingQueue" }
+0x82955780 = { name = "ServerProcessIncomingMessages" }
+0x829565A0 = { name = "ServerSendOutgoingMessages" }
 0x829B88A8 = { name = "XServerInitializeForApp" }
 0x829B91C0 = { name = "TDataArrayCreateTracked_ServerSocketContainer_int" }
 0x829B9280 = { name = "TelnetConsoleInitializeForApp" }
@@ -365,6 +389,7 @@
 0x82A74CE8 = { name = "CRefString__CRefString" }
 0x82A75500 = { name = "CRefString__dtor_CRefString" }
 0x82A75D30 = { name = "CRefString__Format" }
+0x82A76240 = { name = "CRefString__CRefString2" }
 0x82A76448 = { name = "CRefString__operator_assign_char" }
 0x82A77398 = { name = "sSigmaMemoryReallyDispose" }
 0x82A77408 = { name = "SigmaMemorySetTraceAllocations" }
@@ -400,6 +425,7 @@
 0x82A8DFE8 = { name = "VariableArrayTypeDescriptorField__VariableArrayTypeDescriptorField" }
 0x82A8E108 = { name = "EnumTypeDescriptorField__EnumTypeDescriptorField" }
 0x82A8E420 = { name = "SymbolToName" }
+0x82A8E480 = { name = "NameToSymbol" }
 0x82A97000 = { name = "LanguageRules__InitializeDeclensions" }
 0x82A977E0 = { name = "XEncoder__SetUsed" }
 0x82A97818 = { name = "XEncoder__PutAligned8" }
@@ -412,6 +438,7 @@
 0x82AA2438 = { name = "XVarUint32__XVarUint32" }
 0x82AA59A0 = { name = "ErrorManagerBlizzardErrorData__AddMetadata" }
 0x82AAA700 = { name = "Blizzard__String__MemCopy" }
+0x82AAC1E0 = { name = "strcasecmp" }
 0x82AAFB58 = { name = "_sprintf" }
 0x82B3CE80 = { name = "lua_resume" }
 0x82B64CA0 = { name = "google__protobuf__SetLogHandler" }

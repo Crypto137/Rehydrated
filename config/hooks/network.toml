@@ -14,13 +14,6 @@ name = "HydraHook_ClientMessageReceiveGameMessage"
 registers = ["r3"]
 after_instruction = false
 
-# Hooks NetworkInitializeForApp just before it returns.
-[[midasm_hook]]
-address = 0x827ECB60
-name = "HydraHook_PostNetworkInitializeForApp"
-registers = []
-after_instruction = false
-
 # Hooks ServerMessageReceive, which processes incoming
 # network messages when they arrive to the server.
 [[midasm_hook]]

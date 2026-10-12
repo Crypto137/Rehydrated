@@ -9,8 +9,10 @@ game_root = "assets"
 file_path = "assets/default.xex"
 out_directory_path = "generated/default"
 includes = [
+	"config/rexcrt.toml",
 	"config/functions_unresolved.toml",
 	"config/functions.toml",
-	"config/hooks/game_hooks.toml",
-	"config/hooks/network_hooks.toml"
+	"config/hooks/game.toml",
+	"config/hooks/network.toml",
+	"config/hooks/subsystem.toml"
 ]
