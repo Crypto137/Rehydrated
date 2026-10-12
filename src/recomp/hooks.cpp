@@ -51,25 +51,10 @@ void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
 
 void HydraHook_PostNetworkInitializeForApp()
 {
-    rex::TypedGuestPointer<ComplexTypeDescriptor> pRegistrationHead = *MemoryUtils::GetHostPtr<rex::TypedGuestPointer<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
+    if (REXCVAR_GET(dump_type_descriptors))
+        StaticDataDumper::DumpTypeDescriptors("TypeDescriptors.bin");
 
-    bool dumpTypeDescriptors = REXCVAR_GET(dump_type_descriptors);
-    if (dumpTypeDescriptors)
-        StaticDataDumper::DumpTypeDescriptors(pRegistrationHead, "TypeDescriptors.bin");
-
-    ComplexTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<ComplexTypeDescriptor>(pRegistrationHead);
-    while (ptTypeDesc)
-    {
-        REXLOG_INFO("ComplexTypeDescriptor: szName={}, nVersion={}, nFieldCount={}, dwFlags=0x{:08X}",
-            MemoryUtils::GetHostPtr<char>(ptTypeDesc->szName),
-            static_cast<i32>(ptTypeDesc->nVersion),
-            static_cast<i32>(ptTypeDesc->nFieldCount),
-            static_cast<u32>(ptTypeDesc->dwFlags));
-
-        ptTypeDesc = MemoryUtils::GetHostPtr<ComplexTypeDescriptor>(ptTypeDesc->pNextRegisteredDescriptor);
-    }
-
-    REXLOG_INFO("NetworkInitializeForApp finished");
+    REXLOG_INFO("NetworkInitializeForApp() finished");
 }
 
 void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)

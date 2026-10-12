@@ -1,11 +1,7 @@
 #pragma once
 
-#include <rex/system/xtypes.h>
-
-struct ComplexTypeDescriptor;
-
 namespace StaticDataDumper {
 
-void DumpTypeDescriptors(rex::TypedGuestPointer<ComplexTypeDescriptor> typeDescPtr, char* fileName);
+void DumpTypeDescriptors(const char* fileName);
 
 }  // namespace TypeDescriptorDumper

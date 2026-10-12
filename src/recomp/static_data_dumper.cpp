@@ -35,7 +35,9 @@ namespace {
 
         GuestPtr<ComplexTypeDescriptor> complexTypeDescPtr{};
         complexTypeDescPtr.value = typeDescPtr.value;
-        complexDescriptors.insert(complexTypeDescPtr);
+        auto inserted = complexDescriptors.insert(complexTypeDescPtr);
+        if (!inserted.second)   // already inserted, this protects against infinite loops in recursive types (e.g. ConversationTreeNode)
+            return;
 
         ComplexTypeDescriptor* complexTypeDesc = static_cast<ComplexTypeDescriptor*>(typeDesc);        
         TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(complexTypeDesc->arFields);
@@ -49,7 +51,7 @@ namespace {
             // TODO: dump SymbolicEntry            
 
             DiscoverTypeDescriptors(field->ptDataType, primitiveDescriptors, complexDescriptors, strings);
-            //DiscoverTypeDescriptors(field->ptAuxDataType, primitiveDescriptors, complexDescriptors, strings); // TODO: add ConversationTreeNode handling
+            DiscoverTypeDescriptors(field->ptAuxDataType, primitiveDescriptors, complexDescriptors, strings);
         }
     }
 
@@ -60,7 +62,7 @@ namespace {
     }
 }
 
-void StaticDataDumper::DumpTypeDescriptors(rex::TypedGuestPointer<ComplexTypeDescriptor> typeDescPtr, char* fileName)
+void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
 {
     REXLOG_INFO("Dumping type descriptors...");
 
@@ -70,6 +72,7 @@ void StaticDataDumper::DumpTypeDescriptors(rex::TypedGuestPointer<ComplexTypeDes
 
     REXLOG_INFO("Discovering type descriptors...");
 
+    GuestPtr<ComplexTypeDescriptor> typeDescPtr = *MemoryUtils::GetHostPtr<rex::TypedGuestPointer<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
     while (typeDescPtr)
     {
         GuestPtr<XTypeDescriptor> castTypeDescPtr{};
