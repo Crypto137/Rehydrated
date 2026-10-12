@@ -4,4 +4,6 @@ namespace StaticDataDumper {
 
 void DumpTypeDescriptors(const char* fileName);
 
+void DumpGameMessages(const char* fileName);
+
 }  // namespace TypeDescriptorDumper

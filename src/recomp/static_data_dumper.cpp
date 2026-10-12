@@ -3,10 +3,13 @@
 #include <cstring>
 #include <fstream>
 #include <set>
+#include <vector>
 
 #include <rex/logging.h>
+#include <rex/ppc.h>
 
 #include "core/memory_utils.h"
+#include "game/network/game_message_type.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
 
 template <typename T>
@@ -138,5 +141,64 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     }
 
     REXLOG_INFO("Finished dumping type descriptors");
+}
+
+REX_IMPORT(__imp__GetGameMessageTypeAndSize, GetGameMessageTypeAndSize, u32(u32, u32, u32, u32));
+
+namespace {
+
+struct GameMessageInfo
+{
+    rex::be<u32> eMessageType;
+    rex::be<u32> pTypeDescriptor;
+    rex::be<u32> dwSize;
+    rex::be<u32> pszMessageLabel;
+};
+
+}
+
+void StaticDataDumper::DumpGameMessages(const char* fileName)
+{
+    REXLOG_INFO("Dumping game messages...");
+
+    auto* memory = REX_KERNEL_MEMORY();
+    if (!memory)
+        return;
+    auto* base = memory->virtual_membase();
+
+    rex::CallFrame frame(*rex::runtime::ThreadState::Get()->context());
+    
+    std::vector<GameMessageInfo> gameMessages{};
+    gameMessages.reserve(MSG_NUM_MESSAGES);
+
+    for (int i = MSG_INVALID + 1; i <= MSG_NUM_MESSAGES; i++)
+    {
+        rex::ppc::stack_guard guard(frame.ctx);
+
+        u32 pTypeDescriptorPtr = rex::ppc::stack_push(frame.ctx, base, 0);
+        u32 dwSizePtr = rex::ppc::stack_push(frame.ctx, base, 0);
+        u32 pszMessageLabelPtr = rex::ppc::stack_push(frame.ctx, base, 0);
+
+        u32 result = GetGameMessageTypeAndSize(i, pTypeDescriptorPtr, dwSizePtr, pszMessageLabelPtr);
+        if (!result)
+            continue;
+
+        GameMessageInfo gameMessageInfo;
+        gameMessageInfo.eMessageType = i;
+        gameMessageInfo.pTypeDescriptor = *MemoryUtils::GetHostPtr<rex::be<u32>>(pTypeDescriptorPtr);
+        gameMessageInfo.dwSize = *MemoryUtils::GetHostPtr<rex::be<u32>>(dwSizePtr);
+        gameMessageInfo.pszMessageLabel = *MemoryUtils::GetHostPtr<rex::be<u32>>(pszMessageLabelPtr);
+        gameMessages.push_back(gameMessageInfo);
+    }
+
+    REXLOG_INFO("Writing game messages...");
+
+    std::ofstream file(fileName, std::ios::binary);
+
+    int count = gameMessages.size();
+    WriteToStream(file, &count);
+    WriteToStream(file, &gameMessages.front(), count);
+
+    REXLOG_INFO("Finished dumping game messages");
 }
 
