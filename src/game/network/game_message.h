@@ -231,9 +231,109 @@ struct GameSetupMessage
     rex::be<u32> dwFirstHeartbeat;
 };
 
+struct HotbarButtonData
+{
+    rex::be<SNO> m_snoPower;
+    rex::be<RuneType> m_eRuneType;
+    rex::be<GBID> m_gbidItem;
+};
+
+struct HirelingInfo
+{
+    rex::be<HirelingClass> eClass;
+    rex::be<GBID> gbidName;
+    rex::be<i32> field8;    // max 0x7F, bit count 7
+    rex::be<i32> field12;
+    rex::be<i32> fDead;
+    rex::be<i32> arnPowerKeyParam[4];
+};
+
+struct HirelingSavedData
+{
+    HirelingInfo tHireling[4];
+    rex::be<HirelingClass> eActiveHireling;
+    rex::be<u32> dwAvailableHirelings;
+};
+
+struct LearnedLore
+{
+    rex::be<i32> m_nLearnedCount;
+    rex::be<SNO> m_snoLoreLearned[256];
+};
+
+struct SavedConversations
+{
+    rex::be<i32> m_nSavedConvCount;
+    char m_arPlayedConv[32];
+    rex::be<SNO> m_snoSavedConv[256];
+};
+
+struct ActiveSkillSavedData
+{
+    rex::be<SNO> snoSkill;
+    rex::be<RuneType> eRuneType;
+};
+
+struct SavePointData
+{
+    rex::be<SNO> snoWorld;
+    rex::be<i32> nNum;
+    rex::be<i32> bCreatesPortal;
+    rex::be<ACDID> idACDReturnPortal;
+};
+
+struct PlayerSavedData
+{
+    HotbarButtonData tHotbarBtnAssignments[6];
+    HotbarButtonData tPotionBtn;
+    char bSkillSlotEverAssigned;
+    rex::be<u32> uSecondsPlayed;
+    rex::be<u32> m_ActivatedWaypoints;
+    HirelingSavedData tHirelingSavedData;
+    rex::be<u32> uTimeLastLevel;
+    LearnedLore tLearnedLore;
+    SavedConversations tSavedConversations;     // skipped in the type descriptor
+    ActiveSkillSavedData tActiveSkills[6];
+    SNO snoTraits[3];
+    SavePointData tLastSavePoint;
+};
+
+struct PlayerQuestRewardHistoryEntry
+{
+    rex::be<SNO> snoQuest;
+    rex::be<i32> nStepUID;
+    char uDifficultyFlags;
+};
+
+struct PlayerQuestHistoryEntry
+{
+    rex::be<SNO> snoQuest;
+    rex::be<i32> nStepUID;
+    rex::be<DifficultyLevel> eDifficulty;
+};
+
+struct PlayerSavedQuest
+{
+    rex::be<SNO> snoQuest;
+    rex::be<DifficultyLevel> eDifficulty;
+    rex::be<i32> nCurrentStepUID;
+    rex::be<i32> arObjectiveState[20];
+    rex::be<i32> arFailureConditionState[20];
+};
+
 struct HeroStateData
 {
-    // TODO
+    rex::be<Act> eLastPlayedAct;
+    rex::be<Act> eHighestUnlockedAct;
+    rex::be<DifficultyLevel> eLastPlayedDifficulty;
+    rex::be<DifficultyLevel> eHighestUnlockedDifficulty;
+    rex::be<u32> uPlayerFlags;
+    PlayerSavedData tSavedData;
+    rex::be<i32> nNumQuestRewardEntries;
+    PlayerQuestRewardHistoryEntry tQuestRewardHistory[100];
+    PlayerQuestHistoryEntry tQuestHistory[200];     // skipped in the type descriptor
+    PlayerSavedQuest tSavedQuest[64];               // skipped in the type descriptor
+    rex::be<i32> uBossKillFlags[4];
 };
 
 struct NewPlayerMessage

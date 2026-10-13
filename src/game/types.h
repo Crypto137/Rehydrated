@@ -157,6 +157,18 @@ enum Act : int
     //ACT_MAX_CAMPAIGN = 400,
 };
 
+enum DifficultyLevel : int
+{
+    DL_INVALID = -1,
+    DL_NORMAL,
+    DL_NIGHTMARE,
+    DL_HELL,
+    DL_INFERNO,
+    //DL_X1,
+    //DL_DYNAMIC,
+    DL_NUM_DIFFICULTY_LEVELS,
+};
+
 enum PlayerClass : int
 {
     PLAYER_CLASS_NONE = -1,
@@ -170,6 +182,14 @@ enum PlayerClass : int
     NUM_PLAYER_CLASSES,
 };
 
+enum HirelingClass : int
+{
+    HC_NONE,
+    HC_TEMPLAR,
+    HC_SCOUNDREL,
+    HC_ENCHANTRESS,
+    NUM_HIRELING_CLASSES,
+};
 
 // TODO: clean up entries that didn't exist in 17339
 enum WeaponClass : int
@@ -234,4 +254,16 @@ enum Team : int
     TEAM_HATE_ALL_EXCEPT_PLAYERS_6,
     TEAM_HATE_ALL_EXCEPT_PLAYERS_7,
     TEAM_NUM_TEAMS,
+};
+
+enum RuneType : int
+{
+    RUNE_TYPE_INVALID = -1,
+    RUNE_TYPE_A,
+    RUNE_TYPE_B,
+    RUNE_TYPE_C,
+    RUNE_TYPE_D,
+    RUNE_TYPE_E,
+    RUNE_TYPE_COUNT,
+    RUNE_TYPE_NONE,
 };
