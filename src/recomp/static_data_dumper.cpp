@@ -227,9 +227,6 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
 
         if (attribDefs[i].ptCompressor)
             compressors.insert(attribDefs[i].ptCompressor);
-
-        const char* name = MemoryUtils::GetHostPtr<const char>(attribDefs[i].pszName);
-        REXLOG_INFO("AttribDef: eAttrib={}, pszName={}", i, name);
     }
 
     REXLOG_INFO("Writing attribute definitions to {}...", fileName);
