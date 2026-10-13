@@ -15,6 +15,9 @@ REXCVAR_DEFINE_BOOL(dump_type_descriptors, false, "Development", "Dumps type des
 REXCVAR_DEFINE_BOOL(dump_game_messages, false, "Development", "Dumps game message metadata on boot")
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
+REXCVAR_DEFINE_BOOL(dump_attrib_defs, false, "Development", "Dumps attribute definitions on boot")
+    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+
 // Game
 
 void HydraHook_SGameInitializeGame(PPCRegister& r3)
@@ -67,15 +70,18 @@ void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)
 void HydraHook_PostNetworkInitializeForApp()
 {
     if (REXCVAR_GET(dump_type_descriptors))
-        StaticDataDumper::DumpTypeDescriptors("TypeDescriptors.bin");
+        StaticDataDumper::DumpTypeDescriptors("_TypeDescriptors.bin");
 
     if (REXCVAR_GET(dump_game_messages))
-        StaticDataDumper::DumpGameMessages("GameMessages.bin");
+        StaticDataDumper::DumpGameMessages("_GameMessages.bin");
 
     REXLOG_INFO("NetworkInitializeForApp() finished");
 }
 
 void HydraHook_PostFastAttribInitializeForApp()
 {
+    if (REXCVAR_GET(dump_attrib_defs))
+        StaticDataDumper::DumpAttribDefs("_AttribDefs.bin");
+
     REXLOG_INFO("FastAttribInitializeForApp() finished");
 }

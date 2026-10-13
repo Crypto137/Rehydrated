@@ -9,6 +9,8 @@
 #include <rex/ppc.h>
 
 #include "core/memory_utils.h"
+#include "game/attributes/attribute_compressor.h"
+#include "game/attributes/attrib_defs.h"
 #include "game/network/game_message_type.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
 
@@ -19,50 +21,50 @@ template <typename T>
 using GuestPtrSet = std::set<GuestPtr<T>>;
 
 namespace {
-    void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XTypeDescriptor>& primitiveDescriptors,
-        GuestPtrSet<ComplexTypeDescriptor>& complexDescriptors, GuestPtrSet<char>& strings)
+void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XTypeDescriptor>& primitiveDescriptors,
+    GuestPtrSet<ComplexTypeDescriptor>& complexDescriptors, GuestPtrSet<char>& strings)
+{
+    XTypeDescriptor* typeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(typeDescPtr);
+    if (!typeDesc)
+        return;
+
+    if (typeDesc->szName)
+        strings.insert(typeDesc->szName);
+
+    int fieldCount = typeDesc->nFieldCount;
+    if (fieldCount == 0)
     {
-        XTypeDescriptor* typeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(typeDescPtr);
-        if (!typeDesc)
-            return;
-
-        if (typeDesc->szName)
-            strings.insert(typeDesc->szName);
-
-        int fieldCount = typeDesc->nFieldCount;
-        if (fieldCount == 0)
-        {
-            primitiveDescriptors.insert(typeDescPtr);
-            return;
-        }
-
-        GuestPtr<ComplexTypeDescriptor> complexTypeDescPtr{};
-        complexTypeDescPtr.value = typeDescPtr.value;
-        auto inserted = complexDescriptors.insert(complexTypeDescPtr);
-        if (!inserted.second)   // already inserted, this protects against infinite loops in recursive types (e.g. ConversationTreeNode)
-            return;
-
-        ComplexTypeDescriptor* complexTypeDesc = static_cast<ComplexTypeDescriptor*>(typeDesc);        
-        TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(complexTypeDesc->arFields);
-        for (int i = 0; i < fieldCount; ++i)
-        {
-            TypeDescriptorField* field = &arFields[i];
-
-            if (field->szFieldName)
-                strings.insert(field->szFieldName);
-
-            // TODO: dump SymbolicEntry            
-
-            DiscoverTypeDescriptors(field->ptDataType, primitiveDescriptors, complexDescriptors, strings);
-            DiscoverTypeDescriptors(field->ptAuxDataType, primitiveDescriptors, complexDescriptors, strings);
-        }
+        primitiveDescriptors.insert(typeDescPtr);
+        return;
     }
 
-    template <typename T>
-    void WriteToStream(std::ofstream& stream, const T* data, std::size_t count = 1)
+    GuestPtr<ComplexTypeDescriptor> complexTypeDescPtr{};
+    complexTypeDescPtr.value = typeDescPtr.value;
+    auto inserted = complexDescriptors.insert(complexTypeDescPtr);
+    if (!inserted.second)   // already inserted, this protects against infinite loops in recursive types (e.g. ConversationTreeNode)
+        return;
+
+    ComplexTypeDescriptor* complexTypeDesc = static_cast<ComplexTypeDescriptor*>(typeDesc);
+    TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(complexTypeDesc->arFields);
+    for (int i = 0; i < fieldCount; ++i)
     {
-        stream.write(reinterpret_cast<const char*>(data), count * sizeof(T));
+        TypeDescriptorField* field = &arFields[i];
+
+        if (field->szFieldName)
+            strings.insert(field->szFieldName);
+
+        // TODO: dump SymbolicEntry            
+
+        DiscoverTypeDescriptors(field->ptDataType, primitiveDescriptors, complexDescriptors, strings);
+        DiscoverTypeDescriptors(field->ptAuxDataType, primitiveDescriptors, complexDescriptors, strings);
     }
+}
+
+template <typename T>
+void WriteToStream(std::ofstream& stream, const T* data, std::size_t count = 1)
+{
+    stream.write(reinterpret_cast<const char*>(data), count * sizeof(T));
+}
 }
 
 void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
@@ -90,7 +92,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
         typeDescPtr = typeDesc->pNextRegisteredDescriptor;
     }
 
-    REXLOG_INFO("Writing type descriptors...");
+    REXLOG_INFO("Writing type descriptors to {}...", fileName);
 
     std::ofstream file(fileName, std::ios::binary);
 
@@ -99,7 +101,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     for (auto& primitiveDescPtr : primitiveDescriptors)
     {
         WriteToStream(file, &primitiveDescPtr.value);
-        
+
         XTypeDescriptor* primitiveDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(primitiveDescPtr);
         if (!primitiveDesc)
             continue;
@@ -167,11 +169,11 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
     auto* base = memory->virtual_membase();
 
     rex::CallFrame frame(*rex::runtime::ThreadState::Get()->context());
-    
+
     std::vector<GameMessageInfo> gameMessages{};
     gameMessages.reserve(MSG_NUM_MESSAGES);
 
-    for (int i = MSG_INVALID + 1; i <= MSG_NUM_MESSAGES; i++)
+    for (int i = MSG_INVALID + 1; i <= MSG_NUM_MESSAGES; ++i)
     {
         rex::ppc::stack_guard guard(frame.ctx);
 
@@ -191,7 +193,7 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
         gameMessages.push_back(gameMessageInfo);
     }
 
-    REXLOG_INFO("Writing game messages...");
+    REXLOG_INFO("Writing game messages to {}...", fileName);
 
     std::ofstream file(fileName, std::ios::binary);
 
@@ -202,3 +204,92 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
     REXLOG_INFO("Finished dumping game messages");
 }
 
+void StaticDataDumper::DumpAttribDefs(const char* fileName)
+{
+    REXLOG_INFO("Dumping attribute definitions...");
+
+    constexpr u32 cgarAttribDefs = 0x82F9DA88;
+
+    GuestPtrSet<char> strings{};
+    GuestPtrSet<AttributeCompressor> compressors{};
+
+    AttribDef* attribDefs = MemoryUtils::GetHostPtr<AttribDef>(cgarAttribDefs);
+    for (int i = ATTRIBUTE_AXEBADDATA; i < NUM_ATTRIBUTES; ++i)
+    {
+        if (attribDefs[i].pszFormulaItem)
+            strings.insert(attribDefs[i].pszFormulaItem);
+
+        if (attribDefs[i].pszFormulaCharacter)
+            strings.insert(attribDefs[i].pszFormulaCharacter);
+
+        if (attribDefs[i].pszName)
+            strings.insert(attribDefs[i].pszName);
+
+        if (attribDefs[i].ptCompressor)
+            compressors.insert(attribDefs[i].ptCompressor);
+
+        const char* name = MemoryUtils::GetHostPtr<const char>(attribDefs[i].pszName);
+        REXLOG_INFO("AttribDef: eAttrib={}, pszName={}", i, name);
+    }
+
+    REXLOG_INFO("Writing attribute definitions to {}...", fileName);
+
+    std::ofstream file(fileName, std::ios::binary);
+
+    int count = NUM_ATTRIBUTES;
+    WriteToStream(file, &count);
+    WriteToStream(file, attribDefs, count);
+
+    int numCompressors = compressors.size();
+    WriteToStream(file, &numCompressors);
+    for (auto& compressorPtr : compressors)
+    {
+        WriteToStream(file, &compressorPtr.value);
+
+        AttributeCompressor* compressor = MemoryUtils::GetHostPtr<AttributeCompressor>(compressorPtr);
+        if (!compressor)
+            continue;
+
+        switch (compressor->m_eType)
+        {
+            case ACT_UNCOMPRESSED:
+                WriteToStream(file, static_cast<AttributeCompressorUncompressed*>(compressor));
+                break;
+
+            case ACT_BOUNDED_INT:
+                WriteToStream(file, static_cast<AttributeCompressorBoundedInt*>(compressor));
+                break;
+
+            case ACT_LINEAR_FLOAT:
+                WriteToStream(file, static_cast<AttributeCompressorLinearFloat*>(compressor));
+                break;
+
+            case ACT_FLOAT16:
+                WriteToStream(file, static_cast<AttributeCompressorFloat16*>(compressor));
+                break;
+
+            case ACT_FLOAT_VARIABLE:
+                WriteToStream(file, static_cast<AttributeCompressorFloatVariable*>(compressor));
+                break;
+
+            default:
+                REXLOG_WARN("Unknown attribute compressor type 0x{:08X}", static_cast<u32>(compressor->m_eType));
+                return;
+        }
+    }
+
+    int numStrings = strings.size();
+    WriteToStream(file, &numStrings);
+    for (auto& strPtr : strings)
+    {
+        WriteToStream(file, &strPtr.value);
+
+        char* str = MemoryUtils::GetHostPtr<char>(strPtr);
+        if (!str)
+            continue;
+
+        WriteToStream(file, str, std::strlen(str) + 1);
+    }
+
+    REXLOG_INFO("Finished dumping attribute definitions");
+}
