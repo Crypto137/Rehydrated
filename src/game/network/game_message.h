@@ -2,11 +2,13 @@
 
 #include <rex/types.h>
 
-#include "game/attributes/attrib.h"
+#include "game/animation.h"
+#include "game/effect.h"
 #include "game/game.h"
 #include "game/game_balance.h"
 #include "game/scene.h"
 #include "game/types.h"
+#include "game/attributes/attrib.h"
 #include "game/world_place.h"
 #include "game/network/game_message_type.h"
 #include "game/sigma/math/ivector2d.h"
@@ -33,6 +35,12 @@ struct SNOName
 {
     rex::be<SNOGroup> snoGroup;
     rex::be<SNO> snoHandle;
+};
+
+struct RNG
+{
+    rex::be<u32> dwSeed;
+    rex::be<u32> dwCarry;
 };
 
 // Primitive Messages
@@ -942,4 +950,206 @@ struct PlayAnimationMessage
     rex::be<f32> flUnitAnimStartTime;
     rex::be<i32> nUsedAnimArrayElements;
     PlayAnimationMessageSpec tAnim[3];
+};
+
+struct ACDTranslateNormalMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    XOptional<Vector3D> vDest;
+    XOptional<rex::be<Angle>> aDesiredYaw;
+    XOptional<rex::be<i32>> bSnapFacing;
+    XOptional<rex::be<f32>> flMovementSpeed;
+    XOptional<rex::be<u32>> uMoveFlags;
+    XOptional<rex::be<ActorAnimationTag>> eAnimTag;
+    XOptional<rex::be<u32>> uWalkInPlaceTicks;
+    XOptional<rex::be<SNO>> snoPowerPassability;
+    XOptional<rex::be<u32>> uAckValue;
+    XOptional<rex::be<u32>> eMoveType;
+    //XOptional<int> nMaxTicksToWalk
+};
+
+struct ACDTranslateSnappedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    Vector3D vDest;
+    rex::be<Angle> aDesiredYaw;
+    rex::be<i32> bSnapFacing;
+    rex::be<u32> uMoveFlags;
+    XOptional<rex::be<u32>> uAckValue;
+};
+
+struct ACDTranslateFacingMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<Angle> aDesiredYaw;
+    rex::be<i32> bSnapFacing;
+};
+
+struct ACDTranslateFixedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    Vector3D vVel;
+    rex::be<u32> uMoveFlags;
+    rex::be<ActorAnimationTag> eAnimTag;
+    rex::be<SNO> snoPowerPassability;
+};
+
+struct ACDTranslateArcMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    Vector3D vPos;
+    Vector3D vVel;
+    rex::be<u32> uMoveFlags;
+    rex::be<ActorAnimationTag> eAnimTag;
+    rex::be<ActorAnimationTag> eLandingAnimTag;
+    rex::be<f32> flGravity;
+    rex::be<SNO> snoPowerPassability;
+    rex::be<f32> flUnitBounce;
+    rex::be<f32> flDesiredHeight;
+};
+
+// TODO: clean up entries that didn't exist in 17339
+enum DeterministicPathType
+{
+    DPATH_NONE,
+    DPATH_CHARGED_BOLT,
+    DPATH_PLAGUE_OF_TOADS,
+    DPATH_CHAKRAM_LEFT,
+    DPATH_CHAKRAM_RIGHT,
+    DPATH_SIN_WAVE,
+    DPATH_PEDAL_CURVE,
+    DPATH_SPIRAL,
+    DPATH_PLAGUE_OF_TOADS_STRAIGHT,
+    DPATH_PIE_WEDGE,
+    DPATH_CURVED_OFFSET,
+    DPATH_FIRESTORM,
+    DPATH_SPIRAL_IMMEDIATE,
+    DPATH_COUNT,
+};
+
+struct ACDTranslateDetPathMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<DeterministicPathType> eDPath;
+    RNG tSeed;
+    Vector3D wvVelocity;
+    rex::be<Angle> aOriginalYaw;
+    Vector3D vStartPos;
+    rex::be<u32> uMoveFlags;
+    rex::be<ActorAnimationTag> eAnimTag;
+    rex::be<SNO> snoPowerPassability;
+    rex::be<u32> nVar0;
+    rex::be<f32> flVar0;
+    rex::be<f32> flVar1;
+    rex::be<f32> flVar2;
+    rex::be<f32> flVar3;
+    rex::be<f32> flVar4;
+};
+
+struct DPathSinData
+{
+    rex::be<f32> flSinIncPerTick;
+    rex::be<f32> flSinIncAccel;
+    rex::be<f32> flLateralMaxDistance;
+    rex::be<f32> flOOLateralDistanceToScale;
+    rex::be<f32> flLateralStartDistance;
+    rex::be<f32> flSpeed;
+};
+
+struct ACDTranslateDetPathSinMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<DeterministicPathType> eDPath;
+    RNG tSeed;
+    Vector3D wvVelocity;
+    rex::be<Angle> aOriginalYaw;
+    Vector3D vStartPos;
+    rex::be<u32> uMoveFlags;
+    rex::be<ActorAnimationTag> eAnimTag;
+    rex::be<SNO> snoPowerPassability;
+    rex::be<i32> nVar0;
+    rex::be<f32> flVar0;
+    DPathSinData tSinData;
+    rex::be<f32> flSpeedMult;
+};
+
+struct ACDTranslateDetPathSpiralMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    Vector3D vStartPos;
+    Vector3D vTargetPos;
+    rex::be<u32> uMoveFlags;
+    rex::be<ActorAnimationTag> eAnimTag;
+    rex::be<f32> flVar0;
+    DPathSinData tSinData;
+    rex::be<f32> flSpeedMult;
+};
+
+struct ACDTranslateSyncMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    Vector3D vPos;
+    XOptional<rex::be<i32>> bSnap;
+    XOptional<rex::be<u32>> uAckValue;
+};
+
+struct ACDTranslateFixedUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    Vector3D vPos;
+    Vector3D vVel;
+};
+
+struct ACDClientTranslateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> uTickBase;
+    rex::be<u32> uTicksAhead;
+    Vector3D vDest;
+    Angle aDesiredYaw;
+    rex::be<f32> flMovementSpeed;
+    rex::be<u32> uMoveFlags;
+    rex::be<u32> eAnimTag;
+    XOptional<rex::be<SNO>> snoPower;
+};
+
+struct ACDTranslateAckMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> uAckValue;
+};
+
+struct PlayEffectMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<EffectType> eEffectType;
+    XOptional<rex::be<i32>> nEffectParameter;
+};
+
+struct PlayHitEffectMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<ACDNetworkName> annAttacker;
+    rex::be<DamageType> eDamageType;
+    rex::be<i32> fCrit;
+};
+
+struct PlayHitEffectOverrideMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<ACDNetworkName> annAttacker;
+    rex::be<SNO> snoEffectGroup;
 };

@@ -44,6 +44,7 @@ enum ActorLocationType : int
 
 typedef int GBID;
 typedef int DataID;
+typedef float Angle;
 
 // Note: SNO groups 16, 30, and 50 are missing in all publicly available versions of the game.
 // The probably correspond to legacy SNO groups that were removed before the 2011 closed beta.
@@ -365,4 +366,17 @@ enum DyeType : int
     DYE_TYPE_20,
     DYE_TYPE_21,
     MAX_DYE_VALUE,
+};
+
+enum DamageType : int
+{
+    DAMAGE_TYPE_NONE = -1,
+    DAMAGE_TYPE_PHYSICAL,
+    DAMAGE_TYPE_FIRE,
+    DAMAGE_TYPE_LIGHTNING,
+    DAMAGE_TYPE_COLD,
+    DAMAGE_TYPE_POISON,
+    DAMAGE_TYPE_ARCANE,
+    DAMAGE_TYPE_HOLY,
+    NUM_DAMAGE_TYPES,
 };
