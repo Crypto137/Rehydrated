@@ -5,12 +5,14 @@
 #include "game/sigma/math/quaternion.h"
 #include "game/sigma/math/vector3d.h"
 
+// Position-Rotation Transform
 struct PRTransform
 {
     Quaternion q;
     Vector3D wp;
 };
 
+// Position-Rotation-Scale Transform
 struct PRSTransform
 {
     Quaternion q;

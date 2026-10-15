@@ -2,11 +2,10 @@
 
 #include <rex/types.h>
 
-#include "game/animation.h"
-#include "game/effect.h"
 #include "game/game.h"
 #include "game/game_balance.h"
 #include "game/scene.h"
+#include "game/tags.h"
 #include "game/types.h"
 #include "game/attributes/attrib.h"
 #include "game/world_place.h"
@@ -62,10 +61,34 @@ struct IntDataMessage
     rex::be<i32> nData;
 };
 
+struct BoolDataMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> bVal;
+};
+
+struct DataIDDataMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<DataID> id;
+};
+
 struct ANNDataMessage
 {
     RequiredMessageHeader tHeader;
     rex::be<ACDNetworkName> ann;
+};
+
+struct SNODataMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoData;
+};
+
+struct SNONameDataMessage
+{
+    RequiredMessageHeader tHeader;
+    SNOName snoname;
 };
 
 struct GBIDDataMessage
@@ -91,6 +114,12 @@ struct GenericBlobMessage
 {
     RequiredMessageHeader tHeader;
     rex::be<u32> uBlobSize;
+};
+
+struct PRTransformMessage
+{
+    RequiredMessageHeader tHeader;
+    PRTransform tTransform;
 };
 
 // Complex Messages
@@ -1152,4 +1181,886 @@ struct PlayHitEffectOverrideMessage
     rex::be<ACDNetworkName> ann;
     rex::be<ACDNetworkName> annAttacker;
     rex::be<SNO> snoEffectGroup;
+};
+
+struct PlayNonPositionalSoundMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoSound;
+};
+
+struct PlayErrorSoundMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ActorTag> dwSoundTag;
+};
+
+struct PlayMusicMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoMusic;
+};
+
+struct PlayCutsceneMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nIndex;
+};
+
+struct ComplexEffectAddMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SComplexEffectID> idSComplexEffect;
+    rex::be<ComplexEffectType> eType;
+    rex::be<SNO> snoEffectGroup;
+    rex::be<ACDNetworkName> annSource;
+    rex::be<ACDNetworkName> annDest;
+    rex::be<u32> dwParam1;
+    rex::be<u32> dwParam2;
+    rex::be<u32> bIgnoreOwnerAlpha;
+};
+
+struct FlippyMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annLauncher;
+    rex::be<SNO> snoFlippyParticle;
+    rex::be<SNO> snoActorLoot;
+    Vector3D wpDest;
+};
+
+struct WaypointActivatedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annWaypoint;
+    rex::be<ACDNetworkName> annActivatingPlayer;
+    rex::be<SNO> snoLevelArea;
+    rex::be<i32> bAnnounce;
+};
+
+struct AimTargetMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<TargetType> eType;
+    rex::be<ACDNetworkName> annTarget;
+    WorldPlace tPlace;
+};
+
+struct ACDChangeGBHandleMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    GBHandle hGB;
+};
+
+struct EndOfTickMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> dwTickEnding;
+    rex::be<u32> dwTickNext;
+};
+
+struct TryWaypointMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annWaypoint;
+    rex::be<u32> nWaypoint;
+};
+
+enum NPCInteractionType
+{
+    // TODO
+};
+
+struct NPCInteraction
+{
+    rex::be<NPCInteractionType> eType;
+    rex::be<u32> dwData;
+    rex::be<u32> dwData2;
+    rex::be<u32> dwFlags;
+};
+
+enum NPCMenu
+{
+    // TODO
+};
+
+struct NPCInteractOptionsMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annTalkingTo;
+    NPCInteraction tNPCInteraction[20];
+    rex::be<i32> nNumInteractions;
+    rex::be<NPCMenu> ePreferredMenu;
+};
+
+struct QuestUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoQuest;
+    rex::be<SNO> snoLevelArea;
+    rex::be<i32> nStepUID;
+    rex::be<i32> bFailed;
+    rex::be<i32> bDisplayButton;
+};
+
+struct QuestMeterMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoQuest;
+    rex::be<ACDNetworkName> annMeter;
+    rex::be<f32> flMeter;
+};
+
+struct QuestCounterMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoQuest;
+    rex::be<SNO> snoLevelArea;
+    rex::be<i32> nStepUID;
+    rex::be<i32> nObjectiveIndex;
+    rex::be<i32> nValue;
+    rex::be<i32> bCompleted;
+};
+
+struct PlayerLevel
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nPlayerIndex;
+    rex::be<i32> nNewLevel;
+};
+
+enum PickupResponse : int
+{
+    PICKUP_RESPONSE_INVALID,
+    PICKUP_RESPONSE_OK,
+    PICKUP_RESPONSE_TRADING,
+    PICKUP_RESPONSE_OWNED_BY_OTHER,
+    PICKUP_RESPONSE_SINGULAR,
+    PICKUP_RESPONSE_NO_SUITABLE_SLOT_FOUND,
+    PICKUP_RESPONSE_UNUSABLE_GLYPH,
+    PICKUP_RESPONSE_NOT_RIGHT_NOW,
+    NUM_PICKUP_RESPONSES,
+};
+
+struct ACDPickupFailedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> bIsCurrency;
+    rex::be<PickupResponse> ePickupResponse;
+    rex::be<ACDNetworkName> annPickee;
+};
+
+struct PetMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nOwner;
+    rex::be<i32> nIndex;
+    rex::be<ACDNetworkName> annPet;
+    rex::be<i32> nType;
+};
+
+struct PetDetachMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annPet;
+    rex::be<i32> bDisplayChatMessage;
+};
+
+struct HirelingInfoUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> eClass;
+    rex::be<i32> fDead;
+    rex::be<GBID> gbidName;
+    rex::be<i32> eValidClass;
+    rex::be<i32> arnPowerKeyParam[5];
+    rex::be<ACDNetworkName> annItems[6];
+    rex::be<i32> nPlayerIndex;
+};
+
+enum UIElement : int
+{
+    // TODO
+};
+
+enum UIElementAction : int
+{
+    // TODO
+};
+
+struct UIElementMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<UIElement> eElement;
+    rex::be<UIElementAction> eAction;
+};
+
+enum eTradeMessageType
+{
+    TRADE_MSG_TRY_START,
+    TRADE_MSG_CANCEL,
+    TRADE_MSG_ACCEPT,
+    TRADE_MSG_START,
+    TRADE_MSG_GOLD,
+    TRADE_MSG_COMPLETE,
+    TRADE_MSG_ITEM,
+    TRADE_MSG_OTHER_BUSY,
+    TRADE_MSG_STATE,
+    TRADE_MSG_ITEM_REMOVED,
+    NUM_MESSAGE_TYPES,
+};
+
+struct TradeMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> eMessageType;
+    rex::be<u32> dwData;
+    rex::be<u32> dwData2;
+    rex::be<u64> uData64;
+    rex::be<ACDNetworkName> ann;
+    rex::be<ACDNetworkName> arrItems[4];
+};
+
+struct SetIdleAnimationMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<u32> dwAnimTag;
+};
+
+struct ACDCollFlagsMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<u32> uCollFlags;
+};
+
+enum GoldModifiedReason : int
+{
+    GMR_UNKNOWN,
+    GMR_SOLD,
+    GMR_KILL,
+    GMR_QUEST,
+    GMR_SCRIPT,
+    GMR_CRAFTING,
+    GMR_BUY_STASH,
+    GMR_PURCHASE,
+    GMR_CHEAT_REPAIR_ALL,
+    GMR_CHEAT,
+    GMR_TRADE,
+    GMR_TRADE_FAILED,
+    GMR_PICKUP,
+    //GMR_RESET_PARAGON_POINTS,
+    //GMR_MAIL,
+    //GMR_ACHIEVEMENT,
+    //GMR_DAILY_FIRST,
+    //GMR_STORE_PURCHASE,
+    //GMR_EMPOWERED_RIFT,
+    //GMR_CURRENCY_CONVERSION,
+    //GMR_CUBE_RECIPE,
+    GMR_COUNT,
+};
+
+struct GoldModifiedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> bPlaySound;
+    rex::be<GoldModifiedReason> eReason;
+};
+
+struct ActTransitionMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<Act> eAct;
+    rex::be<i32> bOnJoin;
+};
+
+struct InterstitialMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<PlayerClass> ePlayerClass;
+    rex::be<i32> fIsMale;
+};
+
+struct EffectGroupACDToACDMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoEffectGroup;
+    rex::be<ACDNetworkName> annFrom;
+    rex::be<ACDNetworkName> annTo;
+};
+
+enum RopePosition : int
+{
+    ROPE_POSITION_DEFAULT,
+    ROPE_POSITION_CHEST,
+    ROPE_POSITION_MOUTH,
+    ROPE_POSITION_LEFT_HAND,
+    ROPE_POSITION_RIGHT_HAND,
+    ROPE_POSITION_MANA_GATHER,
+    ROPE_POSITION_BACK,
+    ROPE_POSITION_HEAD,
+    ROPE_POSITION_LEFT_FOOT,
+    ROPE_POSITION_RIGHT_FOOT,
+    ROPE_POSITION_PELVIS,
+    ROPE_POSITION_LEFT_WEAPON,
+    ROPE_POSITION_RIGHT_WEAPON,
+    ROPE_POSITION_EMITTER,
+    ROPE_POSITION_EMITTER_FLOOR,
+    ROPE_POSITION_EXPLOSION,
+    ROPE_POSITION_BEAM_CENTER,
+    ROPE_POSITION_BEAM_LEFT,
+    ROPE_POSITION_BEAM_RIGHT,
+    ROPE_POSITION_COUNT,
+};
+
+struct RopeEffectMessageACDToACD
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoRope;
+    rex::be<ACDNetworkName> annFrom;
+    rex::be<RopePosition> ePositionFrom;
+    rex::be<ACDNetworkName> annTo;
+    rex::be<RopePosition> ePositionTo;
+    rex::be<i32> bIgnoreOwnerAlpha;
+};
+
+struct RopeEffectMessageACDToPlace
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoRope;
+    rex::be<ACDNetworkName> annFrom;
+    rex::be<RopePosition> ePositionFrom;
+    WorldPlace tPlaceTo;
+    rex::be<i32> bIgnoreOwnerAlpha;
+};
+
+enum PVPGameResult : int
+{
+    PVP_GR_INVALID = -1,
+    PVP_GR_WIN,
+    PVP_GR_LOSS,
+    PVP_GR_TIE,
+    NUM_PVP_GAME_RESULTS,
+};
+
+struct GameSyncedData
+{
+    rex::be<u32> dwGameSyncedFlags;
+    rex::be<Act> eAct;
+    rex::be<Team> arPlayerAllyTeam[4];  // there is a 40 byte gap in the type descriptor here, team data fits the most
+    rex::be<Team> arMonsterTeam[4];
+    rex::be<Team> eSceneryTeam;
+    rex::be<Team> eNeutralTeam;
+    rex::be<i32> bPregame;
+    rex::be<u32> dwPregameEnd;
+    rex::be<u32> dwRoundStart;
+    rex::be<u32> dwRoundEnd;
+    rex::be<i32> bPVPGameOver;
+    rex::be<i32> bPVPAwardsAssigned;
+    rex::be<u32> nTeamWins[2];
+    rex::be<u32> nTeamScore[2];
+    rex::be<PVPGameResult> ePVPGameResult[2];
+    OnlineService::HeroId uPartyGuideHeroId;
+};
+
+struct GameSyncedDataMessage
+{
+    RequiredMessageHeader tHeader;
+    GameSyncedData tSyncedData;
+};
+
+struct ACDChangeActorMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<SNO> snoActor;
+};
+
+enum PlayerWarpReason : int
+{
+    WARP_UNKNOWN,
+    WARP_TOWN_PORTAL,
+    WARP_WAYPOINT,
+    WARP_CHANGING_ACTS,
+    WARP_HEARTH_PORTAL,
+    WARP_CHECKPOINT,
+    WARP_COMPANION,
+    WARP_BOSS_FIGHT,
+    WARP_ELEVATOR,
+    WARP_PORTAL,
+    WARP_SCRIPT,
+    WARP_HEADSTONE,
+    WARP_CONSOLE_PORTAL,
+    WARP_CHALLENGE,
+    WARP_CANCELLED,
+    WARP_CONSOLE_PVP_SS,
+    //WARP_TIERED_RIFT,
+    //WARP_SET_DUNGEON,
+    WARP_COUNT,
+};
+
+struct PlayerWarpedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<PlayerWarpReason> eWarpReason;
+    rex::be<f32> flWarpFadeInSeconds;
+};
+
+enum MonsterRarity : int
+{
+    MR_NONE = -1,
+    MR_NORMAL,
+    MR_CHAMPION,
+    MR_RARE,
+    MR_RARE_MINION,
+    MR_UNIQUE,
+    MR_HIRELING,
+    MR_6,
+    MR_BOSS,
+    MR_NUM_RARITIES,
+};
+
+struct VictimMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nPlayerVictimIndex;
+    rex::be<i32> nKillerLevel;
+    rex::be<i32> nKillerPlayerIndex;
+    rex::be<MonsterRarity> eKillerMonsterRarity;
+    rex::be<SNO> snoKillerActor;
+    rex::be<Team> eKillerTeam;
+    rex::be<GBID> pKillerRareNameGBIDs[2];
+    rex::be<SNO> snoPowerDmgSource;
+};
+
+struct EngagedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nPlayerIndex;
+    rex::be<SNO> snoActorMonster;
+    rex::be<i32> eMonsterRarity;
+    rex::be<GBID> pRareNameGBIDs[2];
+};
+
+struct KillCountMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nPlayerIndex;
+    rex::be<i32> nPlayerKills;
+    rex::be<i32> nDeaths;
+    rex::be<i32> nAssists;
+};
+
+struct WorldStatusMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SWorldID> idSWorld;
+    rex::be<u32> dwWorldStatusBits;
+};
+
+struct WeatherOverrideMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoWeatherOverride;
+    rex::be<f32> flWeatherIntensityOverride;
+    rex::be<f32> flWeatherIntensityOverrideEnd; // dword in later versions
+};
+
+struct ACDShearMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<f32> flShear;
+};
+
+struct ACDGroupMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<u32> uPrimaryGroup;
+    rex::be<u32> uSecondaryGroup;
+};
+
+enum ConversationSpeaker : int
+{
+    CONV_SPEAKER_INVALID = -1,
+    CONV_SPEAKER_PLAYER,
+    CONV_SPEAKER_PRIMARY_NPC,
+    CONV_SPEAKER_ALT_NPC1,
+    CONV_SPEAKER_ALT_NPC2,
+    CONV_SPEAKER_ALT_NPC3,
+    CONV_SPEAKER_ALT_NPC4,
+    CONV_SPEAKER_FOLLOWER_TEMPLAR,
+    CONV_SPEAKER_FOLLOWER_SCOUNDREL,
+    CONV_SPEAKER_FOLLOWER_ENCHANTRESS,
+    NUM_CONV_SPEAKERS,
+};
+
+enum ActorGender : int
+{
+    ACTOR_GENDER_INVALID = -1,
+    ACTOR_GENDER_MALE,
+    ACTOR_GENDER_FEMALE,
+    NUM_ACTOR_GENDERS,
+};
+
+struct PlayLineParams
+{
+    rex::be<SNO> snoConversation;
+    rex::be<i32> nSpeakingPlayerIndex;
+    rex::be<i32> bZoom;
+    rex::be<i32> bFirstLine;
+    rex::be<i32> bHostile;
+    rex::be<i32> bPlayerInitiated;
+    rex::be<u32> dwLineUID;
+    rex::be<ConversationSpeaker> eLineSpeaker;
+    rex::be<ActorGender> eLineGender;
+    rex::be<PlayerClass> eLineClass;
+    rex::be<ConversationSpeaker> eSpeakerTarget;
+    rex::be<SNO> snoSpeakerActor;
+    rex::be<ActorGender> ePlayerGender;
+    rex::be<PlayerClass> ePlayerClass;
+    rex::be<u32> dwLineFlags;
+    rex::be<u32> dwLineAnimTag;
+    rex::be<u32> dwLineDisplayTime;
+    rex::be<i32> nLineGUID;
+    rex::be<i32> nPriority;
+};
+
+struct PlayConvLineMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annSpeaker;
+    rex::be<ACDNetworkName> annParticipants[9];
+    PlayLineParams tParams;
+    rex::be<u32> dwTimeToDisplay;
+};
+
+struct StopConvLineMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nConvLineGUID;
+    rex::be<i32> fStoppedByUser;
+};
+
+struct AdvanceConvMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoConv;
+    rex::be<i32> nLineUID;
+};
+
+struct UpdateConvAutoAdvanceMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoConv;
+    rex::be<i32> nLineUID;
+    rex::be<u32> dwNextAdvanceTime;
+};
+
+struct EndConversationMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoConversation;
+    rex::be<ACDNetworkName> annSpeaker;
+};
+
+struct HirelingSwapMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<HirelingClass> eNewClass;
+};
+
+struct DeathFadeTimeMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<i32> nTimeUntilFade;
+    rex::be<i32> nFadeTime;
+    rex::be<i32> bRecurseForAttachments;
+};
+
+struct DisplayGameTextMessage
+{
+    RequiredMessageHeader tHeader;
+    char szMsg[1024];
+    XOptional<rex::be<i32>> nParam1;
+    XOptional<rex::be<i32>> nParam2;
+};
+
+struct ACDLookAtMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annSrc;
+    rex::be<ACDNetworkName> annTarget;
+};
+
+enum KillCounterType : int
+{
+    KILLCOUNTER_MONSTER,
+    KILLCOUNTER_OBJECT_DESTRUCTION,
+    KILLCOUNTER_SINGLE_ATTACK,
+    KILLCOUNTER_ENVIRONMENT_ATTACK,
+    KILLCOUNTER_COUNT,
+};
+
+struct KillCounterUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<KillCounterType> eType;
+    rex::be<u32> uCount;
+    // float flXPMultiplier
+    rex::be<u32> uTotalTime;
+    rex::be<i32> bExpired;
+};
+
+struct LowHealthCombatMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<f32> flHealthPercent;
+    rex::be<u32> uXPRewarded;
+};
+
+struct SaviorMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annSavedPlayer;
+    rex::be<u32> uXPRewarded;
+};
+
+enum FloatingNumberType : int
+{
+    FLOATING_NUMBER_TYPE_DAMAGE_DONE,
+    FLOATING_NUMBER_TYPE_DOT_DAMAGE_DONE,
+    FLOATING_NUMBER_TYPE_CRITICAL_HIT_DONE,
+    FLOATING_NUMBER_TYPE_DAMAGE_TAKEN,
+    FLOATING_NUMBER_TYPE_DOT_DAMAGE_TAKEN,
+    FLOATING_NUMBER_TYPE_CRITICAL_HIT_TAKEN,
+    FLOATING_NUMBER_TYPE_DODGE,
+    FLOATING_NUMBER_TYPE_DODGED,
+    FLOATING_NUMBER_TYPE_BLOCK ,
+    FLOATING_NUMBER_TYPE_PARRY,
+    FLOATING_NUMBER_TYPE_HEAL,
+    FLOATING_NUMBER_TYPE_ABSORB,
+    FLOATING_NUMBER_TYPE_ROOT,
+    FLOATING_NUMBER_TYPE_STUN,
+    FLOATING_NUMBER_TYPE_BLIND,
+    FLOATING_NUMBER_TYPE_FROZEN,
+    FLOATING_NUMBER_TYPE_FEAR,
+    FLOATING_NUMBER_TYPE_CHARM,
+    FLOATING_NUMBER_TYPE_TAUNT,
+    FLOATING_NUMBER_TYPE_SNARE,
+    FLOATING_NUMBER_TYPE_ATTACK_SPEED_SLOW,
+    FLOATING_NUMBER_TYPE_BROKE_FREEZE,
+    FLOATING_NUMBER_TYPE_BROKE_BLIND,
+    FLOATING_NUMBER_TYPE_BROKE_STUN,
+    FLOATING_NUMBER_TYPE_BROKE_ROOT,
+    FLOATING_NUMBER_TYPE_BROKE_SNARE,
+    FLOATING_NUMBER_TYPE_BROKE_FEAR,
+    FLOATING_NUMBER_TYPE_IMMUNE,
+    //FLOATING_NUMBER_TYPE_CRUSHING_BLOW,
+    FLOATING_NUMBER_TYPE_GOLD,
+    //FLOATING_NUMBER_TYPE_BLOODSHARDS,
+    //FLOATING_NUMBER_TYPE_PLATINUM,
+    FLOATING_NUMBER_TYPE_GBID,
+    FLOATING_NUMBER_TYPE_XP,
+    FLOATING_NUMBER_TYPE_BONUS_QUEST_REWARD,
+    FLOATING_NUMBER_TYPE_PVP_KILL,
+    FLOATING_NUMBER_TYPE_PVP_ASSIST,
+    //FLOATING_NUMBER_TYPE_NEPHALEM_GLORY_GAINED,
+    //FLOATING_NUMBER_TYPE_NEPHALEM_GLORY_EXTRA_TIME,
+    FLOATING_NUMBER_TYPE_COUNT,
+};
+
+struct FloatingNumberMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annTarget;
+    rex::be<f32> flDamage;
+    rex::be<FloatingNumberType> eType;
+};
+
+struct FloatingAmountMessage
+{
+    RequiredMessageHeader tHeader;
+    WorldPlace wpPlace;
+    rex::be<i32> nAmount;
+    XOptional<rex::be<i32>> nAmount2;
+    rex::be<FloatingNumberType> eType;
+};
+
+struct RemoveRagdollMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annTarget;
+    rex::be<SNO> snoMonster;
+};
+
+struct LoreMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoLore;
+};
+
+struct WorldDeletedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SWorldID> idSWorld;
+};
+
+struct ActiveEvent
+{
+    rex::be<SNO> snoTimedEvent;
+    rex::be<u32> dwStartTime;
+    rex::be<u32> dwExpirationTime;
+    // uint32 dwArtificiallyElapsedTime
+};
+
+struct TimedEventStartedMessage
+{
+    RequiredMessageHeader tHeader;
+    ActiveEvent tEvent;
+};
+
+struct ActTransitionStartedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> dwActTransitionTime;
+    //rex::be<i32> bRecreateGameWithParty;
+    rex::be<i32> nPlayerIndex;
+};
+
+struct PlayerQuestMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nPlayerIndex;
+    rex::be<SNO> snoQuest;
+    // SNO snoLevelArea
+};
+
+enum DeSyncReason : int
+{
+    DESYNC_REASON_POWER,
+    DESYNC_REASON_REJECTED,
+    DESYNC_REASON_CANNOT_MOVE,
+    DESYNC_REASON_TOO_FAR,
+    DESYNC_REASON_COUNT,
+};
+
+struct PlayerDeSyncSnapMessage
+{
+    RequiredMessageHeader tHeader;
+    WorldPlace placeSnap;
+    rex::be<DeSyncReason> eReason;
+    rex::be<SNO> snoPowerCurrent;
+    rex::be<i32> nPlayerIndex;
+};
+
+enum ItemQualityLevel : int
+{
+    IQL_INVALID = -1,
+    IQL_INFERIOR,
+    IQL_NORMAL,
+    IQL_SUPERIOR,
+    IQL_MAGIC_1_AFFIX,
+    IQL_MAGIC_2_AFFIX,
+    IQL_MAGIC_3_AFFIX,
+    IQL_RARE_4_AFFIX,
+    IQL_RARE_5_AFFIX,
+    IQL_RARE_6_AFFIX,
+    IQL_LEGENDARY,
+    //IQL_SPECIAL,  // the field specifies -1 to 10 range, so IQL_SPECIAL was probably added later
+    IQL_NUM_ITEM_QUALITY_LEVELS,
+    IQL_DISPLAY_AS_SET_ITEM = IQL_NUM_ITEM_QUALITY_LEVELS,
+};
+
+struct SalvageResultsMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<GBID> gbidOriginalItem;
+    rex::be<ItemQualityLevel> eIQLOriginalItem;
+    rex::be<u32> field16;
+    rex::be<GBID> gbidMaterials[10];
+};
+
+struct MapMarkerInfoMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> m_nHashedName;
+    WorldPlace m_Place;
+    rex::be<SNO> m_ImageInfo;
+    rex::be<u32> m_hImage;
+    rex::be<SNO> m_snoStringList;
+    rex::be<u32> m_hLabel;
+    rex::be<i32> m_bActive;
+    rex::be<i32> m_bCanBecomeArrow;
+    rex::be<i32> m_bRespectsFoW;
+    rex::be<i32> m_bIsPing;
+    rex::be<f32> m_fMaxDisplayRangeSq;
+    rex::be<f32> m_fMinDisplayRangeSq;
+    rex::be<f32> m_fDiscoveryRangeSq;
+    rex::be<u32> m_nPlayerUseFlags;
+};
+
+struct DebugActorTooltipMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    char szTooltip[1024];
+};
+
+struct BossEncounterMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> nPlayerIndex;
+    rex::be<SNO> snoEncounter;
+};
+
+struct EncounterInviteStateMessage
+{
+    RequiredMessageHeader tHeader;
+    char m_AcceptedPlayers;
+    char m_PendingPlayers;
+    char m_DeclinedPlayers;
+};
+
+struct CameraFocusMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<i32> bSnap;
+    rex::be<f32> flDuration;
+};
+
+struct CameraZoomMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<f32> flZoom;
+    rex::be<i32> bSnap;
+    rex::be<f32> flDuration;
+};
+
+struct CameraYawMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<Angle> aAngle;
+    rex::be<i32> bSnap;
+    rex::be<f32> flDuration;
+};
+
+struct BossZoomMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<f32> flZoom;
+    rex::be<f32> flZoomSpeed;
+};
+
+struct EnchantItemMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annItem;
+    rex::be<GBID> gbidAffix;
 };
