@@ -145,7 +145,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     REXLOG_INFO("Finished dumping type descriptors");
 }
 
-REX_IMPORT(__imp__GetGameMessageTypeAndSize, GetGameMessageTypeAndSize, u32(u32, u32, u32, u32));
+REX_IMPORT(__imp__GetGameMessageTypeAndSize, Guest_GetGameMessageTypeAndSize, u32(u32, u32, u32, u32));
 
 namespace {
 
@@ -181,7 +181,7 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
         u32 dwSizePtr = rex::ppc::stack_push(frame.ctx, base, 0);
         u32 pszMessageLabelPtr = rex::ppc::stack_push(frame.ctx, base, 0);
 
-        u32 result = GetGameMessageTypeAndSize(i, pTypeDescriptorPtr, dwSizePtr, pszMessageLabelPtr);
+        u32 result = Guest_GetGameMessageTypeAndSize(i, pTypeDescriptorPtr, dwSizePtr, pszMessageLabelPtr);
         if (!result)
             continue;
 
