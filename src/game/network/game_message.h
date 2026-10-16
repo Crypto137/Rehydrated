@@ -205,7 +205,7 @@ struct JoinLANGameMessage
     rex::be<XLocale> eXLocale;
 };
 
-struct JoinConsoleGame
+struct JoinConsoleGameMessage
 {
     RequiredMessageHeader tHeader;
     rex::be<XLocale> eXLocale;
@@ -458,6 +458,7 @@ struct RevealSceneMessage
     PRTransform transform;
     rex::be<SSceneID> idSSceneParent;
     rex::be<SNO> snoSceneGroup;
+    rex::be<u32> uLabelCount;
     rex::be<GBID> arAppliedLabels[256];
 };
 
@@ -740,7 +741,7 @@ struct AttributesSetValuesMessage
     RequiredMessageHeader tHeader;
     rex::be<ACDNetworkName> ann;
     rex::be<i32> nAttributeCount;
-    NetAttributeKeyValue tKeyVals[15];
+    NetAttributeKeyValue atKeyVals[15];
 };
 
 struct VisualItem
