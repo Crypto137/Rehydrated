@@ -171,7 +171,7 @@ enum Act : int
     ACT_3 = 200,
     ACT_4 = 300,
     //ACT_5 = 400,
-    //ACT_TEST = 1000,
+    ACT_TEST = 1000,
     //ACT_OPEN_WORLD = 3000,
     //ACT_MAX_VALUE = 3000,
     //ACT_MAX_CAMPAIGN = 400,
@@ -209,6 +209,17 @@ enum HirelingClass : int
     HC_SCOUNDREL,
     HC_ENCHANTRESS,
     NUM_HIRELING_CLASSES,
+};
+
+enum CrafterType : int
+{
+    CRAFTER_TYPE_INVALID = -1,
+    CRAFTER_TYPE_BLACKSMITH,
+    CRAFTER_TYPE_JEWEL,
+    CRAFTER_TYPE_MYSTIC,
+    //CRAFTER_TYPE_HORADRIM,
+    //CRAFTER_TYPE_JEWEL_UPGRADE,
+    CRAFTER_TYPE_COUNT,
 };
 
 enum WeaponClass : int

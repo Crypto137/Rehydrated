@@ -42,6 +42,14 @@ struct RNG
     rex::be<u32> dwCarry;
 };
 
+struct RGBAColor
+{
+    char r;
+    char g;
+    char b;
+    char a;
+};
+
 // Primitive Messages
 
 struct SimpleMessage
@@ -2063,4 +2071,264 @@ struct EnchantItemMessage
     RequiredMessageHeader tHeader;
     rex::be<ACDNetworkName> annItem;
     rex::be<GBID> gbidAffix;
+};
+
+enum DebugDrawPrimType : int
+{
+    DBG_PRIM_LINE,
+    DBG_PRIM_SPHERE,
+    DBG_PRIM_HALF_SPHERE,
+    DBG_PRIM_CYLINDER,
+    DBG_PRIM_CAPSULE,
+    DBG_PRIM_PIE,
+    DBG_PRIM_BOX,
+    DBG_PRIM_TEXT,
+    DBG_PRIM_COUNT,
+};
+
+struct DebugDrawPrimMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> uID;
+    rex::be<DebugDrawPrimType> eType;
+    rex::be<SWorldID> idSWorld;
+    Vector3D vPos0;
+    Vector3D vPos1;
+    rex::be<f32> flLength;
+    rex::be<f32> flRadius;
+    rex::be<u32> uLifetimeInTicks;
+    RGBAColor rgbaColor;
+    char szText[128];
+};
+
+struct CraftingResultsMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> annItem;
+    rex::be<GBID> gbidItem;
+    rex::be<ItemQualityLevel> eIQL;
+};
+
+struct CrafterLevelUpMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<CrafterType> eType;
+    rex::be<u32> dwAnimTag;
+    rex::be<u32> dwNewIdle;
+    //rex::be<i32> nLevel;
+};
+
+struct UnlockDifficultyMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> field8;
+    rex::be<u32> field12;
+};
+
+struct DifficultyAndHandicapMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<DifficultyLevel> eDifficulty;
+    rex::be<i32> nHandicapLevel;
+};
+
+struct GameTestingSamplingStartMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoWorld;
+    rex::be<SNO> snoScene;
+};
+
+struct RequestBuffCancelMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoPower;
+    rex::be<i32> nBuffIndex;
+};
+
+struct OpenGameToPublicMessage
+{
+    RequiredMessageHeader tHeader;
+    char szGameTag[16];
+};
+
+struct BroadcastTextMessage
+{
+    RequiredMessageHeader tHeader;
+    char szMsg[1024];
+};
+
+struct VoteKickMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nPlayerIndexToKick;
+    rex::be<i32> nPlayerIndexInitiating;
+    char usMessage[1024];
+};
+
+struct MailSendMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nToAccount;
+};
+
+struct MailReadMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u64> idMail;
+};
+
+struct MailRetrieveMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u64> idMail;
+};
+
+struct MailDeleteMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u64> idMail;
+};
+
+struct MailSentResponseMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u64> idMail;
+    rex::be<i32> idErr;
+};
+
+struct MailReadResponseMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u64> idMail;
+    rex::be<i32> idErr;
+};
+
+struct MailRetrieveResponseMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u64> idMail;
+    rex::be<i32> idErr;
+};
+
+struct MailDeleteResponseMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u64> idMail;
+    rex::be<i32> idErr;
+};
+
+struct PVPTokenRedemptionMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> nItems;
+    rex::be<ACDNetworkName> arrItems[4];
+    rex::be<GBID> arrGBIDs[4];
+    rex::be<u32> nStackSize[4];
+};
+
+struct PlayerSetCameraObserverMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<SNO> snoObserver;
+    XOptional<WorldPlace> wpToOrbit;
+};
+
+struct PlayerSetCameraOrbitMessage
+{
+    RequiredMessageHeader tHeader;
+    WorldPlace wpToOrbit;
+};
+
+struct PlayerSetCameraDefaultsMessage
+{
+    RequiredMessageHeader tHeader;
+};
+
+struct PlayerConsoleSetCameraDefaultsMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> bForce;
+};
+
+struct PlayerSavedQuestUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<DifficultyLevel> eLastPlayedDifficulty;
+    rex::be<Act> eLastPlayedAct;
+    rex::be<SNO> snoLastPlayedQuest;
+    rex::be<i32> nLastPlayedStepUID;
+    //rex::be<i32> nHandicapLevel;
+    PlayerSavedQuest tSavedQuest[64];
+    rex::be<u32> dwNumQuests;
+};
+
+struct PlayerQuestHistoryUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    PlayerQuestHistoryEntry tQuestHistory[200];
+    rex::be<u32> dwNumEntries;
+};
+
+struct PlayerQuestRewardHistoryUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nNumQuestRewardEntries;
+    PlayerQuestRewardHistoryEntry tQuestRewardHistory[100];
+};
+
+struct PlayerSavedConversationsUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    SavedConversations tSavedConversations;
+};
+
+struct ConsoleCriteriaUpdate
+{
+    rex::be<u32> field0;
+    rex::be<u32> field4;
+};
+
+struct ConsoleAchievementCriteriaUpdateMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nNumUpdates;
+    ConsoleCriteriaUpdate tUpdates[64];
+};
+
+struct ConsoleAchievementAwardedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<u32> field8;
+    rex::be<u64> field16;
+    rex::be<u32> field24;
+};
+
+struct DuelResultMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<i32> nPlayerVictimIndex;
+    rex::be<i32> nPlayerKillerIndex;
+    rex::be<SNO> snoPowerDmgSource;
+};
+
+struct ItemJunkFlagChangedMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<i32> bJunkFlag;
+};
+
+struct SpendParagonPointsMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<GBID> gbidParagonBonus;
+    rex::be<i32> nPoints;
+};
+
+struct PlayerClearClientWalkPowerMessage
+{
+    RequiredMessageHeader tHeader;
+    rex::be<ACDNetworkName> ann;
+    rex::be<SNO> snoPower;
 };
