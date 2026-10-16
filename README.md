@@ -1,6 +1,6 @@
 # Rehydrated
 
-Rehydrated is a ReXGlue based recompilation project for the vanilla version of Diablo 3 (C1.0.0.17339, disc image MD5 `3360CCDA2970F81AD75DE8EC02D2AE1E`). This targets the vanilla version specifically, and not later Ultimate Evil Edition releases that include the Reaper of Souls expansion.
+Rehydrated is a ReXGlue based recompilation project for the vanilla version of Diablo 3 (C1.0.0.17339). This targets the vanilla version specifically, and not later Ultimate Evil Edition releases that include the Reaper of Souls expansion.
 
 Currently in early experimental state: the game runs, but nothing exciting beyond that.
 
@@ -10,8 +10,12 @@ Expect some tinkering to get it to run. Requires ReXGlue 0.10.0 and all of its d
 
 - Put ReXGlue in `Rehydrated/thirdparty/rexglue-sdk`.
 
-- Put `Default.xex` and the `CPKs` folder in `Rehydrated/assets`. These need to be extracted from a vanilla US disc image of Diablo 3 for Xbox 360.
+- Put `Default.xex` and the `CPKs` folder in `Rehydrated/assets`. These need to be extracted from a vanilla US disc image of Diablo 3 for Xbox 360 (MD5 `3360CCDA2970F81AD75DE8EC02D2AE1E`).
 
 - Open the folder in VS 2022 and build (or use your other preferred method).
 
 - Add `execute_unclipped_draw_vs_on_cpu = true` to `rehydrated.toml` to fix 3D graphics rendering as black.
+
+## AI Usage
+
+This project is not "vibe coded", AI agents are not used in the development. AI chatbots are used to replace writing one-off scripts, such as for generating enums from dumped static data. All AI output is checked and tested by a human developer before being commited.
