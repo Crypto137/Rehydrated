@@ -22,9 +22,11 @@
 0x8233D8D0 = { name = "CGameAsyncRenderDispose" }
 0x8233E5F0 = { name = "ClientIdle" }
 0x8233EC80 = { name = "CGameAsyncRenderInit" }
+0x82340490 = { name = "InputUpdate" }
 0x82345B60 = { name = "Console__Online__PartyGetPlayerAccountAndHero" }
 0x823478F8 = { name = "Console__Online__Party__EndGame" }
 0x82348B80 = { name = "Console__Online__PartyEndGame" }
+0x8236BEF0 = { name = "_InputUpdate" }
 0x8236C678 = { name = "FontGroupDef__GetMaxCount" }
 0x8236CAD8 = { name = "FontGroupDef__FontGroupDef" }
 0x8236D710 = { name = "ComplexTypeDescriptor__SizeOf" }
@@ -56,7 +58,9 @@
 0x8239A888 = { name = "CTrickleInitializeForApp" }
 0x8239A9C0 = { name = "CTrickleDisposeForGame" }
 0x8239C5E8 = { name = "CPlayerInputInitializeForGame" }
+0x823A3F40 = { name = "PlayerInputUpdate" }
 0x823A6B90 = { name = "LocalPlayerGet" }
+0x823A92C0 = { name = "PlayerIsLocal" }
 0x823ACDF8 = { name = "CPlayerInitializeForGame" }
 0x823B0660 = { name = "ClientSendKeepAlive" }
 0x823B0B80 = { name = "ClientMessageInitializeForGame" }
@@ -82,6 +86,8 @@
 0x823B7A28 = { name = "Weather__DisposeForGame" }
 0x823BBBD0 = { name = "CinematographyInitialize" }
 0x823BBC70 = { name = "CinematographyDispose" }
+0x823BD818 = { name = "UI_GetWindowFromID" }
+0x823BD820 = { name = "UI_GetTextFromID" }
 0x823C1A18 = { name = "UI_InitializeForGame" }
 0x823C3680 = { name = "UI_DisposeForGame" }
 0x823C9D10 = { name = "UIStartScreen__Console__StartScreenInitializeForGame" }
@@ -141,6 +147,8 @@
 0x82443BA0 = { name = "MessageSendToServer" }
 0x8244A1A8 = { name = "Prefs__Load" }
 0x8244A4C8 = { name = "Prefs__InitializeForApp" }
+0x8244C580 = { name = "UIIDCreateFromParent" }
+0x8244C5C8 = { name = "UIID__SetFromParent" }
 0x8244D618 = { name = "Prefetch__TakeSNOElement" }
 0x8244DAF0 = { name = "Prefetch__ApplyHotfix" }
 0x82468230 = { name = "AppearanceGroupDef__GetMaxCount" }
@@ -152,6 +160,7 @@
 0x82562EA8 = { name = "WeatherGroupDef__WeatherGroupDef" }
 0x825740F8 = { name = "ControlSchemeDefinitionGroupDef__GetMaxCount" }
 0x825748B0 = { name = "ControlSchemeDefinitionGroupDef__ControlSchemeDefinitionGroupDef" }
+0x825941D0 = { name = "UIEventQueue__Console__ValidateUIControls" }
 0x825ACB28 = { name = "XClientSocketInit" }
 0x825ACBE8 = { name = "XClientSocketSendBuffer" }
 0x825AE110 = { name = "ClientMessageReceiveAllMessage" }
@@ -380,6 +389,8 @@
 0x8275FB18 = { name = "PlayersAreLocalToEachOther" }
 0x82760478 = { name = "PlayerGetByPlayerIndex" }
 0x827616D0 = { name = "PlayersGetCount" }
+0x82762F50 = { name = "PlayerGetFirstInGame" }
+0x82762FC0 = { name = "PlayerGetNextInGame" }
 0x82763660 = { name = "PlayerGetByControllerIndex" }
 0x82768558 = { name = "TagMapInitializeForGame" }
 0x82768928 = { name = "TagMapDisposeForGame" }

@@ -13,6 +13,7 @@ includes = [
 	"config/functions_unresolved.toml",
 	"config/functions.toml",
 	"config/hooks/game.toml",
+	"config/hooks/input.toml",
 	"config/hooks/network.toml",
 	"config/hooks/subsystem.toml"
 ]

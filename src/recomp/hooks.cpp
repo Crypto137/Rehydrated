@@ -45,6 +45,12 @@ void HydraHook_SGameInitializeGame(PPCRegister& r3)
         tParams->szGameName);
 }
 
+// Input
+void HydraHook_PostInputUpdate(PPCRegister& r3)
+{
+    // not using this for anything yet
+}
+
 // Network
 
 void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3)

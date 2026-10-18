@@ -6,6 +6,10 @@
 
 void HydraHook_SGameInitializeGame(PPCRegister& r3);
 
+// Input
+
+void HydraHook_PostInputUpdate(PPCRegister& r3);
+
 // Network
 
 void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3);
