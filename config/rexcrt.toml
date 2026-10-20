@@ -2,4 +2,6 @@
 memcpy = 0x82AAA700
 memset = 0x82AAAC30
 strchr = 0x82AAC690
+strstr = 0x82AAC6D0
+strncmp = 0x82AAC750
 strncpy = 0x82AACD98
