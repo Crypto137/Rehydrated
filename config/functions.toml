@@ -762,7 +762,6 @@
 0x82AA3690 = { name = "SAXLogString__Flush" }
 0x82AA4C48 = { name = "XSocketBase__SendTo" }
 0x82AA59A0 = { name = "ErrorManagerBlizzardErrorData__AddMetadata" }
-0x82AAA700 = { name = "Blizzard__String__MemCopy" }
 0x82AAC1E0 = { name = "strcasecmp" }
 0x82AAFB58 = { name = "_sprintf" }
 0x82B3CE80 = { name = "lua_resume" }

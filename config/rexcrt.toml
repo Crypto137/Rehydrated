@@ -1,3 +1,5 @@
 [rexcrt]
+memcpy = 0x82AAA700
+memset = 0x82AAAC30
 strchr = 0x82AAC690
 strncpy = 0x82AACD98
