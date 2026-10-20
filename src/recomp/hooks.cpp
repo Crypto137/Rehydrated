@@ -63,7 +63,18 @@ void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3)
 
 void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
 {
-    // not using this for anything yet
+    const RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r3.u32);
+
+    // not using this for anything right now
+}
+
+void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)
+{
+    int idServerSocket = static_cast<int>(r3.s32);
+    const RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r4.u32);
+
+    if (REXCVAR_GET(log_client_messages))
+        REXLOG_INFO("ServerMessageReceiveOutsideGame(): [0x{:08X}] eType={}", idServerSocket, GameMessageTypeToName(pMessage->eType));
 }
 
 void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)
@@ -71,8 +82,7 @@ void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)
     int nPlayerIndex = static_cast<int>(r3.s32);
     const RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r4.u32);
 
-    if (REXCVAR_GET(log_client_messages))
-        REXLOG_INFO("ServerMessageReceive(): [{}] eType={}", nPlayerIndex, GameMessageTypeToName(pMessage->eType));
+    // not using this for anything right now
 }
 
 // Subsystem

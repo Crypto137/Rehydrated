@@ -1,21 +1,28 @@
-# Hooks ClientMessageReceiveAllMessage, which processes incoming
-# network messages as soon as they arrive to the client.
+# ClientMessageReceiveAllMessage handles server messages as soon as they arrive to the client.
+# Most messages are queued to be processed on the game thread later in ClientMessageReceiveGameMessage.
 [[midasm_hook]]
 address = 0x825AE110
 name = "HydraHook_ClientMessageReceiveAllMessage"
 registers = ["r3"]
 after_instruction = false
 
-# Hooks ClientMessageReceiveGameMessage, which processes
-# incoming network messages on a game thread.
+# ClientMessageReceiveGameMessage handles server messages on the game thread.
 [[midasm_hook]]
 address = 0x825AF388
 name = "HydraHook_ClientMessageReceiveGameMessage"
 registers = ["r3"]
 after_instruction = false
 
-# Hooks ServerMessageReceive, which processes incoming
-# network messages when they arrive to the server.
+# ServerMessageReceiveOutsideGame handles client messages before they are passed
+# to a game instance. In practice it handles only CMSG_JOIN_CONSOLE_GAME, but all client
+# messages go through it first, and the rest are handled in ServerMessageReceive.
+[[midasm_hook]]
+address = 0x829E2C20
+name = "HydraHook_ServerMessageReceiveOutsideGame"
+registers = ["r3", "r4"]
+after_instruction = false
+
+# ServerMessageReceive handles client messages in the context of a specific game instance.
 [[midasm_hook]]
 address = 0x829E2DC0
 name = "HydraHook_ServerMessageReceive"
