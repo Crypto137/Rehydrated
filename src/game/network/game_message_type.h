@@ -12,7 +12,7 @@ enum GameMessageType
     SMSG_PRELOAD_REMOVE_ACD,
     SMSG_PLAYER_WARPING,
     CMSG_REQUEST_LAN_GAME_PARAMS,
-    MSG_10,
+    SMSG_NET_LOUNGE_ADVERTIZE_GAME,
     CMSG_JOIN_BNET_GAME,
     CMSG_JOIN_LAN_GAME,
     CMSG_JOIN_CONSOLE_GAME,
@@ -574,6 +574,7 @@ enum GameMessageTypeDescriptor : unsigned int
     DT_ROPE_EFFECT_MESSAGE_ACD_TO_PLACE = 0x82FAE76C,
     DT_EFFECT_GROUP_ACD_TO_ACD_MESSAGE = 0x82FAE79C,
     DT_JOIN_BNET_GAME_MESSAGE = 0x82FAE7D0,
+    DT_ADVERTIZE_PACKET = 0x82FE2694,
 };
 
 bool GetGameMessageTypeAndSize(GameMessageType eMessageType, unsigned int& pTypeDescriptor, unsigned int& dwSize, const char*& pszMessageLabel);

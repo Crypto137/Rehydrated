@@ -49,6 +49,12 @@ bool GetGameMessageTypeAndSize(GameMessageType eMessageType, unsigned int& pType
             dwSize = 12;
             pszMessageLabel = "CMSG_REQUEST_LAN_GAME_PARAMS";
             return true;
+        case SMSG_NET_LOUNGE_ADVERTIZE_GAME:
+            // NOTE: This is not included in the original implementation of GetGameMessageTypeAndSize().
+            pTypeDescriptor = DT_ADVERTIZE_PACKET;
+            dwSize = 416;
+            pszMessageLabel = "SMSG_NET_LOUNGE_ADVERTIZE_GAME";
+            return true;
         case CMSG_JOIN_BNET_GAME:
             pTypeDescriptor = DT_JOIN_BNET_GAME_MESSAGE;
             dwSize = 80;
