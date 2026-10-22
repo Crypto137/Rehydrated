@@ -16,6 +16,8 @@ void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3);
 
 void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3);
 
+void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3);
+
 void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4);
 
 void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4);

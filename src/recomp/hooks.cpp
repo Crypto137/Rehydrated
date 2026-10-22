@@ -5,6 +5,7 @@
 
 #include "core/memory_utils.h"
 #include "game/game.h"
+#include "game/network/game_connection.h"
 #include "game/network/game_message.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
 #include "recomp/static_data_dumper.h"
@@ -57,8 +58,7 @@ void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3)
 {
     const RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r3.u32);
 
-    if (REXCVAR_GET(log_server_messages))
-        REXLOG_INFO("ClientMessageReceiveAllMessage(): eType={}", GameMessageTypeToName(pMessage->eType));
+    // not using this for anything right now
 }
 
 void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
@@ -66,6 +66,32 @@ void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
     const RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r3.u32);
 
     // not using this for anything right now
+}
+
+void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3)
+{
+    GameConnection* ptGameConnection = MemoryUtils::GetHostPtr<GameConnection>(r3.u32);
+
+    if (!REXCVAR_GET(log_server_messages))
+        return;
+
+    i32 nBufferCount = ptGameConnection->tOutgoingPacketBufferList.m_nCount;
+    if (!nBufferCount)
+        return;
+
+    REXLOG_INFO("ServerSendOutgoingMessagesForGameConnection(): count={}", nBufferCount);
+
+    TPacketBufferListNode* listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(ptGameConnection->tOutgoingPacketBufferList.m_pHead);
+    int i = 0;
+    while (listNode)
+    {
+        PacketBuffer* tPacketBuffer = MemoryUtils::GetHostPtr<PacketBuffer>(listNode->m_tData);
+        RequiredMessageHeader* pMessage = reinterpret_cast<RequiredMessageHeader*>(&tPacketBuffer->byteData[0]);
+
+        REXLOG_INFO("  [{}] {}", i++, GameMessageTypeToName(pMessage->eType));
+
+        listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
+    }
 }
 
 void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)

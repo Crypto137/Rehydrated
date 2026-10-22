@@ -13,6 +13,14 @@ name = "HydraHook_ClientMessageReceiveGameMessage"
 registers = ["r3"]
 after_instruction = false
 
+# ServerSendOutgoingMessagesForGameConnection flushes tOutgoingPacketBufferList
+# of a GameConnection to its bound socket. GameConnection ptr is the r3 argument.
+[[midasm_hook]]
+address = 0x829551E8
+name = "HydraHook_ServerSendOutgoingMessagesForGameConnection"
+registers = ["r3"]
+after_instruction = false
+
 # ServerMessageReceiveOutsideGame handles client messages before they are passed
 # to a game instance. In practice it handles only CMSG_JOIN_CONSOLE_GAME, but all client
 # messages go through it first, and the rest are handled in ServerMessageReceive.
