@@ -3,7 +3,6 @@
 #include <format>
 
 #include "game/network/game_message.h"
-#include "game/network/game_message_type.h"
 
 namespace
 {

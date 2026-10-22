@@ -6,7 +6,6 @@
 #include "core/memory_utils.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
-#include "game/network/game_message_type.h"
 #include "recomp/network/game_message_printer.h"
 
 REXCVAR_DEFINE_BOOL(server_log_outgoing_messages, false, "Hydra/Server", "Logs server -> client messages")

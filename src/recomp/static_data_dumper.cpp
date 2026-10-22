@@ -33,7 +33,9 @@ using GuestPtr = rex::TypedGuestPointer<T>;
 template <typename T>
 using GuestPtrSet = std::set<GuestPtr<T>>;
 
-namespace {
+namespace
+{
+
 void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XTypeDescriptor>& primitiveDescriptors,
     GuestPtrSet<ComplexTypeDescriptor>& complexDescriptors, GuestPtrSet<char>& strings)
 {
@@ -72,6 +74,7 @@ void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<
         DiscoverTypeDescriptors(field->ptAuxDataType, primitiveDescriptors, complexDescriptors, strings);
     }
 }
+
 }
 
 void StaticDataDumper::OnNetworkInitializeForAppFinished()
