@@ -1091,12 +1091,12 @@ bool GetGameMessageTypeAndSize(GameMessageType eMessageType, unsigned int& pType
             pszMessageLabel = "SMSG_REMOVE_NEAREST_RAGDOLL";
             return true;
         case SMSG_PREFETCH:
-            pTypeDescriptor = DT_SNO_NAME_DATA_MESSAGE;
+            pTypeDescriptor = DT_SNONAME_DATA_MESSAGE;
             dwSize = 16;
             pszMessageLabel = "SMSG_PREFETCH";
             return true;
         case SMSG_PREFETCH_AND_SCAN_CHILDREN:
-            pTypeDescriptor = DT_SNO_NAME_DATA_MESSAGE;
+            pTypeDescriptor = DT_SNONAME_DATA_MESSAGE;
             dwSize = 16;
             pszMessageLabel = "SMSG_PREFETCH_AND_SCAN_CHILDREN";
             return true;
@@ -1106,12 +1106,12 @@ bool GetGameMessageTypeAndSize(GameMessageType eMessageType, unsigned int& pType
             pszMessageLabel = "SMSG_LORE_LEARNED";
             return true;
         case CMSG_AV_CAMERA_MODE_TOGGLE:
-            pTypeDescriptor = DT_PR_TRANSFORM_MESSAGE;
+            pTypeDescriptor = DT_PRTRANSFORM_MESSAGE;
             dwSize = 36;
             pszMessageLabel = "CMSG_AV_CAMERA_MODE_TOGGLE";
             return true;
         case CMSG_AV_CAMERA_LOCATION:
-            pTypeDescriptor = DT_PR_TRANSFORM_MESSAGE;
+            pTypeDescriptor = DT_PRTRANSFORM_MESSAGE;
             dwSize = 36;
             pszMessageLabel = "CMSG_AV_CAMERA_LOCATION";
             return true;
