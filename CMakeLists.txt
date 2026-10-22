@@ -18,6 +18,7 @@ set(REHYDRATED_SOURCES
     src/game/network/game_message_type.cpp
     src/recomp/hooks.cpp
     src/recomp/static_data_dumper.cpp
+    src/recomp/network/game_message_dumper.cpp
 )
 
 if(WIN32)

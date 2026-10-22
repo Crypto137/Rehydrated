@@ -5,14 +5,27 @@
 #include <set>
 #include <vector>
 
+#include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/ppc.h>
 
+#include "core/io.h"
 #include "core/memory_utils.h"
 #include "game/attributes/attribute_compressor.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/network/game_message_type.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
+
+using namespace IO;
+
+REXCVAR_DEFINE_BOOL(dump_type_descriptors, false, "Hydra/Static Data", "Dumps type descriptors on startup")
+    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+
+REXCVAR_DEFINE_BOOL(dump_game_messages, false, "Hydra/Static Data", "Dumps game message metadata on startup")
+    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+
+REXCVAR_DEFINE_BOOL(dump_attrib_defs, false, "Hydra/Static Data", "Dumps attribute definitions on startup")
+    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
 template <typename T>
 using GuestPtr = rex::TypedGuestPointer<T>;
@@ -59,12 +72,21 @@ void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<
         DiscoverTypeDescriptors(field->ptAuxDataType, primitiveDescriptors, complexDescriptors, strings);
     }
 }
-
-template <typename T>
-void WriteToStream(std::ofstream& stream, const T* data, std::size_t count = 1)
-{
-    stream.write(reinterpret_cast<const char*>(data), count * sizeof(T));
 }
+
+void StaticDataDumper::OnNetworkInitializeForAppFinished()
+{
+    if (REXCVAR_GET(dump_type_descriptors))
+        StaticDataDumper::DumpTypeDescriptors("_TypeDescriptors.bin");
+
+    if (REXCVAR_GET(dump_game_messages))
+        StaticDataDumper::DumpGameMessages("_GameMessages.bin");
+}
+
+void StaticDataDumper::OnFastAttribInitializeForAppFinished()
+{
+    if (REXCVAR_GET(dump_attrib_defs))
+        StaticDataDumper::DumpAttribDefs("_AttribDefs.bin");
 }
 
 void StaticDataDumper::DumpTypeDescriptors(const char* fileName)

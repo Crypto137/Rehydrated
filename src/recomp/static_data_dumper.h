@@ -2,6 +2,10 @@
 
 namespace StaticDataDumper {
 
+void OnNetworkInitializeForAppFinished();
+
+void OnFastAttribInitializeForAppFinished();
+
 void DumpTypeDescriptors(const char* fileName);
 
 void DumpGameMessages(const char* fileName);
