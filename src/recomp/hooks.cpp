@@ -8,7 +8,7 @@
 #include "game/game.h"
 #include "recomp/static_data_dumper.h"
 #include "recomp/network/game_message_dumper.h"
-#include "recomp/network/game_message_translator.h"
+#include "recomp/network/pc_proxy.h"
 
 struct RequiredMessageHeader;
 struct GameConnection;
@@ -62,9 +62,7 @@ void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3)
 
     GameMessageDumper::OnServerSendOutgoingMessages(ptGameConnection);
 
-    char* data = nullptr;
-    int len = 0;
-    GameMessageTranslator::EncodePC(ptGameConnection, data, len);
+    PCProxy::Instance().OnServerSendOutgoingMessagesForGameConnection(ptGameConnection);
 }
 
 bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5)
@@ -76,7 +74,7 @@ bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& 
     //REXLOG_INFO("XServerSendBuffer(): idServerSocket={:08X}, dwSize={}", idServerSocket, dwSize);
     
     // return true to prevent data from being flushed to the X360 client
-    return false;
+    return PCProxy::Instance().IsEnabled();
 }
 
 void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)

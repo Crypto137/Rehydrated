@@ -21,6 +21,7 @@ set(REHYDRATED_SOURCES
     src/recomp/network/game_message_dumper.cpp
     src/recomp/network/game_message_printer.cpp
     src/recomp/network/game_message_translator.cpp
+    src/recomp/network/pc_proxy.cpp
 )
 
 if(WIN32)
