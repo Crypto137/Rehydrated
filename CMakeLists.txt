@@ -15,6 +15,8 @@ include(generated/rexglue.cmake)
 # Sources
 set(REHYDRATED_SOURCES
     src/main.cpp
+    src/core/network/tcp_server.cpp
+    src/core/network/tcp_session.cpp
     src/game/network/game_message_type.cpp
     src/recomp/hooks.cpp
     src/recomp/static_data_dumper.cpp
@@ -35,3 +37,5 @@ rexglue_setup_target(rehydrated)
 target_include_directories(rehydrated SYSTEM PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rexglue-sdk/thirdparty/imgui"
 )
+
+target_link_libraries(rehydrated PRIVATE ws2_32)
