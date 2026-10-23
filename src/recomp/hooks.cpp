@@ -1,11 +1,14 @@
 #include "recomp/hooks.h"
 
+#include <vector>
+
 #include <rex/logging.h>
 
 #include "core/memory_utils.h"
 #include "game/game.h"
 #include "recomp/static_data_dumper.h"
 #include "recomp/network/game_message_dumper.h"
+#include "recomp/network/game_message_translator.h"
 
 struct RequiredMessageHeader;
 struct GameConnection;
@@ -58,6 +61,22 @@ void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3)
     GameConnection* ptGameConnection = MemoryUtils::GetHostPtr<GameConnection>(r3.u32);
 
     GameMessageDumper::OnServerSendOutgoingMessages(ptGameConnection);
+
+    char* data = nullptr;
+    int len = 0;
+    GameMessageTranslator::EncodePC(ptGameConnection, data, len);
+}
+
+bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5)
+{
+    u32 idServerSocket = r3.u32;
+    u32 pMessage = r4.u32;
+    u32 dwSize = r5.u32;
+
+    //REXLOG_INFO("XServerSendBuffer(): idServerSocket={:08X}, dwSize={}", idServerSocket, dwSize);
+    
+    // return true to prevent data from being flushed to the X360 client
+    return false;
 }
 
 void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)
