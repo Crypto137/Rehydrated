@@ -7,6 +7,9 @@
 #include "game/network/game_connection.h"
 #include "recomp/network/game_message_translator.h"
 
+REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC server mode")
+    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+
 REX_IMPORT(__imp__NetworkGetEncodeBuffer, Guest_NetworkGetEncodeBuffer, u32());
 REX_IMPORT(__imp__XEncoder__SetData, Guest_XEncoder__SetData, void(u32, u32, u32));
 REX_IMPORT(__imp__XEncoder__SetUsed, Guest_XEncoder__SetUsed, void(u32, u32));
@@ -27,15 +30,19 @@ struct XEncoder
 }
 
 PCProxy::PCProxy() :
-    m_isEnabled(false),
+    m_isEnabled(REXCVAR_GET(server_pc_proxy_enabled)),
     m_tcpServer(&m_tcpConsumer)
 {
-    Initialize();
 }
 
 void PCProxy::Initialize()
 {
+    if (!m_isEnabled)
+        return;
+
     m_tcpServer.Start("0.0.0.0", "6112");
+
+    REXLOG_INFO("PC proxy initialized and started");
 }
 
 void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection)

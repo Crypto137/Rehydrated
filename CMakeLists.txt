@@ -15,6 +15,7 @@ include(generated/rexglue.cmake)
 # Sources
 set(REHYDRATED_SOURCES
     src/main.cpp
+    src/rehydrated_app.cpp
     src/core/network/tcp_server.cpp
     src/core/network/tcp_session.cpp
     src/game/network/game_message_type.cpp
