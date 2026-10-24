@@ -1,3 +1,11 @@
+# PartyCanStartGame controls availability of the start game button in the main menu.
+[[midasm_hook]]
+address = 0x823418A0
+name = "HydraHook_Console_Online_PartyCanStartGame"
+registers = ["r3"]
+after_instruction = false
+return_on_false = true
+
 # ClientMessageReceiveAllMessage handles server messages as soon as they arrive to the client.
 # Most messages are queued to be processed on the game thread later in ClientMessageReceiveGameMessage.
 [[midasm_hook]]

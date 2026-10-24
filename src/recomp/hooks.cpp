@@ -42,6 +42,17 @@ void HydraHook_PostInputUpdate(PPCRegister& r3)
 
 // Network
 
+bool HydraHook_Console_Online_PartyCanStartGame(PPCRegister& r3)
+{
+    if (!PCProxy::Instance().PartyCanStartGame())
+    {
+        r3.u32 = 0;
+        return false;
+    }
+
+    return true;
+}
+
 void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3)
 {
     RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r3.u32);

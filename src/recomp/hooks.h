@@ -12,6 +12,8 @@ void HydraHook_PostInputUpdate(PPCRegister& r3);
 
 // Network
 
+bool HydraHook_Console_Online_PartyCanStartGame(PPCRegister& r3);
+
 void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3);
 
 void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3);

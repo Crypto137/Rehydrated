@@ -129,6 +129,24 @@ bool TcpServer::Stop()
     return true;
 }
 
+bool TcpServer::HasActiveSessions()
+{
+    std::unique_lock<std::mutex> lock(m_sessionMutex);
+    return !m_sessions.empty();
+}
+
+std::shared_ptr<TcpSession> TcpServer::GetFirstSession()
+{
+    // just a temp thing to get things going
+    std::unique_lock<std::mutex> lock(m_sessionMutex);
+
+    auto it = m_sessions.begin();
+    if (it == m_sessions.end())
+        return nullptr;
+
+    return it->second;
+}
+
 void TcpServer::AcceptConnections()
 {
     std::cout << "Accepting connections..." << std::endl;
@@ -187,7 +205,7 @@ TcpSession* TcpServer::AddSession(SOCKET socket)
     }
 
     TcpSessionId sessionId = ++m_currentSessionId;
-    auto it = m_sessions.emplace(sessionId, std::make_unique<TcpSession>(socket, m_sessionConsumer));
+    auto it = m_sessions.emplace(sessionId, std::make_shared<TcpSession>(socket, m_sessionConsumer));
     if (!it.second)
         return nullptr;
 

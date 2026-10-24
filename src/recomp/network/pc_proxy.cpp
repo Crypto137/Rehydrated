@@ -31,7 +31,7 @@ struct XEncoder
 
 PCProxy::PCProxy() :
     m_isEnabled(REXCVAR_GET(server_pc_proxy_enabled)),
-    m_tcpServer(&m_tcpConsumer)
+    m_tcpServer(this)
 {
 }
 
@@ -43,6 +43,17 @@ void PCProxy::Initialize()
     m_tcpServer.Start("0.0.0.0", "6112");
 
     REXLOG_INFO("PC proxy initialized and started");
+}
+
+bool PCProxy::PartyCanStartGame()
+{
+    if (m_isEnabled)
+    {
+        if (!m_tcpServer.HasActiveSessions())
+            return false;
+    }
+
+    return true;
 }
 
 void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection)
@@ -83,9 +94,9 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
     REXLOG_INFO("OnServerSendOutgoingMessagesForGameConnection(): dwSize={}", dwSize);
 }
 
-int PCProxy::OnClientDataReceived(TcpSession* session, const char* buf, int len)
+int PCProxy::OnDataReceived(TcpSession* session, const char* buf, int len)
 {
     // TODO: handle PC client input
-    REXLOG_INFO("OnClientDataReceived(): len={}", len);
+    REXLOG_INFO("OnDataReceived(): len={}", len);
     return len;
 }

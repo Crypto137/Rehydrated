@@ -5,7 +5,7 @@
 
 struct GameConnection;
 
-class PCProxy
+class PCProxy : public ITcpSessionConsumer
 {
 public:
     PCProxy(const PCProxy&) = delete;
@@ -21,9 +21,11 @@ public:
 
     void Initialize();
 
+    bool PartyCanStartGame();
+
     void OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection);
 
-    int OnClientDataReceived(TcpSession* session, const char* buf, int len);
+    int OnDataReceived(TcpSession* session, const char* buf, int len) override;
 
     inline bool IsEnabled() const { return m_isEnabled; }
 
@@ -31,16 +33,7 @@ private:
     PCProxy();
     ~PCProxy() = default;
 
-    class TcpConsumer : public ITcpSessionConsumer
-    {
-        inline virtual int OnDataReceived(TcpSession* session, const char* buf, int len) override
-        {
-            return PCProxy::Instance().OnClientDataReceived(session, buf, len);
-        }
-    };
-
     bool m_isEnabled;
-    TcpConsumer m_tcpConsumer;
     TcpServer m_tcpServer;
     TcpSession* m_tcpSession;
 };

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <atomic>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
-#include <unordered_map>
 
 #include <WinSock2.h>
 
@@ -21,8 +21,9 @@ public:
 	~TcpServer();
 
 	bool Start(const std::string& host, const std::string& port);
-
 	bool Stop();
+	bool HasActiveSessions();
+	std::shared_ptr<TcpSession> GetFirstSession();
 
 private:
 	void AcceptConnections();
@@ -36,7 +37,7 @@ private:
 	std::thread m_acceptThread;
 	std::atomic<SOCKET> m_listenSocket;
 	int m_currentSessionId;
-	std::unordered_map<TcpSessionId, std::unique_ptr<TcpSession>> m_sessions;
+	std::map<TcpSessionId, std::shared_ptr<TcpSession>> m_sessions;
 	std::mutex m_sessionMutex;
 
 	ITcpSessionConsumer* m_sessionConsumer;
