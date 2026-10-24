@@ -5,8 +5,8 @@ struct RequiredMessageHeader;
 namespace GameMessageTranslator
 {
 
-void ConsoleToPC(RequiredMessageHeader* pMessage);
+bool ConsoleToPC(RequiredMessageHeader* pMessage);
 
-void PCToConsole(RequiredMessageHeader* pMessage);
+bool PCToConsole(RequiredMessageHeader* pMessage);
 
 }

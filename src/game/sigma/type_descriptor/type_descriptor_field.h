@@ -12,7 +12,7 @@ struct SymbolicEntry
 
 struct TypeDescriptorField
 {
-    rex::TypedGuestPointer<char> szFieldName;
+    rex::TypedGuestPointer<const char> szFieldName;
     rex::TypedGuestPointer<XTypeDescriptor> ptDataType;
     rex::be<i32> nDataOffset;
     rex::TypedGuestPointer<void> vDefaultFieldValue;

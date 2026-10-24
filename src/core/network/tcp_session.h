@@ -31,7 +31,7 @@ public:
     bool Send(const char* data, int len);
 
 private:
-    static constexpr int BUFFER_SIZE = 1024 * 128;
+    static constexpr int kBufferSize = 1024 * 128;
 
     void BeginDisconnect();
     void ReceiveLoop();
@@ -40,12 +40,12 @@ private:
     std::atomic<SOCKET> m_socket;
     std::atomic<State> m_state;
 
-    char m_recvBuffer[BUFFER_SIZE];
+    char m_recvBuffer[kBufferSize];
     int m_recvPosition;
     std::thread m_recvThread;
     ITcpSessionConsumer* m_consumer;
 
-    char m_sendBuffer[BUFFER_SIZE];
+    char m_sendBuffer[kBufferSize];
     int m_sendPendingBytes;
     std::thread m_sendThread;
     std::mutex m_sendMutex;

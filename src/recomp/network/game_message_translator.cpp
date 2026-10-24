@@ -1,6 +1,10 @@
 #include "recomp/network/game_message_translator.h"
 
+#include <rex/logging.h>
+
+#include "core/memory_utils.h"
 #include "game/network/game_message.h"
+#include "game/sigma/type_descriptor/type_descriptor.h"
 
 namespace
 {
@@ -404,6 +408,41 @@ GameMessageType ConvertMessageTypePCToConsole(GameMessageType ePCType)
     return MSG_INVALID;
 }
 
+bool ReverseEndiannessPrimitive(u32 ptTypeDescGuest, u32 ptAuxTypeGuest, char* data)
+{
+    switch (ptTypeDescGuest)
+    {
+        case DT_NULL:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+void ReverseEndianness(u32 ptTypeDescGuest, u32 ptAuxTypeGuest, char* data)
+{
+    if (ReverseEndiannessPrimitive(ptTypeDescGuest, ptAuxTypeGuest, data))
+        return;
+
+    XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<XTypeDescriptor>(ptTypeDescGuest);
+    int nFieldCount = ptTypeDescHost->nFieldCount;
+    if (!nFieldCount)
+    {
+        const char* szClassName = MemoryUtils::GetHostPtr<const char>(ptTypeDescHost->szClassName);
+        REXLOG_WARN("ReverseEndianness(): Unhandled primitive type {}", szClassName);
+        return;
+    }
+
+    TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(ptTypeDescHost->arFields);
+    assert(arFields);
+    for (int i = 0; i < nFieldCount; ++i)
+    {
+        TypeDescriptorField* field = &arFields[i];
+        ReverseEndianness(field->ptDataType, field->ptAuxDataType, data + field->nDataOffset.get());
+    }
+}
+
 }
 
 // TODO: Individual message handling:
@@ -424,13 +463,30 @@ GameMessageType ConvertMessageTypePCToConsole(GameMessageType ePCType)
 
 // handle structure changes by temporarily modifying and restoring type descriptors?
 
-void GameMessageTranslator::ConsoleToPC(RequiredMessageHeader* pMessage)
+bool GameMessageTranslator::ConsoleToPC(RequiredMessageHeader* pMessage)
 {
-    pMessage->eType = ConvertMessageTypeConsoleToPC(pMessage->eType);
-    // TODO: convert each field BE <-> LE recursively using type descriptor data
+    GameMessageType consoleType = pMessage->eType;
+
+    u32 ptTypeDescGuest = 0;
+    u32 dwSize = 0;
+    const char* szMessageLabel = nullptr;
+    GetGameMessageTypeAndSize(consoleType, ptTypeDescGuest, dwSize, szMessageLabel);
+
+    if (!ptTypeDescGuest)
+        return false;
+
+    GameMessageType pcType = ConvertMessageTypeConsoleToPC(consoleType);
+    if (!pcType)
+        return false;
+
+    pMessage->eType = pcType;
+    ReverseEndianness(ptTypeDescGuest, DT_NULL, reinterpret_cast<char*>(pMessage));
+
+    return true;
 }
 
-void GameMessageTranslator::PCToConsole(RequiredMessageHeader* pMessage)
+bool GameMessageTranslator::PCToConsole(RequiredMessageHeader* pMessage)
 {
     // TODO
+    return false;
 }

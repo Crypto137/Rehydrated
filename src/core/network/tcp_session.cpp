@@ -74,7 +74,7 @@ bool TcpSession::Send(const char* data, int len)
     {
         std::unique_lock<std::mutex> lock(m_sendMutex);
 
-        if (m_sendPendingBytes + len > BUFFER_SIZE)
+        if (m_sendPendingBytes + len > kBufferSize)
             return false;
 
         std::memcpy(&m_sendBuffer[m_sendPendingBytes], data, len);

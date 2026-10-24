@@ -37,14 +37,14 @@ namespace
 {
 
 void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XTypeDescriptor>& primitiveDescriptors,
-    GuestPtrSet<ComplexTypeDescriptor>& complexDescriptors, GuestPtrSet<char>& strings)
+    GuestPtrSet<ComplexTypeDescriptor>& complexDescriptors, GuestPtrSet<const char>& strings)
 {
     XTypeDescriptor* typeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(typeDescPtr);
     if (!typeDesc)
         return;
 
-    if (typeDesc->szName)
-        strings.insert(typeDesc->szName);
+    if (typeDesc->szClassName)
+        strings.insert(typeDesc->szClassName);
 
     int fieldCount = typeDesc->nFieldCount;
     if (fieldCount == 0)
@@ -98,7 +98,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
 
     GuestPtrSet<XTypeDescriptor> primitiveDescriptors{};
     GuestPtrSet<ComplexTypeDescriptor> complexDescriptors{};
-    GuestPtrSet<char> strings{};
+    GuestPtrSet<const char> strings{};
 
     REXLOG_INFO("Discovering type descriptors...");
 
