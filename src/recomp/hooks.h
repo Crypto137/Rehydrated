@@ -18,6 +18,8 @@ void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3);
 
 void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3);
 
+bool HydraHook_GetGameMessageTypeAndSize(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCRegister& r6);
+
 void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3);
 
 bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5);
