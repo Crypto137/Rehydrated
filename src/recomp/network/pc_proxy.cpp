@@ -8,6 +8,7 @@
 #include "core/memory_utils.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
+#include "game/sigma/type_descriptor/type_descriptor.h"
 #include "recomp/network/game_message_translator.h"
 
 REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC server mode")
@@ -18,7 +19,9 @@ REX_IMPORT(__imp__NetworkGetEncodeBuffer, Guest_NetworkGetEncodeBuffer, u32());
 REX_IMPORT(__imp__XEncoder__SetData, Guest_XEncoder__SetData, void(u32, u32, u32));
 REX_IMPORT(__imp__XEncoder__SetUsed, Guest_XEncoder__SetUsed, void(u32, u32));
 REX_IMPORT(__imp__XEncoder__Put, Guest_XEncoder__Put, void(u32, u32, u32));
-REX_IMPORT(__imp__EncodeMessage, Guest_EncodeMessage, i32(u32, u32));
+REX_IMPORT(__imp__XEncoder__PutBytesAligned8, Guest_XEncoder__PutBytesAligned8, void(u32, u32, u32));
+REX_IMPORT(__imp__TypeDescriptorField__TypeDescriptorField_Dynamic, Guest_TypeDescriptorField__TypeDescriptorField_Dynamic, void(u32, u32, u32));
+REX_IMPORT(__imp__ComplexTypeDescriptor__Encode, Guest_ComplexTypeDescriptor__Encode, u32(u32, u32, u32, u32));
 
 namespace
 {
@@ -37,6 +40,33 @@ static u32 GetMessageTranslationBuffer()
 {
     static u32 ptMessageBuffer = Guest_SigmaMemoryNew(kMessageTranslationBufferSize, 4, 0, 0);
     return ptMessageBuffer;
+}
+
+static void EncodeMessage(u32 pMessage, u32 tEncoder, GameMessageType eMessageType, u32 ptDynamicFieldGuest)
+{
+    u32 pTypeDescriptor = 0;
+    u32 dwSize = 0;
+    const char* pszMessageLabel = nullptr;
+    GetGameMessageTypeAndSize(eMessageType, pTypeDescriptor, dwSize, pszMessageLabel);
+
+    Guest_TypeDescriptorField__TypeDescriptorField_Dynamic(ptDynamicFieldGuest, pTypeDescriptor, 0);
+
+    Guest_ComplexTypeDescriptor__Encode(pTypeDescriptor, pMessage, ptDynamicFieldGuest, tEncoder);
+
+    if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
+    {
+        u32 size = MemoryUtils::GetHostPtr<GenericBlobMessage>(pMessage)->uBlobSize;
+        // TODO: add size check
+        Guest_XEncoder__PutBytesAligned8(tEncoder, pMessage + 12, size);
+    }
+    else if (eMessageType == SMSG_ATTRIBUTE_SET_VALUE)
+    {
+        // TODO
+    }
+    else if (eMessageType == SMSG_ATTRIBUTES_SET_VALUES)
+    {
+        // TODO
+    }
 }
 
 }
@@ -83,6 +113,10 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
     u32 ptEncoderGuest = rex::ppc::stack_push(frame.ctx, base, reinterpret_cast<void*>(&encoder), sizeof(encoder));
     XEncoder* ptEncoderHost = MemoryUtils::GetHostPtr<XEncoder>(ptEncoderGuest);
 
+    // allocate TypeDescriptorField to call Encode
+    TypeDescriptorField dynamicField = {};
+    u32 ptDynamicFieldGuest = rex::ppc::stack_push(frame.ctx, base, reinterpret_cast<void*>(&dynamicField), sizeof(dynamicField));
+
     u32 encodeBuffer = Guest_NetworkGetEncodeBuffer();
 
     Guest_XEncoder__SetData(ptEncoderGuest, encodeBuffer, 0x8000);
@@ -97,13 +131,16 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
         PacketBuffer* tPacketBuffer = MemoryUtils::GetHostPtr<PacketBuffer>(listNode->m_tData);
         RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(listNode->m_tData + 8);
         
+        GameMessageType eMessageType = pMessage->eType;
+
         // We copy the console message to our custom buffer to avoid disrupting normal console flow (at least for now)
         assert(pMessage->dwSize <= kMessageTranslationBufferSize);
         std::memcpy(ptMessageTranslationBufferHost, pMessage, pMessage->dwSize);
+        pMessage = reinterpret_cast<RequiredMessageHeader*>(ptMessageTranslationBufferHost);
 
         // this is where the magic happens (also some messages are dropped if this returns false)
-        if (GameMessageTranslator::ConsoleToPC(reinterpret_cast<RequiredMessageHeader*>(ptMessageTranslationBufferHost)))
-            Guest_EncodeMessage(listNode->m_tData + 8, ptEncoderGuest); // TODO: replace listNode->m_tData + 8 with ptPCMessageBufferGuest when guest GetGameMessageTypeAndSize is hooked
+        if (GameMessageTranslator::ConsoleToPC(pMessage))
+            EncodeMessage(ptMessageTranslationBufferGuest, ptEncoderGuest, eMessageType, ptDynamicFieldGuest);
 
         listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
     }

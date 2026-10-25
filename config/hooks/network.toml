@@ -21,14 +21,6 @@ name = "HydraHook_ClientMessageReceiveGameMessage"
 registers = ["r3"]
 after_instruction = false
 
-# GetGameMessageTypeAndSize maps opcodes to game message definitions.
-[[midasm_hook]]
-address = 0x827ED6F8
-name = "HydraHook_GetGameMessageTypeAndSize"
-registers = ["r3", "r4", "r5", "r6"]
-after_instruction = false
-return_on_true = true
-
 # ServerSendOutgoingMessagesForGameConnection encodes messages stored in
 # tOutgoingPacketBufferList of a GameConnection and calls XServerSendBuffer
 # to flush them to the bound socket. GameConnection ptr is the r3 argument.
