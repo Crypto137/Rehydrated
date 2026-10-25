@@ -5,6 +5,8 @@
 class XEncoder
 {
 public:
+    virtual ~XEncoder() = default;
+
     void SetData(void* d, size_t sizeBytes);
     void SetUsed(size_t u);
     void PutAligned8(uint32_t x, size_t bits);
