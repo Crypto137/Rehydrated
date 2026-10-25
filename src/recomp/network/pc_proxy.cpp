@@ -22,6 +22,7 @@ REX_IMPORT(__imp__XEncoder__Put, Guest_XEncoder__Put, void(u32, u32, u32));
 REX_IMPORT(__imp__XEncoder__PutBytesAligned8, Guest_XEncoder__PutBytesAligned8, void(u32, u32, u32));
 REX_IMPORT(__imp__TypeDescriptorField__TypeDescriptorField_Dynamic, Guest_TypeDescriptorField__TypeDescriptorField_Dynamic, void(u32, u32, u32));
 REX_IMPORT(__imp__ComplexTypeDescriptor__Encode, Guest_ComplexTypeDescriptor__Encode, u32(u32, u32, u32, u32));
+REX_IMPORT(__imp__AttributeCompressor__Encode, Guest_AttributeCompressor__Encode, u32(u32, u32));
 
 namespace
 {
@@ -49,23 +50,38 @@ static void EncodeMessage(u32 pMessage, u32 tEncoder, GameMessageType eMessageTy
     const char* pszMessageLabel = nullptr;
     GetGameMessageTypeAndSize(eMessageType, pTypeDescriptor, dwSize, pszMessageLabel);
 
+    XEncoder* tEncoderHost = MemoryUtils::GetHostPtr<XEncoder>(tEncoder);
+    u32 usedBefore = tEncoderHost->m_used;
+
     Guest_TypeDescriptorField__TypeDescriptorField_Dynamic(ptDynamicFieldGuest, pTypeDescriptor, 0);
 
     Guest_ComplexTypeDescriptor__Encode(pTypeDescriptor, pMessage, ptDynamicFieldGuest, tEncoder);
 
     if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
     {
-        u32 size = MemoryUtils::GetHostPtr<GenericBlobMessage>(pMessage)->uBlobSize;
-        // TODO: add size check
-        Guest_XEncoder__PutBytesAligned8(tEncoder, pMessage + 12, size);
+        u32 blobSize = MemoryUtils::GetHostPtr<GenericBlobMessage>(pMessage)->uBlobSize;
+
+        u32 encoderSizeBytes = tEncoderHost->m_size / 8;
+        u32 encoderUsedBytes = (tEncoderHost->m_used + 7) / 8;
+        if ((encoderSizeBytes - encoderUsedBytes) < blobSize)
+        {
+            REXLOG_WARN("Generic blob is too big to encode");
+            Guest_XEncoder__SetUsed(tEncoder, usedBefore);
+            return;
+        }
+
+        Guest_XEncoder__PutBytesAligned8(tEncoder, pMessage + 12, blobSize);
     }
     else if (eMessageType == SMSG_ATTRIBUTE_SET_VALUE)
     {
-        // TODO
+        Guest_AttributeCompressor__Encode(tEncoder, pMessage + 12);
     }
     else if (eMessageType == SMSG_ATTRIBUTES_SET_VALUES)
     {
-        // TODO
+        AttributesSetValuesMessage* attributesSetValuesMessage = MemoryUtils::GetHostPtr<AttributesSetValuesMessage>(pMessage);
+        int attributeCount = attributesSetValuesMessage->nAttributeCount;
+        for (int i = 0; i < attributeCount; ++i)
+            Guest_AttributeCompressor__Encode(tEncoder, pMessage + 16 + (16 * i));
     }
 }
 
