@@ -26,8 +26,8 @@ struct RequiredMessageHeader
 template <typename T>
 struct XOptional
 {
-    T m_tValue;
     rex::be<i32> m_bExists;
+    T m_tValue;
 };
 
 struct SNOName
