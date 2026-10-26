@@ -1,12 +1,12 @@
 #pragma once
 
-struct RequiredMessageHeader;
+#include "game/network/game_message.h"
 
 namespace GameMessageTranslator
 {
 
-bool ConsoleToPC(RequiredMessageHeader* pMessage);
+GameMessageType ConvertMessageTypeConsoleToPC(GameMessageType eConsoleType);
 
-bool PCToConsole(RequiredMessageHeader* pMessage);
+GameMessageType ConvertMessageTypePCToConsole(GameMessageType ePCType);
 
 }

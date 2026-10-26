@@ -22,6 +22,7 @@ set(REHYDRATED_SOURCES
     src/recomp/hooks.cpp
     src/recomp/static_data_dumper.cpp
     src/recomp/network/game_message_dumper.cpp
+    src/recomp/network/game_message_encoder.cpp
     src/recomp/network/game_message_translator.cpp
     src/recomp/network/pc_proxy.cpp
     src/recomp/network/xdecoder.cpp

@@ -16,8 +16,13 @@ public:
     void PutBytesAligned8(const uint8_t* data, size_t size);
     void PutAsciiStringBytesAligned8(const uint8_t* data, size_t length);
 
+    inline size_t GetSize() const { return m_size; }
+    inline size_t GetSizeBytes() const { return m_size / 8; }
+    inline size_t GetUsed() const { return m_used; }
+    inline size_t GetUsedBytes() const { return (m_used + 7) / 8; }
+
 protected:
-    virtual void DataOverflow() = 0;
+    inline virtual void DataOverflow() {}
 
 private:
     uint8_t* m_data;

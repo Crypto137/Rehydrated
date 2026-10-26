@@ -1,11 +1,5 @@
 #include "recomp/network/game_message_translator.h"
 
-#include <rex/logging.h>
-
-#include "core/memory_utils.h"
-#include "game/network/game_message.h"
-#include "game/sigma/type_descriptor/type_descriptor.h"
-
 namespace
 {
 
@@ -391,58 +385,6 @@ static GameMessageTypeMapping s_MessageTypeMappings[] = {
 
 static_assert(sizeof(s_MessageTypeMappings) / sizeof(s_MessageTypeMappings[0]) == MSG_NUM_MESSAGES);
 
-GameMessageType ConvertMessageTypeConsoleToPC(GameMessageType eConsoleType)
-{
-    return static_cast<GameMessageType>(s_MessageTypeMappings[eConsoleType - 1].PCType);
-}
-
-GameMessageType ConvertMessageTypePCToConsole(GameMessageType ePCType)
-{
-    // TODO: make this not horribly inefficient?
-    for (int i = 0; i < MSG_NUM_MESSAGES; ++i)
-    {
-        if (s_MessageTypeMappings[i].PCType == ePCType)
-            return static_cast<GameMessageType>(i + 1);
-    }
-
-    return MSG_INVALID;
-}
-
-bool ReverseEndiannessPrimitive(u32 ptTypeDescGuest, u32 ptAuxTypeGuest, char* data)
-{
-    switch (ptTypeDescGuest)
-    {
-        case DT_NULL:
-            return true;
-
-        default:
-            return false;
-    }
-}
-
-void ReverseEndianness(u32 ptTypeDescGuest, u32 ptAuxTypeGuest, char* data)
-{
-    if (ReverseEndiannessPrimitive(ptTypeDescGuest, ptAuxTypeGuest, data))
-        return;
-
-    XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<XTypeDescriptor>(ptTypeDescGuest);
-    int nFieldCount = ptTypeDescHost->nFieldCount;
-    if (!nFieldCount)
-    {
-        const char* szClassName = MemoryUtils::GetHostPtr<const char>(ptTypeDescHost->szClassName);
-        REXLOG_WARN("ReverseEndianness(): Unhandled primitive type {}", szClassName);
-        return;
-    }
-
-    TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(ptTypeDescHost->arFields);
-    assert(arFields);
-    for (int i = 0; i < nFieldCount; ++i)
-    {
-        TypeDescriptorField* field = &arFields[i];
-        ReverseEndianness(field->ptDataType, field->ptAuxDataType, data + field->nDataOffset.get());
-    }
-}
-
 }
 
 // TODO: Individual message handling:
@@ -463,30 +405,19 @@ void ReverseEndianness(u32 ptTypeDescGuest, u32 ptAuxTypeGuest, char* data)
 
 // handle structure changes by temporarily modifying and restoring type descriptors?
 
-bool GameMessageTranslator::ConsoleToPC(RequiredMessageHeader* pMessage)
+GameMessageType GameMessageTranslator::ConvertMessageTypeConsoleToPC(GameMessageType eConsoleType)
 {
-    GameMessageType consoleType = pMessage->eType;
-
-    u32 ptTypeDescGuest = 0;
-    u32 dwSize = 0;
-    const char* szMessageLabel = nullptr;
-    GetGameMessageTypeAndSize(consoleType, ptTypeDescGuest, dwSize, szMessageLabel);
-
-    if (!ptTypeDescGuest)
-        return false;
-
-    GameMessageType pcType = ConvertMessageTypeConsoleToPC(consoleType);
-    if (!pcType)
-        return false;
-
-    pMessage->eType = pcType;
-    ReverseEndianness(ptTypeDescGuest, DT_NULL, reinterpret_cast<char*>(pMessage));
-
-    return true;
+    return static_cast<GameMessageType>(s_MessageTypeMappings[eConsoleType - 1].PCType);
 }
 
-bool GameMessageTranslator::PCToConsole(RequiredMessageHeader* pMessage)
+GameMessageType GameMessageTranslator::ConvertMessageTypePCToConsole(GameMessageType ePCType)
 {
-    // TODO
-    return false;
+    // TODO: make this not horribly inefficient?
+    for (int i = 0; i < MSG_NUM_MESSAGES; ++i)
+    {
+        if (s_MessageTypeMappings[i].PCType == ePCType)
+            return static_cast<GameMessageType>(i + 1);
+    }
+
+    return MSG_INVALID;
 }

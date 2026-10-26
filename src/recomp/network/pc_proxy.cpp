@@ -1,88 +1,32 @@
 #include "recomp/network/pc_proxy.h"
 
-#include <cstring>
-
-#include <rex/ppc.h>
 #include <rex/logging.h>
 
 #include "core/memory_utils.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
-#include "game/sigma/type_descriptor/type_descriptor.h"
+#include "recomp/network/game_message_encoder.h"
 #include "recomp/network/game_message_translator.h"
+#include "recomp/network/xencoder.h"
 
 REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC server mode")
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
-REX_IMPORT(__imp__SigmaMemoryNew, Guest_SigmaMemoryNew, u32(u32, u32, u32, u32));
-REX_IMPORT(__imp__NetworkGetEncodeBuffer, Guest_NetworkGetEncodeBuffer, u32());
-REX_IMPORT(__imp__XEncoder__SetData, Guest_XEncoder__SetData, void(u32, u32, u32));
-REX_IMPORT(__imp__XEncoder__SetUsed, Guest_XEncoder__SetUsed, void(u32, u32));
-REX_IMPORT(__imp__XEncoder__Put, Guest_XEncoder__Put, void(u32, u32, u32));
-REX_IMPORT(__imp__XEncoder__PutBytesAligned8, Guest_XEncoder__PutBytesAligned8, void(u32, u32, u32));
-REX_IMPORT(__imp__TypeDescriptorField__TypeDescriptorField_Dynamic, Guest_TypeDescriptorField__TypeDescriptorField_Dynamic, void(u32, u32, u32));
-REX_IMPORT(__imp__ComplexTypeDescriptor__Encode, Guest_ComplexTypeDescriptor__Encode, u32(u32, u32, u32, u32));
-REX_IMPORT(__imp__AttributeCompressor__Encode, Guest_AttributeCompressor__Encode, u32(u32, u32));
-
 namespace
 {
 
-struct XEncoder
-{
-    rex::be<u32> __vftable;
-    rex::be<u32> m_data;
-    rex::be<u32> m_size;
-    rex::be<u32> m_used;
-};
+static constexpr u32 kEncodeBufferSize = 0x8000 * 2;    // TODO: use 0x8000 and flush when the buffer gets filled mid encode
 
-static constexpr u32 kMessageTranslationBufferSize = 0x8000;
-
-static u32 GetMessageTranslationBuffer()
+static char* GetEncodeBuffer()
 {
-    static u32 ptMessageBuffer = Guest_SigmaMemoryNew(kMessageTranslationBufferSize, 4, 0, 0);
-    return ptMessageBuffer;
+    thread_local std::unique_ptr<char[]> buffer = std::make_unique<char[]>(kEncodeBufferSize);
+    return buffer.get();
 }
 
-static void EncodeMessage(u32 pMessage, u32 tEncoder, GameMessageType eMessageType, u32 ptDynamicFieldGuest)
+static char* GetDecodeBuffer()
 {
-    u32 pTypeDescriptor = 0;
-    u32 dwSize = 0;
-    const char* pszMessageLabel = nullptr;
-    GetGameMessageTypeAndSize(eMessageType, pTypeDescriptor, dwSize, pszMessageLabel);
-
-    XEncoder* tEncoderHost = MemoryUtils::GetHostPtr<XEncoder>(tEncoder);
-    u32 usedBefore = tEncoderHost->m_used;
-
-    Guest_TypeDescriptorField__TypeDescriptorField_Dynamic(ptDynamicFieldGuest, pTypeDescriptor, 0);
-
-    Guest_ComplexTypeDescriptor__Encode(pTypeDescriptor, pMessage, ptDynamicFieldGuest, tEncoder);
-
-    if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
-    {
-        u32 blobSize = MemoryUtils::GetHostPtr<GenericBlobMessage>(pMessage)->uBlobSize;
-
-        u32 encoderSizeBytes = tEncoderHost->m_size / 8;
-        u32 encoderUsedBytes = (tEncoderHost->m_used + 7) / 8;
-        if ((encoderSizeBytes - encoderUsedBytes) < blobSize)
-        {
-            REXLOG_WARN("Generic blob is too big to encode");
-            Guest_XEncoder__SetUsed(tEncoder, usedBefore);
-            return;
-        }
-
-        Guest_XEncoder__PutBytesAligned8(tEncoder, pMessage + 12, blobSize);
-    }
-    else if (eMessageType == SMSG_ATTRIBUTE_SET_VALUE)
-    {
-        Guest_AttributeCompressor__Encode(tEncoder, pMessage + 12);
-    }
-    else if (eMessageType == SMSG_ATTRIBUTES_SET_VALUES)
-    {
-        AttributesSetValuesMessage* attributesSetValuesMessage = MemoryUtils::GetHostPtr<AttributesSetValuesMessage>(pMessage);
-        int attributeCount = attributesSetValuesMessage->nAttributeCount;
-        for (int i = 0; i < attributeCount; ++i)
-            Guest_AttributeCompressor__Encode(tEncoder, pMessage + 16 + (16 * i));
-    }
+    thread_local std::unique_ptr<char[]> buffer = std::make_unique<char[]>(kEncodeBufferSize);
+    return buffer.get();
 }
 
 }
@@ -116,30 +60,11 @@ bool PCProxy::PartyCanStartGame()
 
 void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection)
 {
-    auto* memory = REX_KERNEL_MEMORY();
-    if (!memory)
-        return;
-    auto* base = memory->virtual_membase();
+    XEncoder encoder = {};
+    char* encodeBuffer = GetEncodeBuffer();
 
-    rex::CallFrame frame(*rex::runtime::ThreadState::Get()->context());
-    rex::ppc::stack_guard guard(frame.ctx);
-
-    // construct XEncoder on the guest stack
-    XEncoder encoder = { 0x820200A8, 0, 0, 0 };
-    u32 ptEncoderGuest = rex::ppc::stack_push(frame.ctx, base, reinterpret_cast<void*>(&encoder), sizeof(encoder));
-    XEncoder* ptEncoderHost = MemoryUtils::GetHostPtr<XEncoder>(ptEncoderGuest);
-
-    // allocate TypeDescriptorField to call Encode
-    TypeDescriptorField dynamicField = {};
-    u32 ptDynamicFieldGuest = rex::ppc::stack_push(frame.ctx, base, reinterpret_cast<void*>(&dynamicField), sizeof(dynamicField));
-
-    u32 encodeBuffer = Guest_NetworkGetEncodeBuffer();
-
-    Guest_XEncoder__SetData(ptEncoderGuest, encodeBuffer, 0x8000);
-    Guest_XEncoder__SetUsed(ptEncoderGuest, 32);
-
-    u32 ptMessageTranslationBufferGuest = GetMessageTranslationBuffer();
-    char* ptMessageTranslationBufferHost = MemoryUtils::GetHostPtr<char>(ptMessageTranslationBufferGuest);
+    encoder.SetData(encodeBuffer, kEncodeBufferSize);
+    encoder.SetUsed(32);
 
     TPacketBufferListNode* listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(ptGameConnection->tOutgoingPacketBufferList.m_pHead);
     while (listNode)
@@ -147,26 +72,21 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
         PacketBuffer* tPacketBuffer = MemoryUtils::GetHostPtr<PacketBuffer>(listNode->m_tData);
         RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(listNode->m_tData + 8);
         
-        GameMessageType eMessageType = pMessage->eType;
-
-        // We copy the console message to our custom buffer to avoid disrupting normal console flow (at least for now)
-        assert(pMessage->dwSize <= kMessageTranslationBufferSize);
-        std::memcpy(ptMessageTranslationBufferHost, pMessage, pMessage->dwSize);
-        pMessage = reinterpret_cast<RequiredMessageHeader*>(ptMessageTranslationBufferHost);
-
-        // this is where the magic happens (also some messages are dropped if this returns false)
-        if (GameMessageTranslator::ConsoleToPC(pMessage))
-            EncodeMessage(ptMessageTranslationBufferGuest, ptEncoderGuest, eMessageType, ptDynamicFieldGuest);
+        // ConvertMessageTypeConsoleToPC returns MSG_INVALID (0) for messages that are dropped.
+        // TODO: Handle persistence messages separately?
+        GameMessageType pcType = GameMessageTranslator::ConvertMessageTypeConsoleToPC(pMessage->eType);
+        if (pcType)
+            GameMessageEncoder::EncodeMessage(pMessage, encoder);
 
         listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
     }
 
-    u32 dwSize = (ptEncoderHost->m_used + 7) / 8;
+    size_t dwSize = encoder.GetUsedBytes();
     if (dwSize <= 4)
         return;
 
-    Guest_XEncoder__SetUsed(ptEncoderGuest, 0);
-    Guest_XEncoder__Put(ptEncoderGuest, dwSize, 32);
+    encoder.SetUsed(0);
+    encoder.Put(dwSize, 32);
 
     REXLOG_INFO("OnServerSendOutgoingMessagesForGameConnection(): dwSize={}", dwSize);
 }
