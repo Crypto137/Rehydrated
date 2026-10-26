@@ -15,7 +15,8 @@ REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC 
 namespace
 {
 
-static constexpr u32 kEncodeBufferSize = 0x8000 * 2;    // TODO: use 0x8000 and flush when the buffer gets filled mid encode
+// We can't use buffer sizes larger than 0x8000 because this is what the PC code uses for decoding.
+static constexpr u32 kEncodeBufferSize = 0x8000;
 
 static char* GetEncodeBuffer()
 {
@@ -76,7 +77,12 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
         // TODO: Handle persistence messages separately?
         GameMessageType pcType = GameMessageTranslator::ConvertMessageTypeConsoleToPC(pMessage->eType);
         if (pcType)
-            GameMessageEncoder::EncodeMessage(pMessage, encoder);
+        {
+            // Stop when the encode buffer is filled. This may potentially cause issues on initial load
+            // because we drop some messages, so some things may end up being sent twice.
+            if (!GameMessageEncoder::EncodeMessage(pMessage, encoder))
+                break;
+        }
 
         listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
     }

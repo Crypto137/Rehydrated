@@ -437,14 +437,14 @@ bool GameMessageEncoder::EncodeMessage(void* pMessage, XEncoder& tEncoder)
 
     XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<XTypeDescriptor>(pTypeDescriptor);
     if (!Encode(ptTypeDescHost, pMessage, dynamicField, tEncoder))
-        goto error;
+        goto cleanup;
 
     if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
     {
         u32 blobSize = static_cast<GenericBlobMessage*>(pMessage)->uBlobSize;
 
         if ((tEncoder.GetSizeBytes() - tEncoder.GetUsedBytes()) < blobSize)
-            goto error;
+            goto cleanup;
 
         tEncoder.PutBytesAligned8(static_cast<uint8_t*>(pMessage) + 12, blobSize);
     }
@@ -452,7 +452,7 @@ bool GameMessageEncoder::EncodeMessage(void* pMessage, XEncoder& tEncoder)
     {
         AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
         if (!AttributeCompressor_Encode(tEncoder, attributeSetValueMessage->tKeyVal))
-            goto error;
+            goto cleanup;
     }
     else if (header->eType == SMSG_ATTRIBUTES_SET_VALUES)
     {
@@ -461,14 +461,14 @@ bool GameMessageEncoder::EncodeMessage(void* pMessage, XEncoder& tEncoder)
         for (int i = 0; i < attributeCount; ++i)
         {
             if (!AttributeCompressor_Encode(tEncoder, attributesSetValuesMessage->atKeyVals[i]))
-                goto error;
+                goto cleanup;
         }
     }
 
     return true;
 
-error:
-    REXLOG_WARN("EncodeMessage() error for {}", pszMessageLabel);
+cleanup:
+    // valid path when encode buffer gets filled (e.g. on initial load)
     tEncoder.SetUsed(usedBefore);
     return false;
 }
