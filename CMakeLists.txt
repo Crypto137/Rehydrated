@@ -27,6 +27,7 @@ set(REHYDRATED_SOURCES
     src/recomp/network/pc_proxy.cpp
     src/recomp/network/xdecoder.cpp
     src/recomp/network/xencoder.cpp
+    src/recomp/network/xfloat16.cpp
 )
 
 if(WIN32)

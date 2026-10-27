@@ -6,15 +6,120 @@
 #include <rex/logging.h>
 
 #include "core/memory_utils.h"
+#include "game/attributes/attrib_defs.h"
+#include "game/attributes/attribute_compressor.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
+#include "recomp/network/xfloat16.h"
 
 namespace
 {
 
+constexpr u32 cgarAttribDefs = 0x82F9DA88;
+
+bool AttributeCompressor_EncodeUncompressed(AttributeCompressorUncompressed* ptCompressor, XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
+{
+    u32 dwBits = ptCompressor->m_dwBits;
+    if (tEncoder.GetUsed() + dwBits > tEncoder.GetSize())
+        return false;
+
+    i32 nValue = tKeyValue.nValue;
+
+    tEncoder.Put(nValue, dwBits);
+    return true;
+}
+
+bool AttributeCompressor_EncodeBoundedInt(AttributeCompressorBoundedInt* ptCompressor, XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
+{
+    u32 dwBits = ptCompressor->m_dwBits;
+    if (tEncoder.GetUsed() + dwBits > tEncoder.GetSize())
+        return false;
+
+    i32 nValue = tKeyValue.nValue;
+    if (nValue < ptCompressor->m_nMin || nValue > ptCompressor->m_nMax)
+        return false;   // the original code just crashes in this case
+
+    nValue -= ptCompressor->m_nMin;
+
+    tEncoder.Put(nValue, dwBits);
+    return true;
+}
+
+bool AttributeCompressor_EncodeLinearFloat(AttributeCompressorLinearFloat* ptCompressor, XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
+{
+    // This compressor type doesn't appear to be used by any attributes
+    // in any publicly available version of the game.
+    REXLOG_WARN("AttributeCompressor_EncodeLinearFloat() called");
+    return false;
+}
+
+bool AttributeCompressor_EncodeFloat16(AttributeCompressorFloat16* ptCompressor, XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
+{
+    u32 dwBits = ptCompressor->m_dwBits;
+    if (tEncoder.GetUsed() + dwBits > tEncoder.GetSize())
+        return false;
+
+    i32 nValue = tKeyValue.nValue;
+    XFloat16 xfloat16 = std::bit_cast<float, i32>(nValue);
+
+    tEncoder.Put(xfloat16.m_uData, dwBits);
+    return true;
+}
+
+bool AttributeCompressor_EncodeFloatVariable(AttributeCompressorFloatVariable* ptCompressor, XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
+{
+    i32 nValue = tKeyValue.nValue;
+    f32 flValue = std::bit_cast<f32, i32>(nValue);
+
+    float maxValue16 = XFloat16::GetAbsoluteMaximumValue();
+    u32 dwBits = flValue >= maxValue16 || flValue <= -maxValue16 ? 32 : 16;
+
+    if (tEncoder.GetUsed() + 1 + dwBits > tEncoder.GetSize())
+        return false;
+
+    tEncoder.PutBool(dwBits == 16);
+
+    uint32_t data;
+    if (dwBits == 16)
+    {
+        XFloat16 xfloat16 = flValue;
+        data = xfloat16.m_uData;
+    }
+    else
+    {
+        data = nValue;
+    }
+
+    tEncoder.Put(data, dwBits);
+    return true;
+}
+
 bool AttributeCompressor_Encode(XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
 {
-    // TODO
-    return true;
+    Attrib eAttrib = tKeyValue.eKeyAttrib;
+    AttribDef& tAttribDef = MemoryUtils::GetHostPtr<AttribDef>(cgarAttribDefs)[eAttrib];
+    AttributeCompressor* ptCompressor = MemoryUtils::GetHostPtr<AttributeCompressor>(tAttribDef.ptCompressor);
+
+    switch (ptCompressor->m_eType)
+    {
+        case ACT_UNCOMPRESSED:
+            return AttributeCompressor_EncodeUncompressed(static_cast<AttributeCompressorUncompressed*>(ptCompressor), tEncoder, tKeyValue);
+
+        case ACT_BOUNDED_INT:
+            return AttributeCompressor_EncodeBoundedInt(static_cast<AttributeCompressorBoundedInt*>(ptCompressor), tEncoder, tKeyValue);
+
+        case ACT_LINEAR_FLOAT:
+            return AttributeCompressor_EncodeLinearFloat(static_cast<AttributeCompressorLinearFloat*>(ptCompressor), tEncoder, tKeyValue);
+
+        case ACT_FLOAT16:
+            return AttributeCompressor_EncodeFloat16(static_cast<AttributeCompressorFloat16*>(ptCompressor), tEncoder, tKeyValue);
+
+        case ACT_FLOAT_VARIABLE:
+            return AttributeCompressor_EncodeFloatVariable(static_cast<AttributeCompressorFloatVariable*>(ptCompressor), tEncoder, tKeyValue);
+
+        default:
+            REXLOG_WARN("AttributeCompressor_Encode(): Unknown compressor type {}", static_cast<int>(ptCompressor->m_eType.get()));
+            return false;
+    }
 }
 
 // forward declare Encode to be able to call it recursively in subfunctions
@@ -94,14 +199,15 @@ bool GenericFloatEncode(void* lpDefinition, const TypeDescriptorField& field, XE
     u32 uData;
     if (field.dwFlags & (1 << TDF_XFLOAT16))
     {
-        // TODO?: XFloat16
-        uData = 0;
+        XFloat16 xfloat16 = value;
+        uData = xfloat16.m_uData;
     }
     else
     {
         uData = std::bit_cast<u32, f32>(value);
     }
 
+    // !!original code bug!!: uses 32 bits even for XFloat16 encoded values
     tEncoder.Put(uData, 32);
     return true;
 }
