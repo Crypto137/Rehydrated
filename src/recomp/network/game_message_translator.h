@@ -3,6 +3,8 @@
 #include "game/attributes/attrib.h"
 #include "game/network/game_message.h"
 
+struct TypeDescriptorField;
+
 namespace GameMessageTranslator
 {
 
@@ -19,5 +21,7 @@ void TranslateMessageConsoleToPC(void* pMessage);
 void TranslateMessagePCToConsole(void* pMessage);
 
 bool IsMessagePCCompatible(void* pMessage);
+
+bool IsFieldPCCompatible(u32 ptTypeDescriptor, TypeDescriptorField& field);
 
 }

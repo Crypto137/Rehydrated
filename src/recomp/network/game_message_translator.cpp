@@ -2,6 +2,8 @@
 
 #include <rex/logging.h>
 
+#include "game/sigma/type_descriptor/type_descriptor.h"
+
 namespace
 {
 
@@ -410,15 +412,14 @@ constexpr size_t kNumConsoleOnlyAttributes = sizeof(s_ConsoleOnlyAttributes) / s
 // TODO: Individual message handling:
 // (SMSG) PreloadSceneDataMessage: no snoLevelAreas array on PC
 // (SMSG) PreloadACDDataMessage: No eWeaponClass and no gbidMonsterAffixes array on PC
-// (CMSG) JoinConsoleGameMessage: PC has extra data (but ir probably shouldn't send it anyway)
 // (SMSG) NewPlayerMessage: no usGamerTag and no uAcceptedLicenseBits hero on PC, but has 4 bytes of padding after ann instead
-// (SMSG) AttributeSetValueMessage: attribute stuff (index offset / encoding)
-// (SMSG) AttributesSetValuesMessage: attribute stuff (index offset / encoding)
-// (CMSG) TargetMessage: no optional dwFlags on PC
 // (SMSG) HirelingInfoUpdateMessage: PC doesn't have a bunch of fields, including arnPowerKeyParam, annItems, nPlayerIndex?
 // (SMSG) PlayerSetCameraObserverMessage: no optional WorldPlace wpToOrbit on PC
 // (SMSG) SceneSpecification: no snoCombatMusic on X360
 // (SMSG) PlayLineParams: extra bool flag on X360 (bPlayerInitiated?)
+
+// (CMSG) JoinConsoleGameMessage: PC has extra data (but ir probably shouldn't send it anyway)
+// (CMSG) TargetMessage: no optional dwFlags on PC
 // (CMSG) CMSG_ACCEPTED_DEATH: PC -> X360 struct change (SimpleMessage -> IntDataMessage), default to 0?
 // (CMSG) CMSG_REQUEST_EVENT_SKIP: PC -> X360 struct change (SimpleMessage -> BoolDataMessage), default to false?
 // (CMSG) InventoryDropStackPortionMessage -> StackPortionMessage: same structure, just a name change, probably doesn't need handling
@@ -552,6 +553,61 @@ bool GameMessageTranslator::IsMessagePCCompatible(void* pMessage)
                 return false;
             }
         }
+    }
+
+    return true;
+}
+
+bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, TypeDescriptorField& field)
+{
+    // TODO: clean this up
+    switch (ptTypeDescriptor)
+    {
+        case DT_PRELOAD_SCENE_DATA_MESSAGE:
+            if (field.nDataOffset == 16)    // snoLevelAreas
+                return false;
+
+            break;
+
+        case DT_PRELOAD_ACD_DATA_MESSAGE:
+            if (field.nDataOffset == 16)    // eWeaponClass
+                return false;
+
+            if (field.nDataOffset == 20)    // gbidMonsterAffixes
+                return false;
+
+            break;
+
+        case DT_NEW_PLAYER_MESSAGE:
+            if (field.nDataOffset == 17196) // usGamerTag
+                return false;
+
+            if (field.nDataOffset == 17328) // uAcceptedLicenseBitsHero
+                return false;
+
+            break;
+
+        case DT_HIRELING_INFO_UPDATE_MESSAGE:
+            if (field.nDataOffset >= 24 && field.nDataOffset <= 40) // arnPowerKeyParam
+                return false;
+
+            if (field.nDataOffset == 44)    // annItems
+                return false;
+
+            break;
+
+        case DT_PLAYER_SET_CAMERA_OBSERVER_MESSAGE:
+            if (field.nDataOffset == 12)    // wpToOrbit
+                return false;
+
+            break;
+
+        case 0x82FABCE0:    // PlayLineParams
+            // not sure if it's this one, or one of the three flags before it that need to be skipped
+            if (field.nDataOffset == 20)    // bPlayerInitiated
+                return false;
+
+            break;
     }
 
     return true;

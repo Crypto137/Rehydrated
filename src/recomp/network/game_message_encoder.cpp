@@ -32,6 +32,12 @@ bool AttributeCompressor_EncodeUncompressed(AttributeCompressorUncompressed* ptC
 bool AttributeCompressor_EncodeBoundedInt(AttributeCompressorBoundedInt* ptCompressor, XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
 {
     u32 dwBits = ptCompressor->m_dwBits;
+
+    // HACK: adjust bit count for PC compat (4 players / 3 bits on console -> 8 players / 4 bits on PC)
+    if (tKeyValue.eKeyAttrib == ATTRIBUTE_PET_OWNER || tKeyValue.eKeyAttrib == ATTRIBUTE_PET_CREATOR)
+        dwBits = 4;
+    // HACK end
+
     if (tEncoder.GetUsed() + dwBits > tEncoder.GetSize())
         return false;
 
@@ -97,6 +103,13 @@ bool AttributeCompressor_EncodeFloatVariable(AttributeCompressorFloatVariable* p
 bool AttributeCompressor_Encode(XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
 {
     Attrib eAttrib = tKeyValue.eKeyAttrib;
+
+    // HACK: encode Special_Inventory_Has_Sold as BoundedInt in the 0-1 range
+    // (reuse compressor from another bool attribute to achieve this)
+    if (eAttrib == ATTRIBUTE_SPECIAL_INVENTORY_HAS_SOLD)
+        eAttrib = ATTRIBUTE_INVULNERABLE;
+    // HACK end
+
     AttribDef& tAttribDef = MemoryUtils::GetHostPtr<AttribDef>(cgarAttribDefs)[eAttrib];
     AttributeCompressor* ptCompressor = MemoryUtils::GetHostPtr<AttributeCompressor>(tAttribDef.ptCompressor);
 
@@ -518,16 +531,31 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescrip
 
     for (int i = 0; i < nFieldCount; ++i)
     {
-        TypeDescriptorField& field = arFields[i];
-        if (field.ptDataType == DT_NULL)
+        TypeDescriptorField& subfield = arFields[i];
+        if (subfield.ptDataType == DT_NULL)
             break;
 
-        XTypeDescriptor* ptChildType = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptDataType);
-        if (!Encode(ptChildType, static_cast<u8*>(pMessage) + field.nDataOffset.get(), field, tEncoder))
+        if (!GameMessageTranslator::IsFieldPCCompatible(field.ptDataType, subfield))
+            continue;
+
+        XTypeDescriptor* ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
+        if (!Encode(ptSubfieldType, static_cast<u8*>(pMessage) + subfield.nDataOffset.get(), subfield, tEncoder))
         {
             tEncoder.SetUsed(usedBefore);
             return false;
         }
+
+        // HACK: encode snoMusic twice to fill SceneSpecification.snoCombatMusic
+        if (field.ptDataType == 0x82FA7574 && field.nDataOffset == 52)
+        {
+            int snoCombatMusic = -1;    // SNO_NONE
+            if (!Encode(ptSubfieldType, &snoCombatMusic, field, tEncoder))
+            {
+                tEncoder.SetUsed(usedBefore);
+                return false;
+            }
+        }
+        // HACK end
     }
 
     return true;
