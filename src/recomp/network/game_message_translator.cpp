@@ -9,7 +9,7 @@ struct GameMessageTypeMapping
     int PCType;
 };
 
-static GameMessageTypeMapping s_MessageTypeMappings[] = {
+constexpr GameMessageTypeMapping s_MessageTypeMappings[] = {
     { CMSG_TRY_CONSOLE_COMMAND,                                1 },
     { SMSG_TRY_CONSOLE_COMMAND,                                2 },
     { SMSG_QUIT,                                               3 },
@@ -385,6 +385,24 @@ static GameMessageTypeMapping s_MessageTypeMappings[] = {
 
 static_assert(sizeof(s_MessageTypeMappings) / sizeof(s_MessageTypeMappings[0]) == MSG_NUM_MESSAGES);
 
+constexpr Attrib s_ConsoleOnlyAttributes[] = {
+    ATTRIBUTE_DAMAGE_WEAPON_BONUS_FLAT,
+    ATTRIBUTE_ITEM_LEGENDARY_ITEM_LEVEL_OVERRIDE,
+    ATTRIBUTE_GIZMO_OPERATION_RADIUS_OVERRIDE,
+    ATTRIBUTE_CORPSE_RESURRECTION_ALLOWED_GAMETIME,
+    ATTRIBUTE_SPECIAL_INVENTORY_INDEX,
+    ATTRIBUTE_PVP_PLAYER_REVEALED_ON_MAP,
+    ATTRIBUTE_TARGETED_LEGENDARY_CHANCE,
+    ATTRIBUTE_IN_COMBAT_WITH_PLAYER,
+    ATTRIBUTE_ACTOR_FORWARDS_BUFFS,
+    ATTRIBUTE_ITEM_FLAGGED_AS_JUNK,
+    ATTRIBUTE_PARAGON_BONUS,
+    ATTRIBUTE_PARAGON_BONUS_POINTS_AVAILABLE,
+    ATTRIBUTE_TARGETED_RARE_CHANCE,
+};
+
+constexpr size_t kNumConsoleOnlyAttributes = sizeof(s_ConsoleOnlyAttributes) / sizeof(s_ConsoleOnlyAttributes[0]);
+
 }
 
 // TODO: Individual message handling:
@@ -420,4 +438,32 @@ GameMessageType GameMessageTranslator::ConvertMessageTypePCToConsole(GameMessage
     }
 
     return MSG_INVALID;
+}
+
+Attrib GameMessageTranslator::ConvertAttribConsoleToPC(Attrib eConsoleAttrib)
+{
+    int offset = 0;
+
+    for (int i = 0; i < kNumConsoleOnlyAttributes; ++i)
+    {
+        if (eConsoleAttrib == s_ConsoleOnlyAttributes[i])
+            return ATTRIBUTE_NONE;
+        else if (eConsoleAttrib > s_ConsoleOnlyAttributes[i])
+            offset--;
+    }
+    
+    return static_cast<Attrib>(eConsoleAttrib + offset);
+}
+
+Attrib GameMessageTranslator::ConvertAttribPCToConsole(Attrib ePCAttrib)
+{
+    int nAttrib = ePCAttrib;
+
+    for (int i = 0; i < kNumConsoleOnlyAttributes; ++i)
+    {
+        if (nAttrib >= s_ConsoleOnlyAttributes[i])
+            nAttrib++;
+    }
+
+    return static_cast<Attrib>(nAttrib);
 }
