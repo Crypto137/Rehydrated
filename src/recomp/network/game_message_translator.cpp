@@ -1,7 +1,5 @@
 #include "recomp/network/game_message_translator.h"
 
-#include <rex/logging.h>
-
 #include "game/sigma/type_descriptor/type_descriptor.h"
 
 namespace
@@ -19,15 +17,10 @@ constexpr GameMessageTypeMapping s_MessageTypeMappings[] = {
     { CMSG_TRY_CONSOLE_COMMAND,                                1 },
     { SMSG_TRY_CONSOLE_COMMAND,                                2 },
     { SMSG_QUIT,                                               3 },
-    // disabled because preloading unknown snos may be crashing the client (to be confirmed)
-    //{ SMSG_PRELOAD_ADD_SCENE,                                  6 },
-    //{ SMSG_PRELOAD_ADD_ACD,                                    7 },
-    //{ SMSG_PRELOAD_REMOVE_SCENE,                               8 },
-    //{ SMSG_PRELOAD_REMOVE_ACD,                                 9 },
-    { SMSG_PRELOAD_ADD_SCENE,                                  0 },
-    { SMSG_PRELOAD_ADD_ACD,                                    0 },
-    { SMSG_PRELOAD_REMOVE_SCENE,                               0 },
-    { SMSG_PRELOAD_REMOVE_ACD,                                 0 },
+    { SMSG_PRELOAD_ADD_SCENE,                                  6 },
+    { SMSG_PRELOAD_ADD_ACD,                                    7 },
+    { SMSG_PRELOAD_REMOVE_SCENE,                               8 },
+    { SMSG_PRELOAD_REMOVE_ACD,                                 9 },
     { SMSG_PLAYER_WARPING,                                    10 },
     { CMSG_REQUEST_LAN_GAME_PARAMS,                           13 },
     { SMSG_NET_LOUNGE_ADVERTIZE_GAME,                          0 },
@@ -457,7 +450,7 @@ Attrib GameMessageTranslator::ConvertAttribConsoleToPC(Attrib eConsoleAttrib)
     for (int i = 0; i < kNumConsoleOnlyAttributes; ++i)
     {
         if (eConsoleAttrib == s_ConsoleOnlyAttributes[i])
-            return ATTRIBUTE_NONE;
+            return ATTRIBUTE_AXEBADDATA;
         else if (eConsoleAttrib > s_ConsoleOnlyAttributes[i])
             offset--;
     }
@@ -517,6 +510,8 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
 
     ptHeader->eType = eConsoleType;
 
+    // FIXME: AXEBADDATA attribs, SNO hash
+
     if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
     {
         AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
@@ -548,23 +543,8 @@ bool GameMessageTranslator::IsMessagePCCompatible(void* pMessage)
         AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
         Attrib eConsoleAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
         
-        if (ConvertAttribConsoleToPC(eConsoleAttrib) == ATTRIBUTE_NONE)
+        if (ConvertAttribConsoleToPC(eConsoleAttrib) == ATTRIBUTE_AXEBADDATA)
             return false;
-    }
-    else if (eConsoleType == SMSG_ATTRIBUTES_SET_VALUES)
-    {
-        AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
-        int nCount = attributesSetValuesMessage->nAttributeCount;
-        for (int i = 0; i < nCount; ++i)
-        {
-            Attrib eConsoleAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
-            if (ConvertAttribConsoleToPC(eConsoleAttrib) == ATTRIBUTE_NONE)
-            {
-                // TBD if this is a problem, we may need to modify AttributesSetValuesMessage to remove PC incompatible attribs
-                REXLOG_WARN("Dropping AttributesSetValuesMessage because it has a console-only attribute");
-                return false;
-            }
-        }
     }
 
     return true;
