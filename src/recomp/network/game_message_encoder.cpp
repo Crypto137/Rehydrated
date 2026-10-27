@@ -362,7 +362,7 @@ bool OptionalEncode(void* lpDefinition, const TypeDescriptorField& field, XEncod
     if (usedBefore == tEncoder.GetSize())
         return false;
 
-    i32 hasValue = *static_cast<int*>(lpDefinition);
+    u32 hasValue = *static_cast<u32*>(lpDefinition);
     hasValue = rex::byte_swap(hasValue);  // BE -> LE, probably not really necessary in this case? let's keep it for consistency
 
     tEncoder.PutBool(hasValue);
@@ -370,7 +370,15 @@ bool OptionalEncode(void* lpDefinition, const TypeDescriptorField& field, XEncod
     if (hasValue)
     {
         XTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
-        if (!Encode(ptTypeDesc, static_cast<char*>(lpDefinition) + 4, field, tEncoder))
+
+        // The original doesn't use dynamic fields for this particular case,
+        // but we use fields for dynamic dispatch, so we need a dynamic field here.
+        // Copy the original field to preserve metadata like bit counts.
+        TypeDescriptorField dynamicField = field;
+        dynamicField.ptDataType = field.ptAuxDataType;
+        dynamicField.ptAuxDataType = DT_NULL;
+
+        if (!Encode(ptTypeDesc, static_cast<char*>(lpDefinition) + 4, dynamicField, tEncoder))
         {
             tEncoder.SetUsed(usedBefore);
             return false;
