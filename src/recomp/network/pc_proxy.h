@@ -35,5 +35,4 @@ private:
 
     bool m_isEnabled;
     TcpServer m_tcpServer;
-    TcpSession* m_tcpSession;
 };

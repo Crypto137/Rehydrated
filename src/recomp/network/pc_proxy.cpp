@@ -3,6 +3,7 @@
 #include <rex/logging.h>
 
 #include "core/memory_utils.h"
+#include "core/network/tcp_session.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
 #include "recomp/network/game_message_encoder.h"
@@ -94,6 +95,10 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
     encoder.Put(dwSize, 32);
 
     REXLOG_INFO("OnServerSendOutgoingMessagesForGameConnection(): dwSize={}", dwSize);
+
+    std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
+    if (session)
+        session->Send(encodeBuffer, dwSize);
 }
 
 int PCProxy::OnDataReceived(TcpSession* session, const char* buf, int len)
