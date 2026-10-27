@@ -75,7 +75,7 @@ void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<
     }
 }
 
-}
+}  // namespace
 
 void StaticDataDumper::OnNetworkInitializeForAppFinished()
 {
@@ -235,7 +235,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
 
     constexpr u32 cgarAttribDefs = 0x82F9DA88;
 
-    GuestPtrSet<char> strings{};
+    GuestPtrSet<const char> strings{};
     GuestPtrSet<AttributeCompressor> compressors{};
 
     AttribDef* attribDefs = MemoryUtils::GetHostPtr<AttribDef>(cgarAttribDefs);
@@ -306,7 +306,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
     {
         WriteToStream(file, &strPtr.value);
 
-        char* str = MemoryUtils::GetHostPtr<char>(strPtr);
+        const char* str = MemoryUtils::GetHostPtr<const char>(strPtr);
         if (!str)
             continue;
 

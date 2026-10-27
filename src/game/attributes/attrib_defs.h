@@ -76,9 +76,9 @@ struct AttribDef
     rex::be<AttributeParameterType> eParameterType;
     rex::be<AttributeOperator> eAttributeOperator;
     rex::be<AttributeDataType> eAttributeDataType;
-    rex::TypedGuestPointer<char> pszFormulaItem;
-    rex::TypedGuestPointer<char> pszFormulaCharacter;
-    rex::TypedGuestPointer<char> pszName;
+    rex::TypedGuestPointer<const char> pszFormulaItem;
+    rex::TypedGuestPointer<const char> pszFormulaCharacter;
+    rex::TypedGuestPointer<const char> pszName;
     rex::TypedGuestPointer<AttributeCompressor> ptCompressor;
     char uSyncFlags;
 };

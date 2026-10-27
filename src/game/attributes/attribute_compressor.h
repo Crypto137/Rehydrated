@@ -14,7 +14,7 @@ enum AttributeCompressorType
 
 struct AttributeCompressor
 {
-    rex::TypedGuestPointer<void> __vftable;
+    rex::TypedGuestPointer<u32> __vftable;
     rex::be<AttributeCompressorType> m_eType;
     rex::TypedGuestPointer<AttributeCompressor> m_ptNextCompressor;
 };

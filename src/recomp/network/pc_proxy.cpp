@@ -16,15 +16,15 @@ namespace
 {
 
 // We can't use buffer sizes larger than 0x8000 because this is what the PC code uses for decoding.
-static constexpr u32 kEncodeBufferSize = 0x8000;
+constexpr u32 kEncodeBufferSize = 0x8000;
 
-static char* GetEncodeBuffer()
+char* GetEncodeBuffer()
 {
     thread_local std::unique_ptr<char[]> buffer = std::make_unique<char[]>(kEncodeBufferSize);
     return buffer.get();
 }
 
-static char* GetDecodeBuffer()
+char* GetDecodeBuffer()
 {
     thread_local std::unique_ptr<char[]> buffer = std::make_unique<char[]>(kEncodeBufferSize);
     return buffer.get();

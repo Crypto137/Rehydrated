@@ -6,7 +6,7 @@
 
 struct XTypeDescriptor
 {
-    rex::TypedGuestPointer<void> __vftable;
+    rex::TypedGuestPointer<u32> __vftable;
     rex::TypedGuestPointer<const char> szClassName;
     rex::be<i32> nVersion;
     rex::TypedGuestPointer<TypeDescriptorField> arFields;
