@@ -15,4 +15,13 @@ inline T* GetHostPtr(u32 va)
     return memory->template TranslateVirtual<T*>(va);
 }
 
+inline u32 GetGuestPtr(const void* ptr)
+{
+    auto* memory = REX_KERNEL_MEMORY();
+    if (!memory || !ptr)
+        return 0;
+
+    return memory->HostToGuestVirtual(ptr);
+}
+
 }  // namespace MemoryUtils

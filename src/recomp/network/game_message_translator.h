@@ -22,6 +22,8 @@ void TranslateMessagePCToConsole(void* pMessage);
 
 bool IsMessagePCCompatible(void* pMessage);
 
-bool IsFieldPCCompatible(u32 ptTypeDescriptor, TypeDescriptorField& field);
+bool IsFieldPCCompatible(u32 ptTypeDescriptor, const TypeDescriptorField& field);
+
+int GetFieldBitCountOverride(u32 ptTypeDescriptor, const TypeDescriptorField& field);
 
 }

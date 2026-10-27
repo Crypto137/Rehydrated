@@ -558,7 +558,7 @@ bool GameMessageTranslator::IsMessagePCCompatible(void* pMessage)
     return true;
 }
 
-bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, TypeDescriptorField& field)
+bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, const TypeDescriptorField& field)
 {
     // TODO: clean this up
     switch (ptTypeDescriptor)
@@ -611,4 +611,150 @@ bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, TypeDescri
     }
 
     return true;
+}
+
+int GameMessageTranslator::GetFieldBitCountOverride(u32 ptTypeDescriptor, const TypeDescriptorField& field)
+{
+    switch (ptTypeDescriptor)
+    {
+        case DT_CHAT_MESSAGE:
+            if (field.nDataOffset == 12)    // nPlayerIndex
+                return 4;
+
+            break;
+
+        case DT_CONNECTION_ESTABLISHED_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 3;
+
+            break;
+
+        case DT_DUEL_RESULT_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerVictimIndex
+                return 3;
+
+            if (field.nDataOffset == 12)    // nPlayerKillerIndex
+                return 4;
+
+            break;
+
+        case DT_ENGAGED_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 3;
+
+            break;
+
+        case 0x82F9D2F8:    // GameSyncedData
+            if (field.nDataOffset == 0)     // dwGameSyncedFlags
+                return 2;
+
+            break;
+
+        case DT_JOIN_BNET_GAME_MESSAGE:
+            if (field.nDataOffset == 64)    // eXLocale
+                return 4;
+
+            break;
+
+        case DT_JOIN_LAN_GAME_MESSAGE:
+            if (field.nDataOffset == 192)   // eXLocale
+                return 4;
+
+            break;
+
+        case DT_KILL_COUNT_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 3;
+
+            break;
+
+        case DT_NEW_PLAYER_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 3;
+
+            break;
+
+        case DT_PET_MESSAGE:
+            if (field.nDataOffset == 8)     // nOwner
+                return 3;
+
+            break;
+
+        case DT_PLAYER_ACTOR_SET_INITIAL_MESSAGE:
+            if (field.nDataOffset == 12)    // nPlayerIndex
+                return 3;
+
+            break;
+
+        case DT_PLAYER_ENTER_KNOWN_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 3;
+            
+            break;
+
+        case DT_PLAYER_INDEX_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 4;
+
+            break;
+
+        case DT_PLAYER_LEVEL:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 3;
+
+            break;
+
+        case DT_PLAYER_QUEST_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndex
+                return 4;
+
+            break;
+
+        case DT_TRICKLE_MESSAGE:
+            if (field.nDataOffset == 32)    // nPlayerIndexOwner
+                return 4;
+
+            if (field.nDataOffset == 56)    // dwTrickleFlags
+                return 6;
+
+            break;
+
+        case DT_TRY_CHAT_MESSAGE:
+            if (field.nDataOffset == 12)    // nPlayerTarget
+                return 4;
+
+            break;
+
+        case DT_TRY_CONSOLE_COMMAND:
+            if (field.nDataOffset == 12)    // nPlayerIndex
+                return 4;
+
+            break;
+
+        case DT_UI_ELEMENT_MESSAGE:
+            if (field.nDataOffset == 8)     // eElement
+                return 4;
+
+            break;
+
+        case DT_VICTIM_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerVictimIndex
+                return 3;
+
+            if (field.nDataOffset == 16)    // nKillerPlayerIndex
+                return 4;
+
+            break;
+
+        case DT_VOTE_KICK_MESSAGE:
+            if (field.nDataOffset == 8)     // nPlayerIndexToKick
+                return 4;
+
+            if (field.nDataOffset == 12)    // nPlayerIndexInitiating
+                return 4;
+
+            break;
+    }
+
+    return -1;  // no override
 }

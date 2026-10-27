@@ -226,9 +226,15 @@ bool GenericFloatEncode(void* lpDefinition, const TypeDescriptorField& field, XE
     return true;
 }
 
-bool GenericIntEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
+bool GenericIntEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder, i32 nBitCountOverride = -1)
 {
     i32 nBitCount = field.nBitCount;
+
+    // HACK: override bit count for some int fields for PC compat
+    if (nBitCountOverride != -1)
+        nBitCount = nBitCountOverride;
+    // HACK end
+
     if (tEncoder.GetUsed() + nBitCount > tEncoder.GetSize())
         return false;
 
@@ -466,7 +472,13 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* pMessage, const Ty
         case DT_INT:
         case DT_INT_2:
         case DT_DATAID:
-            return GenericIntEncode(pMessage, field, tEncoder);
+        {
+            // Bit count overrides for some fields (mostly player index)
+            u32 ptTypeDescGuest = MemoryUtils::GetGuestPtr(ptTypeDesc);
+            i32 nBitCountOverride = GameMessageTranslator::GetFieldBitCountOverride(ptTypeDescGuest, field);
+
+            return GenericIntEncode(pMessage, field, tEncoder, nBitCountOverride);
+        }
 
         case DT_VELOCITY:
         case DT_ACCEL:
