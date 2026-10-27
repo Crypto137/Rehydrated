@@ -9,6 +9,7 @@
 #include "game/attributes/attrib_defs.h"
 #include "game/attributes/attribute_compressor.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
+#include "recomp/network/game_message_translator.h"
 #include "recomp/network/xfloat16.h"
 
 namespace
@@ -545,13 +546,20 @@ bool GameMessageEncoder::EncodeMessage(void* pMessage, XEncoder& tEncoder)
 
     size_t usedBefore = tEncoder.GetUsed();
 
+    XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<XTypeDescriptor>(pTypeDescriptor);
+
     TypeDescriptorField dynamicField = {};  // TODO?: full constructor for dynamic fields
     dynamicField.ptDataType = pTypeDescriptor;
     dynamicField.ptAuxDataType = DT_NULL;
 
-    XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<XTypeDescriptor>(pTypeDescriptor);
+    // Translate Console -> PC right before encode to keep other code consistent with the console version
+    GameMessageTranslator::TranslateMessageConsoleToPC(pMessage);
+
     if (!Encode(ptTypeDescHost, pMessage, dynamicField, tEncoder))
         goto cleanup;
+
+    // Revert translation so that special message encoding code below works correctly
+    GameMessageTranslator::TranslateMessagePCToConsole(pMessage);
 
     if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
     {

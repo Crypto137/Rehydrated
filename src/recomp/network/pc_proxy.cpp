@@ -73,10 +73,9 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
         PacketBuffer* tPacketBuffer = MemoryUtils::GetHostPtr<PacketBuffer>(listNode->m_tData);
         RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(listNode->m_tData + 8);
         
-        // ConvertMessageTypeConsoleToPC returns MSG_INVALID (0) for messages that are dropped.
         // TODO: Handle persistence messages separately?
         GameMessageType pcType = GameMessageTranslator::ConvertMessageTypeConsoleToPC(pMessage->eType);
-        if (pcType)
+        if (GameMessageTranslator::IsMessagePCCompatible(pMessage))
         {
             // Stop when the encode buffer is filled. This may potentially cause issues on initial load
             // because we drop some messages, so some things may end up being sent twice.

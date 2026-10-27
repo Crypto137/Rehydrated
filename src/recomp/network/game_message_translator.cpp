@@ -1,5 +1,7 @@
 #include "recomp/network/game_message_translator.h"
 
+#include <rex/logging.h>
+
 namespace
 {
 
@@ -466,4 +468,91 @@ Attrib GameMessageTranslator::ConvertAttribPCToConsole(Attrib ePCAttrib)
     }
 
     return static_cast<Attrib>(nAttrib);
+}
+
+void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
+{
+    RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
+    GameMessageType eConsoleType = ptHeader->eType;
+    GameMessageType ePCType = ConvertMessageTypeConsoleToPC(eConsoleType);
+
+    ptHeader->eType = ePCType;
+
+    if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
+    {
+        AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
+        Attrib eConsoleAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
+        attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
+    }
+    else if (eConsoleType == SMSG_ATTRIBUTES_SET_VALUES)
+    {
+        AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
+        int nCount = attributesSetValuesMessage->nAttributeCount;
+        for (int i = 0; i < nCount; ++i)
+        {
+            Attrib eConsoleAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
+            attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
+        }
+    }
+}
+
+void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
+{
+    RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
+    GameMessageType ePCType = ptHeader->eType;
+    GameMessageType eConsoleType = ConvertMessageTypePCToConsole(ePCType);
+
+    ptHeader->eType = eConsoleType;
+
+    if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
+    {
+        AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
+        Attrib ePCAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
+        attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
+    }
+    else if (eConsoleType == SMSG_ATTRIBUTES_SET_VALUES)
+    {
+        AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
+        int nCount = attributesSetValuesMessage->nAttributeCount;
+        for (int i = 0; i < nCount; ++i)
+        {
+            Attrib ePCAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
+            attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
+        }
+    }
+}
+
+bool GameMessageTranslator::IsMessagePCCompatible(void* pMessage)
+{
+    RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
+    GameMessageType eConsoleType = ptHeader->eType;
+
+    if (ConvertMessageTypeConsoleToPC(eConsoleType) == MSG_INVALID)
+        return false;
+
+    if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
+    {
+        AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
+        Attrib eConsoleAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
+        
+        if (ConvertAttribConsoleToPC(eConsoleAttrib) == ATTRIBUTE_NONE)
+            return false;
+    }
+    else if (eConsoleType == SMSG_ATTRIBUTES_SET_VALUES)
+    {
+        AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
+        int nCount = attributesSetValuesMessage->nAttributeCount;
+        for (int i = 0; i < nCount; ++i)
+        {
+            Attrib eConsoleAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
+            if (ConvertAttribConsoleToPC(eConsoleAttrib) == ATTRIBUTE_NONE)
+            {
+                // TBD if this is a problem, we may need to modify AttributesSetValuesMessage to remove PC incompatible attribs
+                REXLOG_WARN("Dropping AttributesSetValuesMessage because it has a console-only attribute");
+                return false;
+            }
+        }
+    }
+
+    return true;
 }

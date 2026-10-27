@@ -14,4 +14,10 @@ Attrib ConvertAttribConsoleToPC(Attrib eConsoleAttrib);
 
 Attrib ConvertAttribPCToConsole(Attrib ePCAttrib);
 
+void TranslateMessageConsoleToPC(void* pMessage);
+
+void TranslateMessagePCToConsole(void* pMessage);
+
+bool IsMessagePCCompatible(void* pMessage);
+
 }
