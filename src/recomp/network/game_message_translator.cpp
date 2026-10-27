@@ -726,7 +726,7 @@ int GameMessageTranslator::GetFieldBitCountOverride(u32 ptTypeDescriptor, const 
             break;
 
         case DT_TRY_CONSOLE_COMMAND:
-            if (field.nDataOffset == 12)    // nPlayerIndex
+            if (field.nDataOffset == 8)     // nPlayerIndex
                 return 4;
 
             break;
