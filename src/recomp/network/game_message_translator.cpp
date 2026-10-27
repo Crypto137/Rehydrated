@@ -7,6 +7,8 @@
 namespace
 {
 
+constexpr u32 dwSNOCoreDataHashPC = 0xF2B9DA6E;   // 1.0.8.16603
+
 struct GameMessageTypeMapping
 {
     GameMessageType ConsoleType;
@@ -17,10 +19,15 @@ constexpr GameMessageTypeMapping s_MessageTypeMappings[] = {
     { CMSG_TRY_CONSOLE_COMMAND,                                1 },
     { SMSG_TRY_CONSOLE_COMMAND,                                2 },
     { SMSG_QUIT,                                               3 },
-    { SMSG_PRELOAD_ADD_SCENE,                                  6 },
-    { SMSG_PRELOAD_ADD_ACD,                                    7 },
-    { SMSG_PRELOAD_REMOVE_SCENE,                               8 },
-    { SMSG_PRELOAD_REMOVE_ACD,                                 9 },
+    // disabled because preloading unknown snos may be crashing the client (to be confirmed)
+    //{ SMSG_PRELOAD_ADD_SCENE,                                  6 },
+    //{ SMSG_PRELOAD_ADD_ACD,                                    7 },
+    //{ SMSG_PRELOAD_REMOVE_SCENE,                               8 },
+    //{ SMSG_PRELOAD_REMOVE_ACD,                                 9 },
+    { SMSG_PRELOAD_ADD_SCENE,                                  0 },
+    { SMSG_PRELOAD_ADD_ACD,                                    0 },
+    { SMSG_PRELOAD_REMOVE_SCENE,                               0 },
+    { SMSG_PRELOAD_REMOVE_ACD,                                 0 },
     { SMSG_PLAYER_WARPING,                                    10 },
     { CMSG_REQUEST_LAN_GAME_PARAMS,                           13 },
     { SMSG_NET_LOUNGE_ADVERTIZE_GAME,                          0 },
@@ -479,7 +486,12 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
 
     ptHeader->eType = ePCType;
 
-    if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
+    if (eConsoleType == SMSG_CONNECTION_ESTABLISHED)
+    {
+        ConnectionEstablishedMessage* connectionEstablishedMessage = static_cast<ConnectionEstablishedMessage*>(pMessage);
+        connectionEstablishedMessage->dwSnoCoreDataHash = dwSNOCoreDataHashPC;
+    }
+    else if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
     {
         AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
         Attrib eConsoleAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
@@ -563,6 +575,10 @@ bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, const Type
     // TODO: clean this up
     switch (ptTypeDescriptor)
     {
+        case 0x82FA92F8:                    // RequiredMessageHeader
+            if (field.nDataOffset == 2)
+                return false;
+
         case DT_PRELOAD_SCENE_DATA_MESSAGE:
             if (field.nDataOffset == 16)    // snoLevelAreas
                 return false;
@@ -605,6 +621,16 @@ bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, const Type
         case 0x82FABCE0:    // PlayLineParams
             // not sure if it's this one, or one of the three flags before it that need to be skipped
             if (field.nDataOffset == 20)    // bPlayerInitiated
+                return false;
+
+            break;
+
+        case 0x82FA8308:    // PlayerQuestHistoryEntry
+            if (field.nDataOffset == 4)     // nStepUID
+                return false;
+
+        case 0x82FA7AFC:    // HeroStateData
+            if (field.nDataOffset == 17048) // uBossKillFlags
                 return false;
 
             break;

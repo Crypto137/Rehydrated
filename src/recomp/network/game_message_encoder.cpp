@@ -568,6 +568,22 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescrip
             }
         }
         // HACK end
+
+        // HACK: Write nNumQuestRewardEntries in HeroStateData
+        if (field.ptDataType == 0x82FA7AFC && field.nDataOffset == 20)
+        {
+            TypeDescriptorField dynamicField = {};
+            dynamicField.ptDataType = DT_INT;
+            dynamicField.ptAuxDataType = DT_NULL;
+            dynamicField.nDataOffset = 2436;
+            dynamicField.nBitCount = 32;
+            if (!Encode(ptSubfieldType, static_cast<u8*>(pMessage) + dynamicField.nDataOffset.get(), dynamicField, tEncoder))
+            {
+                tEncoder.SetUsed(usedBefore);
+                return false;
+            }
+        }
+        // HACK end
     }
 
     return true;
