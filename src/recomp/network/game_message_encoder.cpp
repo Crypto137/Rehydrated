@@ -226,15 +226,9 @@ bool GenericFloatEncode(void* lpDefinition, const TypeDescriptorField& field, XE
     return true;
 }
 
-bool GenericIntEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder, i32 nBitCountOverride = -1)
+bool GenericIntEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     i32 nBitCount = field.nBitCount;
-
-    // HACK: override bit count for some int fields for PC compat
-    if (nBitCountOverride != -1)
-        nBitCount = nBitCountOverride;
-    // HACK end
-
     if (tEncoder.GetUsed() + nBitCount > tEncoder.GetSize())
         return false;
 
@@ -429,7 +423,8 @@ bool FixedArrayEncode(void* lpDefinition, const TypeDescriptorField& field, XEnc
     XTypeDescriptor* ptAuxTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
     size_t offset = 0;
 
-    TypeDescriptorField dynamicField = {};
+    // the original code allocates a dynamic field here, but doesn't use it and pass the original field instead
+    TypeDescriptorField dynamicField = field;
     dynamicField.ptDataType = field.ptAuxDataType;
     dynamicField.ptAuxDataType = DT_NULL;
 
@@ -472,13 +467,7 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* pMessage, const Ty
         case DT_INT:
         case DT_INT_2:
         case DT_DATAID:
-        {
-            // Bit count overrides for some fields (mostly player index)
-            u32 ptTypeDescGuest = MemoryUtils::GetGuestPtr(ptTypeDesc);
-            i32 nBitCountOverride = GameMessageTranslator::GetFieldBitCountOverride(ptTypeDescGuest, field);
-
-            return GenericIntEncode(pMessage, field, tEncoder, nBitCountOverride);
-        }
+            return GenericIntEncode(pMessage, field, tEncoder);
 
         case DT_VELOCITY:
         case DT_ACCEL:
@@ -550,18 +539,30 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescrip
         if (!GameMessageTranslator::IsFieldPCCompatible(field.ptDataType, subfield))
             continue;
 
+        // Bit count overrides for some fields (mostly player index)
+        i32 nBitCountOriginal = subfield.nBitCount;
+        i32 nBitCountOverride = GameMessageTranslator::GetFieldBitCountOverride(field.ptDataType, subfield);
+
+        if (nBitCountOverride != -1)
+            subfield.nBitCount = nBitCountOverride;
+
         XTypeDescriptor* ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
-        if (!Encode(ptSubfieldType, static_cast<u8*>(pMessage) + subfield.nDataOffset.get(), subfield, tEncoder))
+        bool encoded = Encode(ptSubfieldType, static_cast<u8*>(pMessage) + subfield.nDataOffset.get(), subfield, tEncoder);
+
+        if (nBitCountOverride != -1)
+            subfield.nBitCount = nBitCountOriginal;
+
+        if (!encoded)
         {
             tEncoder.SetUsed(usedBefore);
             return false;
         }
 
         // HACK: encode snoMusic twice to fill SceneSpecification.snoCombatMusic
-        if (field.ptDataType == 0x82FA7574 && field.nDataOffset == 52)
+        if (field.ptDataType == 0x82FA7574 && subfield.nDataOffset == 52)
         {
             int snoCombatMusic = -1;    // SNO_NONE
-            if (!Encode(ptSubfieldType, &snoCombatMusic, field, tEncoder))
+            if (!Encode(ptSubfieldType, &snoCombatMusic, subfield, tEncoder))
             {
                 tEncoder.SetUsed(usedBefore);
                 return false;
@@ -570,13 +571,14 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescrip
         // HACK end
 
         // HACK: Write nNumQuestRewardEntries in HeroStateData
-        if (field.ptDataType == 0x82FA7AFC && field.nDataOffset == 20)
+        if (field.ptDataType == 0x82FA7AFC && subfield.nDataOffset == 20)
         {
             TypeDescriptorField dynamicField = {};
             dynamicField.ptDataType = DT_INT;
             dynamicField.ptAuxDataType = DT_NULL;
             dynamicField.nDataOffset = 2436;
             dynamicField.nBitCount = 32;
+            ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(dynamicField.ptDataType);
             if (!Encode(ptSubfieldType, static_cast<u8*>(pMessage) + dynamicField.nDataOffset.get(), dynamicField, tEncoder))
             {
                 tEncoder.SetUsed(usedBefore);
@@ -611,11 +613,13 @@ bool GameMessageEncoder::EncodeMessage(void* pMessage, XEncoder& tEncoder)
     // Translate Console -> PC right before encode to keep other code consistent with the console version
     GameMessageTranslator::TranslateMessageConsoleToPC(pMessage);
 
-    if (!Encode(ptTypeDescHost, pMessage, dynamicField, tEncoder))
-        goto cleanup;
+    bool encoded = Encode(ptTypeDescHost, pMessage, dynamicField, tEncoder);
 
     // Revert translation so that special message encoding code below works correctly
     GameMessageTranslator::TranslateMessagePCToConsole(pMessage);
+
+    if (!encoded)
+        goto cleanup;
 
     if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
     {
