@@ -17,11 +17,13 @@ constexpr GameMessageTypeMapping s_MessageTypeMappings[] = {
     { CMSG_TRY_CONSOLE_COMMAND,                                1 },
     { SMSG_TRY_CONSOLE_COMMAND,                                2 },
     { SMSG_QUIT,                                               3 },
-    { SMSG_PRELOAD_ADD_SCENE,                                  6 },
-    { SMSG_PRELOAD_ADD_ACD,                                    7 },
-    { SMSG_PRELOAD_REMOVE_SCENE,                               8 },
-    { SMSG_PRELOAD_REMOVE_ACD,                                 9 },
-    { SMSG_PLAYER_WARPING,                                    10 },
+    // Preload and Player Warping messages have no handlers on PC,
+    // so sending them results in an AssetMismatch disconnect.
+    { SMSG_PRELOAD_ADD_SCENE,                                  0 }, // 6
+    { SMSG_PRELOAD_ADD_ACD,                                    0 }, // 7
+    { SMSG_PRELOAD_REMOVE_SCENE,                               0 }, // 8
+    { SMSG_PRELOAD_REMOVE_ACD,                                 0 }, // 9
+    { SMSG_PLAYER_WARPING,                                     0 }, // 10
     { CMSG_REQUEST_LAN_GAME_PARAMS,                           13 },
     { SMSG_NET_LOUNGE_ADVERTIZE_GAME,                          0 },
     { CMSG_JOIN_BNET_GAME,                                    17 },
@@ -484,6 +486,12 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
         ConnectionEstablishedMessage* connectionEstablishedMessage = static_cast<ConnectionEstablishedMessage*>(pMessage);
         connectionEstablishedMessage->dwSnoCoreDataHash = dwSNOCoreDataHashPC;
     }
+    else if (eConsoleType == SMSG_REVEAL_TEAM)
+    {
+        RevealTeamMessage* revealTeamMessage = static_cast<RevealTeamMessage*>(pMessage);
+        if (revealTeamMessage->eTeamColoring == TEAM_COLOR_NEUTRAL)
+            revealTeamMessage->eTeamColoring = TEAM_COLOR_NONE;
+    }
     else if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
     {
         AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
@@ -510,7 +518,7 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
 
     ptHeader->eType = eConsoleType;
 
-    // FIXME: AXEBADDATA attribs, SNO hash
+    // FIXME?: AXEBADDATA attribs data loss, eTeamColoring data loss, SNO hash not being reverted
 
     if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
     {
@@ -534,20 +542,6 @@ bool GameMessageTranslator::IsMessagePCCompatible(void* pMessage)
 {
     RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
     GameMessageType eConsoleType = ptHeader->eType;
-
-    // TODO: figure out why these messages cause shit to break
-    switch (eConsoleType)
-    {
-        case SMSG_REVEAL_TEAM:
-        case SMSG_PRELOAD_ADD_ACD:
-        case SMSG_PRELOAD_ADD_SCENE:
-        case SMSG_PRELOAD_REMOVE_ACD:
-        case SMSG_PRELOAD_REMOVE_SCENE:
-            return false;
-
-        default:
-            break;
-    }
 
     if (ConvertMessageTypeConsoleToPC(eConsoleType) == MSG_INVALID)
         return false;

@@ -256,7 +256,6 @@ enum WeaponClass : int
     NUM_WEAPON_CLASSES,
 };
 
-// TODO: clean up entries that didn't exist in 17339
 enum Team : int
 {
     TEAM_INVALID = -1,
