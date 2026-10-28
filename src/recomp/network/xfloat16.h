@@ -6,6 +6,7 @@ struct XFloat16
 {
     XFloat16() = default;
     XFloat16(float value) { *this = value; }
+    XFloat16(uint16_t uData) { m_uData = uData; }
 
     inline static float const GetAbsoluteMaximumValue() { return 65536.0f; }
 

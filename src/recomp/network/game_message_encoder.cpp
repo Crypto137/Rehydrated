@@ -136,8 +136,17 @@ bool AttributeCompressor_Encode(XEncoder& tEncoder, NetAttributeKeyValue& tKeyVa
     }
 }
 
-// forward declare Encode to be able to call it recursively in subfunctions
+XDecoder::Result AttributeCompressor_Decode(XDecoder& tEncoder, NetAttributeKeyValue& tKeyValue)
+{
+    // The client doesn't send any attributes, so we can implement this later if needed
+    return XDecoder::RESULT_CORRUPTED;
+}
+
+// forward declare Encode and Decode to be able to call them recursively in subfunctions
+
 bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescriptorField& field, XEncoder& tEncoder);
+
+XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder);
 
 size_t XTypeDescriptor_SizeOf(u32 ptTypeDescGuest)
 {
@@ -226,6 +235,41 @@ bool GenericFloatEncode(void* lpDefinition, const TypeDescriptorField& field, XE
     return true;
 }
 
+XDecoder::Result GenericFloatDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 uData = 0;
+    XDecoder::Result result = tDecoder.Get(uData, field.nBitCount);
+    if (result)
+        return result;
+
+    f32 value;
+    if (field.dwFlags & (1 << TDF_XFLOAT16))
+    {
+        XFloat16 xfloat16 = static_cast<u16>(uData);
+        value = xfloat16;
+    }
+    else
+    {
+        value = std::bit_cast<f32, u32>(uData);
+    }
+
+    if (field.dwFlags & (1 << TDF_MINMAX_BOUNDED))
+    {
+        f32 flMinValue = field.vMinFieldValue.value;
+        f32 flMaxValue = field.vMaxFieldValue.value;
+        if (value < flMinValue || value > flMaxValue)
+        {
+            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            return XDecoder::RESULT_CORRUPTED;
+        }
+    }
+
+    value = rex::byte_swap(value);  // LE -> BE
+    *static_cast<f32*>(lpDefinition) = value;
+
+    return XDecoder::RESULT_VALID;
+}
+
 bool GenericIntEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     i32 nBitCount = field.nBitCount;
@@ -247,6 +291,35 @@ bool GenericIntEncode(void* lpDefinition, const TypeDescriptorField& field, XEnc
 
     tEncoder.Put(value, nBitCount);
     return true;
+}
+
+XDecoder::Result GenericIntDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 uData = 0;
+    XDecoder::Result result = tDecoder.Get(uData, field.nBitCount);
+    if (result)
+        return result;
+    
+    i32 value = static_cast<i32>(uData);
+
+    if (field.dwFlags & (1 << TDF_MINMAX_BOUNDED))
+    {
+        i32 nMinValue = field.vMinFieldValue.value;
+        i32 nMaxValue = field.vMaxFieldValue.value;
+
+        value += nMinValue;
+
+        if (value < nMinValue || value > nMaxValue)
+        {
+            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            return XDecoder::RESULT_CORRUPTED;
+        }
+    }
+
+    value = rex::byte_swap(value);  // LE -> BE
+    *static_cast<i32*>(lpDefinition) = value;
+
+    return XDecoder::RESULT_VALID;
 }
 
 bool Int64Encode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
@@ -272,6 +345,35 @@ bool Int64Encode(void* lpDefinition, const TypeDescriptorField& field, XEncoder&
     return true;
 }
 
+XDecoder::Result Int64Decode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u64 uData = 0;
+    XDecoder::Result result = tDecoder.GetU64(uData, field.nBitCount);
+    if (result)
+        return result;
+
+    i64 value = static_cast<i64>(uData);
+
+    if (field.dwFlags & (1 << TDF_MINMAX_BOUNDED))
+    {
+        i32 nMinValue = field.vMinFieldValue.value;
+        i32 nMaxValue = field.vMaxFieldValue.value;
+
+        value += nMinValue;
+
+        if (value < nMinValue || value > nMaxValue)
+        {
+            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            return XDecoder::RESULT_CORRUPTED;
+        }
+    }
+
+    value = rex::byte_swap(value);  // LE -> BE
+    *static_cast<i64*>(lpDefinition) = value;
+
+    return XDecoder::RESULT_VALID;
+}
+
 bool WordEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     i32 nBitCount = field.nBitCount;
@@ -293,6 +395,35 @@ bool WordEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& 
 
     tEncoder.Put(value, nBitCount);
     return true;
+}
+
+XDecoder::Result WordDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 uData = 0;
+    XDecoder::Result result = tDecoder.Get(uData, field.nBitCount);
+    if (result)
+        return result;
+
+    u16 value = static_cast<u16>(uData);
+
+    if (field.dwFlags & (1 << TDF_MINMAX_BOUNDED))
+    {
+        i32 nMinValue = field.vMinFieldValue.value;
+        i32 nMaxValue = field.vMaxFieldValue.value;
+
+        value += nMinValue;
+
+        if (value < nMinValue || value > nMaxValue)
+        {
+            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            return XDecoder::RESULT_CORRUPTED;
+        }
+    }
+
+    value = rex::byte_swap(value);  // LE -> BE
+    *static_cast<u16*>(lpDefinition) = value;
+
+    return XDecoder::RESULT_VALID;
 }
 
 bool ByteEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
@@ -318,6 +449,35 @@ bool ByteEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& 
     return true;
 }
 
+XDecoder::Result ByteDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 uData = 0;
+    XDecoder::Result result = tDecoder.Get(uData, field.nBitCount);
+    if (result)
+        return result;
+
+    u8 value = static_cast<u8>(uData);
+
+    if (field.dwFlags & (1 << TDF_MINMAX_BOUNDED))
+    {
+        i32 nMinValue = field.vMinFieldValue.value;
+        i32 nMaxValue = field.vMaxFieldValue.value;
+
+        value += nMinValue;
+
+        if (value < nMinValue || value > nMaxValue)
+        {
+            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            return XDecoder::RESULT_CORRUPTED;
+        }
+    }
+
+    // no endianness swap here
+    *static_cast<u8*>(lpDefinition) = value;
+
+    return XDecoder::RESULT_VALID;
+}
+
 bool PercentEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     i32 nBitCount = field.nBitCount;
@@ -328,6 +488,18 @@ bool PercentEncode(void* lpDefinition, const TypeDescriptorField& field, XEncode
 
     tEncoder.Put(value, nBitCount);
     return true;
+}
+
+XDecoder::Result PercentDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 uData = 0;
+    XDecoder::Result result = tDecoder.Get(uData, field.nBitCount);
+    if (result)
+        return result;
+
+    *static_cast<u8*>(lpDefinition) = uData;
+
+    return XDecoder::RESULT_VALID;
 }
 
 bool FlagEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
@@ -343,6 +515,27 @@ bool FlagEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& 
     return true;
 }
 
+XDecoder::Result FlagDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    i32 value = 0;
+    XDecoder::Result result = tDecoder.GetBool(value);
+    if (result)
+        return result;
+
+    u32 bits = *static_cast<u32*>(lpDefinition);
+    bits = rex::byte_swap(value);  // BE -> LE
+
+    if (value)
+        bits |= (1 << field.nBit);
+    else
+        bits &= ~(1 << field.nBit);
+
+    bits = rex::byte_swap(value);  // LE -> BE
+    *static_cast<u32*>(lpDefinition) = bits;
+
+    return XDecoder::RESULT_VALID;
+}
+
 bool SnoEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     i32 nBitCount = field.nBitCount;
@@ -354,6 +547,19 @@ bool SnoEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& t
 
     tEncoder.Put(value, nBitCount);
     return true;
+}
+
+XDecoder::Result SnoDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 uData = 0;
+    XDecoder::Result result = tDecoder.Get(uData, field.nBitCount);
+    if (result)
+        return result;
+
+    uData = rex::byte_swap(uData);  // LE -> BE
+    *static_cast<u32*>(lpDefinition) = uData;
+
+    return XDecoder::RESULT_VALID;
 }
 
 bool GbidEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
@@ -368,6 +574,19 @@ bool GbidEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& 
     // !!original code bug!!: checks nBitCount, but always uses 32 bits for encoding
     tEncoder.Put(value, 32);
     return true;
+}
+
+XDecoder::Result GbidDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 uData = 0;
+    XDecoder::Result result = tDecoder.Get(uData, field.nBitCount);
+    if (result)
+        return result;
+
+    uData = rex::byte_swap(uData);  // LE -> BE
+    *static_cast<u32*>(lpDefinition) = uData;
+
+    return XDecoder::RESULT_VALID;
 }
 
 bool OptionalEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
@@ -400,6 +619,35 @@ bool OptionalEncode(void* lpDefinition, const TypeDescriptorField& field, XEncod
     }
 
     return true;
+}
+
+XDecoder::Result OptionalDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    i32 hasValue = 0;
+    XDecoder::Result result = tDecoder.GetBool(hasValue);
+    if (result)
+        return result;
+
+    hasValue = rex::byte_swap(hasValue);  // BE -> LE, probably not really necessary in this case? let's keep it for consistency
+    *static_cast<i32*>(lpDefinition) = hasValue;
+
+    if (hasValue)
+    {
+        XTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
+
+        // The original doesn't use dynamic fields for this particular case,
+        // but we use fields for dynamic dispatch, so we need a dynamic field here.
+        // Copy the original field to preserve metadata like bit counts.
+        TypeDescriptorField dynamicField = field;
+        dynamicField.ptDataType = field.ptAuxDataType;
+        dynamicField.ptAuxDataType = DT_NULL;
+
+        result = Decode(ptTypeDesc, static_cast<char*>(lpDefinition) + 4, dynamicField, tDecoder);
+        if (result)
+            return result;
+    }
+
+    return XDecoder::RESULT_VALID;
 }
 
 bool FixedArrayEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
@@ -442,6 +690,51 @@ bool FixedArrayEncode(void* lpDefinition, const TypeDescriptorField& field, XEnc
     return true;
 }
 
+XDecoder::Result FixedArrayDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    i32 nCount = field.nCount;
+    size_t elementSize = XTypeDescriptor_SizeOf(field.ptAuxDataType);
+
+    XDecoder::Result result = XDecoder::RESULT_VALID;
+
+    if (field.dwFlags & (1 << TDF_VARIABLE_COUNT))
+    {
+        i32 nArraySizeBitCount = field.nArraySizeBitCount;
+
+        u32 dwCount = 0;
+        XDecoder::Result result = tDecoder.Get(dwCount, field.nArraySizeBitCount);
+        if (result)
+            return result;
+
+        if (dwCount > nCount)
+            return XDecoder::RESULT_CORRUPTED;
+
+        nCount = static_cast<i32>(dwCount);
+
+        void* ptUsedElements = static_cast<u8*>(lpDefinition) + field.nUsedElementsOffset;
+        *static_cast<u32*>(ptUsedElements) = rex::byte_swap(dwCount);    // LE -> BE
+    }
+
+    XTypeDescriptor* ptAuxTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
+    size_t offset = 0;
+
+    // the original code allocates a dynamic field here, but doesn't use it and pass the original field instead
+    TypeDescriptorField dynamicField = field;
+    dynamicField.ptDataType = field.ptAuxDataType;
+    dynamicField.ptAuxDataType = DT_NULL;
+
+    for (i32 i = 0; i < nCount; ++i)
+    {
+        result = Decode(ptAuxTypeDesc, static_cast<u8*>(lpDefinition) + offset, dynamicField, tDecoder);
+        if (result)
+            return result;
+
+        offset += elementSize;
+    }
+
+    return XDecoder::RESULT_VALID;
+}
+
 bool CharArrayEncode(void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     size_t length = std::strlen(static_cast<char*>(lpDefinition));
@@ -460,14 +753,27 @@ bool CharArrayEncode(void* lpDefinition, const TypeDescriptorField& field, XEnco
     return true;
 }
 
-bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescriptorField& field, XEncoder& tEncoder)
+XDecoder::Result CharArrayDecode(void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 dwLength = 0;
+    XDecoder::Result result = tDecoder.Get(dwLength, field.nBitCount);
+    if (result)
+        return result;
+
+    if (dwLength > field.nCount)
+        return XDecoder::RESULT_CORRUPTED;
+
+    return tDecoder.GetAsciiStringBytesAligned8(static_cast<u8*>(lpDefinition), dwLength);
+}
+
+bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     switch (field.ptDataType)
     {
         case DT_INT:
         case DT_INT_2:
         case DT_DATAID:
-            return GenericIntEncode(pMessage, field, tEncoder);
+            return GenericIntEncode(lpDefinition, field, tEncoder);
 
         case DT_VELOCITY:
         case DT_ACCEL:
@@ -476,39 +782,39 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* pMessage, const Ty
         case DT_FLOAT:
         case DT_ANGLE:
         case DT_HIGHPRECISIONPERCENT:
-            return GenericFloatEncode(pMessage, field, tEncoder);
+            return GenericFloatEncode(lpDefinition, field, tEncoder);
 
         case DT_INT64:
-            return Int64Encode(pMessage, field, tEncoder);
+            return Int64Encode(lpDefinition, field, tEncoder);
 
         case DT_WORD:
-            return WordEncode(pMessage, field, tEncoder);
+            return WordEncode(lpDefinition, field, tEncoder);
 
         case DT_BYTE:
-            return ByteEncode(pMessage, field, tEncoder);
+            return ByteEncode(lpDefinition, field, tEncoder);
 
         case DT_PERCENT:
-            return PercentEncode(pMessage, field, tEncoder);
+            return PercentEncode(lpDefinition, field, tEncoder);
 
         case DT_FLAG:
-            return FlagEncode(pMessage, field, tEncoder);
+            return FlagEncode(lpDefinition, field, tEncoder);
 
         case DT_SNO:
         case DT_SNO_GROUP:
         case DT_SNONAME_HANDLE:
-            return SnoEncode(pMessage, field, tEncoder);
+            return SnoEncode(lpDefinition, field, tEncoder);
 
         case DT_GBID:
-            return GbidEncode(pMessage, field, tEncoder);
+            return GbidEncode(lpDefinition, field, tEncoder);
 
         case DT_OPTIONAL:
-            return OptionalEncode(pMessage, field, tEncoder);
+            return OptionalEncode(lpDefinition, field, tEncoder);
 
         case DT_FIXEDARRAY:
-            return FixedArrayEncode(pMessage, field, tEncoder);
+            return FixedArrayEncode(lpDefinition, field, tEncoder);
 
         case DT_CHARARRAY:
-            return CharArrayEncode(pMessage, field, tEncoder);
+            return CharArrayEncode(lpDefinition, field, tEncoder);
 
         default:
             const char* szClassName = MemoryUtils::GetHostPtr<const char>(ptTypeDesc->szClassName);
@@ -519,12 +825,69 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* pMessage, const Ty
     return true;
 }
 
-bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescriptorField& field, XEncoder& tEncoder)
+XDecoder::Result DecodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    switch (field.ptDataType)
+    {
+        case DT_INT:
+        case DT_INT_2:
+        case DT_DATAID:
+            return GenericIntDecode(lpDefinition, field, tDecoder);
+
+        case DT_VELOCITY:
+        case DT_ACCEL:
+        case DT_MASS:
+        case DT_IMPULSE:
+        case DT_FLOAT:
+        case DT_ANGLE:
+        case DT_HIGHPRECISIONPERCENT:
+            return GenericFloatDecode(lpDefinition, field, tDecoder);
+
+        case DT_INT64:
+            return Int64Decode(lpDefinition, field, tDecoder);
+
+        case DT_WORD:
+            return WordDecode(lpDefinition, field, tDecoder);
+
+        case DT_BYTE:
+            return ByteDecode(lpDefinition, field, tDecoder);
+
+        case DT_PERCENT:
+            return PercentDecode(lpDefinition, field, tDecoder);
+
+        case DT_FLAG:
+            return FlagDecode(lpDefinition, field, tDecoder);
+
+        case DT_SNO:
+        case DT_SNO_GROUP:
+        case DT_SNONAME_HANDLE:
+            return SnoDecode(lpDefinition, field, tDecoder);
+
+        case DT_GBID:
+            return GbidDecode(lpDefinition, field, tDecoder);
+
+        case DT_OPTIONAL:
+            return OptionalDecode(lpDefinition, field, tDecoder);
+
+        case DT_FIXEDARRAY:
+            return FixedArrayDecode(lpDefinition, field, tDecoder);
+
+        case DT_CHARARRAY:
+            return CharArrayDecode(lpDefinition, field, tDecoder);
+
+        default:
+            const char* szClassName = MemoryUtils::GetHostPtr<const char>(ptTypeDesc->szClassName);
+            REXLOG_WARN("DecodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
+            return XDecoder::RESULT_CORRUPTED;
+    }
+}
+
+bool Encode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDescriptorField& field, XEncoder& tEncoder)
 {
     u32 nFieldCount = ptTypeDesc->nFieldCount;
 
     if (!nFieldCount)
-        return EncodePrimitive(ptTypeDesc, pMessage, field, tEncoder);
+        return EncodePrimitive(ptTypeDesc, lpDefinition, field, tEncoder);
 
     size_t usedBefore = tEncoder.GetUsed();
 
@@ -547,7 +910,7 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescrip
             subfield.nBitCount = nBitCountOverride;
 
         XTypeDescriptor* ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
-        bool encoded = Encode(ptSubfieldType, static_cast<u8*>(pMessage) + subfield.nDataOffset.get(), subfield, tEncoder);
+        bool encoded = Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tEncoder);
 
         if (nBitCountOverride != -1)
             subfield.nBitCount = nBitCountOriginal;
@@ -579,7 +942,7 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescrip
             dynamicField.nDataOffset = 2436;
             dynamicField.nBitCount = 32;
             ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(dynamicField.ptDataType);
-            if (!Encode(ptSubfieldType, static_cast<u8*>(pMessage) + dynamicField.nDataOffset.get(), dynamicField, tEncoder))
+            if (!Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + dynamicField.nDataOffset.get(), dynamicField, tEncoder))
             {
                 tEncoder.SetUsed(usedBefore);
                 return false;
@@ -589,6 +952,30 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* pMessage, const TypeDescrip
     }
 
     return true;
+}
+
+XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDescriptorField& field, XDecoder& tDecoder)
+{
+    u32 nFieldCount = ptTypeDesc->nFieldCount;
+
+    if (!nFieldCount)
+        return DecodePrimitive(ptTypeDesc, lpDefinition, field, tDecoder);
+
+    TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(ptTypeDesc->arFields);
+
+    for (int i = 0; i < nFieldCount; ++i)
+    {
+        TypeDescriptorField& subfield = arFields[i];
+        if (subfield.ptDataType == DT_NULL)
+            break;
+
+        XTypeDescriptor* ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
+        XDecoder::Result result = Decode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tDecoder);
+        if (result)
+            return result;
+    }
+
+    return XDecoder::RESULT_VALID;
 }
 
 }  // namespace
@@ -657,6 +1044,50 @@ cleanup:
 
 XDecoder::Result GameMessageEncoder::DecodeMessage(GameMessageType eMessageType, void* pDecodeToBuffer, u32 dwBufferSize, XDecoder& tDecoder)
 {
-    // TODO
+    u32 pTypeDescriptor = 0;
+    u32 dwSize = 0;
+    const char* pszMessageLabel = nullptr;
+    if (!GetGameMessageTypeAndSize(eMessageType, pTypeDescriptor, dwSize, pszMessageLabel))
+        return XDecoder::RESULT_CORRUPTED;
+
+    const XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<const XTypeDescriptor>(pTypeDescriptor);
+
+    TypeDescriptorField dynamicField = {};
+    dynamicField.ptDataType = pTypeDescriptor;
+    dynamicField.ptAuxDataType = DT_NULL;
+
+    XDecoder::Result result = Decode(ptTypeDescHost, pDecodeToBuffer, dynamicField, tDecoder);
+    if (result)
+        return result;
+
+    if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
+    {
+        // Used by the client in CMSG_SAVE_BANNER
+        u32 blobSize = static_cast<GenericBlobMessage*>(pDecodeToBuffer)->uBlobSize;
+
+        if (blobSize > 0x8000 || (tDecoder.GetSizeBytes() - tDecoder.GetUsedBytes()) < blobSize)
+            return XDecoder::RESULT_CORRUPTED;
+
+        tDecoder.GetBytesAligned8(static_cast<uint8_t*>(pDecodeToBuffer) + 12, blobSize);
+    }
+    else if (eMessageType == SMSG_ATTRIBUTE_SET_VALUE)
+    {
+        AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pDecodeToBuffer);
+        result = AttributeCompressor_Decode(tDecoder, attributeSetValueMessage->tKeyVal);
+        if (result)
+            return result;
+    }
+    else if (eMessageType == SMSG_ATTRIBUTES_SET_VALUES)
+    {
+        AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pDecodeToBuffer);
+        int attributeCount = attributesSetValuesMessage->nAttributeCount;
+        for (int i = 0; i < attributeCount; ++i)
+        {
+            result = AttributeCompressor_Decode(tDecoder, attributesSetValuesMessage->atKeyVals[i]);
+            if (result)
+                return result;
+        }
+    }
+
     return XDecoder::RESULT_VALID;
 }
