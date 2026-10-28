@@ -535,6 +535,20 @@ bool GameMessageTranslator::IsMessagePCCompatible(void* pMessage)
     RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
     GameMessageType eConsoleType = ptHeader->eType;
 
+    // TODO: figure out why these messages cause shit to break
+    switch (eConsoleType)
+    {
+        case SMSG_REVEAL_TEAM:
+        case SMSG_PRELOAD_ADD_ACD:
+        case SMSG_PRELOAD_ADD_SCENE:
+        case SMSG_PRELOAD_REMOVE_ACD:
+        case SMSG_PRELOAD_REMOVE_SCENE:
+            return false;
+
+        default:
+            break;
+    }
+
     if (ConvertMessageTypeConsoleToPC(eConsoleType) == MSG_INVALID)
         return false;
 
