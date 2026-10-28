@@ -1,8 +1,8 @@
 #include "recomp/network/xdecoder.h"
 
-void XDecoder::SetData(void* d, size_t sizeBytes)
+void XDecoder::SetData(const void* d, size_t sizeBytes)
 {
-    m_data = reinterpret_cast<uint8_t*>(d);
+    m_data = static_cast<const uint8_t*>(d);
     m_size = 8 * sizeBytes;
     m_used = 0;
 }

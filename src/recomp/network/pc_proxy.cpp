@@ -101,7 +101,7 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
         session->Send(encodeBuffer, dwSize);
 }
 
-int PCProxy::OnDataReceived(TcpSession* session, const char* buf, int len)
+size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
 {
     // TODO: handle PC client input
     REXLOG_INFO("OnDataReceived(): len={}", len);

@@ -14,7 +14,7 @@ public:
 
     virtual ~XDecoder() = default;
 
-    void SetData(void* d, size_t sizeBytes);
+    void SetData(const void* d, size_t sizeBytes);
     void SetUsed(size_t u);
     Result GetAligned8(uint32_t& x, size_t bits);
     Result Get(uint32_t& x, size_t bits);
@@ -27,7 +27,7 @@ protected:
     inline virtual Result DataOverflow() { return RESULT_TRUNCATED; };
 
 private:
-    uint8_t* m_data;
+    const uint8_t* m_data;
     size_t m_size;
     size_t m_used;
 };
