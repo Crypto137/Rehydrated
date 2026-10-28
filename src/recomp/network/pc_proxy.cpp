@@ -1,6 +1,7 @@
 #include "recomp/network/pc_proxy.h"
 
 #include <rex/logging.h>
+#include <rex/ppc.h>
 
 #include "core/memory_utils.h"
 #include "core/network/tcp_session.h"
@@ -12,6 +13,9 @@
 
 REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC server mode")
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+
+REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
+REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
 
 namespace
 {
@@ -35,7 +39,9 @@ char* GetDecodeBuffer()
 
 PCProxy::PCProxy() :
     m_isEnabled(REXCVAR_GET(server_pc_proxy_enabled)),
-    m_tcpServer(this)
+    m_isReadingUpdate(false),
+    m_tcpServer(this),
+    m_lastGuestSocketId(0)
 {
 }
 
@@ -101,8 +107,46 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
         session->Send(encodeBuffer, dwSize);
 }
 
+void PCProxy::OnPostXServerReadUpdate()
+{
+    if (!m_isEnabled)
+        return;
+
+    if (!m_lastGuestSocketId)
+        return;
+
+    m_isReadingUpdate = true;
+
+    // TODO: inject received PC messages by calling ServerEventReceive (guest)
+    // copy message data to buffer returned by NetworkGetDecodeBuffer() before passing
+    //u32 ptDecodeBufferGuest = Guest_NetworkGetDecodeBuffer();
+    //char* ptDecodeBuffer = MemoryUtils::GetHostPtr<char>(ptDecodeBufferGuest);
+    //std::memcpy(nullptr, nullptr, 0);
+    //Guest_ServerEventReceive(m_lastGuestSocketId, ptDecodeBufferGuest);
+
+    m_isReadingUpdate = false;
+}
+
+bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
+{
+    if (!m_isEnabled)
+        return false;
+
+    m_lastGuestSocketId = idServerSocket;
+
+    // Suppress X360 client messages
+    return !m_isReadingUpdate;
+}
+
 size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
 {
+    // This is roughly equivalent to NetworkParseGameDataBlock().
+
+    // TODO: decode and queue messages to be passed to games in OnPostXServerReadUpdate()
+
+    if (len < 4)
+        return 0;
+
     // TODO: handle PC client input
     REXLOG_INFO("OnDataReceived(): len={}", len);
     return len;

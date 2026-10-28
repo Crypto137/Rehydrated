@@ -67,6 +67,11 @@ void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
     // not using this for anything right now
 }
 
+void HydraHook_PostXServerReadUpdate()
+{
+    PCProxy::Instance().OnPostXServerReadUpdate();
+}
+
 void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3)
 {
     GameConnection* ptGameConnection = MemoryUtils::GetHostPtr<GameConnection>(r3.u32);
@@ -74,6 +79,15 @@ void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3)
     GameMessageDumper::OnServerSendOutgoingMessages(ptGameConnection);
 
     PCProxy::Instance().OnServerSendOutgoingMessagesForGameConnection(ptGameConnection);
+}
+
+bool HydraHook_ServerEventReceive(PPCRegister& r3, PPCRegister& r4)
+{
+    u32 idServerSocket = r3.u32;
+    u32 pMessage = r4.u32;
+
+    // return true to prevent client data from being routed to game instances
+    return PCProxy::Instance().OnServerEventReceive(idServerSocket, pMessage);
 }
 
 bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5)

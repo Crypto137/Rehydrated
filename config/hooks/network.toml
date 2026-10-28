@@ -21,6 +21,13 @@ name = "HydraHook_ClientMessageReceiveGameMessage"
 registers = ["r3"]
 after_instruction = false
 
+# Hooks AppServerIdle after it calls XServerReadUpdate. This is where we can inject messages from the PC client.
+[[midasm_hook]]
+address = 0x828D49C8
+name = "HydraHook_PostXServerReadUpdate"
+registers = []
+after_instruction = false
+
 # ServerSendOutgoingMessagesForGameConnection encodes messages stored in
 # tOutgoingPacketBufferList of a GameConnection and calls XServerSendBuffer
 # to flush them to the bound socket. GameConnection ptr is the r3 argument.
@@ -29,6 +36,14 @@ address = 0x829551E8
 name = "HydraHook_ServerSendOutgoingMessagesForGameConnection"
 registers = ["r3"]
 after_instruction = false
+
+# ServerEventReceive queues a received client message to be processed by a game instance.
+[[midasm_hook]]
+address = 0x82955468
+name = "HydraHook_ServerEventReceive"
+registers = ["r3", "r4"]
+after_instruction = false
+return_on_true = true
 
 # XServerSendBuffer flushed encoded outgoing server messages to a socket.
 # r3 = u32 idServerSocket, r4 = void* pMessage, r5 = u32 dwSize
