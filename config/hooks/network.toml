@@ -54,6 +54,13 @@ registers = ["r3", "r4", "r5"]
 after_instruction = false
 return_on_true = true
 
+# temp hook to get server socket id (remove this later)
+[[midasm_hook]]
+address = 0x829B7FA0
+name = "HydraHook_sServerSocketMsgHandler"
+registers = ["r3", "r4", "r5"]
+after_instruction = false
+
 # ServerMessageReceiveOutsideGame handles client messages before they are passed
 # to a game instance. In practice it handles only CMSG_JOIN_CONSOLE_GAME, but all client
 # messages go through it first, and the rest are handled in ServerMessageReceive.

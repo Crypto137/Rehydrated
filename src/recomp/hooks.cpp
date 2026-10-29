@@ -102,6 +102,14 @@ bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& 
     return PCProxy::Instance().IsEnabled();
 }
 
+void HydraHook_sServerSocketMsgHandler(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5)
+{
+    u32 idServerSocket = r3.u32;
+
+    // TODO: get socket id from server app globals instead
+    PCProxy::Instance().SetGuestSocketId(idServerSocket);
+}
+
 void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)
 {
     int idServerSocket = r3.s32;

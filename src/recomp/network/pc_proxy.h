@@ -39,6 +39,8 @@ public:
 
     inline bool IsEnabled() const { return m_isEnabled; }
 
+    inline void SetGuestSocketId(u32 idServerSocket) { m_guestSocketId = idServerSocket; }
+
 private:
     PCProxy();
     ~PCProxy() = default;
@@ -48,7 +50,7 @@ private:
     bool m_isEnabled;
     bool m_isReadingUpdate;
     TcpServer m_tcpServer;
-    u32 m_lastGuestSocketId;
+    u32 m_guestSocketId;
     std::list<std::unique_ptr<char[]>> m_pcMessageQueue;
     std::mutex m_pcMessageMutex;
 };

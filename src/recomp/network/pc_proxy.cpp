@@ -46,7 +46,7 @@ PCProxy::PCProxy() :
     m_isEnabled(REXCVAR_GET(server_pc_proxy_enabled)),
     m_isReadingUpdate(false),
     m_tcpServer(this),
-    m_lastGuestSocketId(0)
+    m_guestSocketId(0)
 {
 }
 
@@ -117,7 +117,7 @@ void PCProxy::OnPostXServerReadUpdate()
     if (!m_isEnabled)
         return;
 
-    if (!m_lastGuestSocketId)
+    if (!m_guestSocketId)
         return;
 
     m_isReadingUpdate = true;
@@ -133,7 +133,7 @@ void PCProxy::OnPostXServerReadUpdate()
         std::memcpy(ptDecodeBuffer, it->get(), kEncodeBufferSize);
         m_pcMessageQueue.pop_front();
         
-        Guest_ServerEventReceive(m_lastGuestSocketId, ptDecodeBufferGuest);
+        Guest_ServerEventReceive(m_guestSocketId, ptDecodeBufferGuest);
     }
 
     m_isReadingUpdate = false;
@@ -145,7 +145,7 @@ bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
         return false;
 
     REXLOG_INFO("OnServerEventReceive(): {}", idServerSocket);
-    m_lastGuestSocketId = idServerSocket;
+    m_guestSocketId = idServerSocket;
 
     // Suppress X360 client messages
     return !m_isReadingUpdate;
