@@ -4,7 +4,7 @@ Rehydrated is a ReXGlue based recompilation project for the vanilla version of D
 
 This project is intended for local use only. You also need a legally acquired copy of the game to run it.
 
-Currently in early experimental state: the game runs, but nothing exciting beyond that. Working on the PC proxy mode to allow PC clients to connect to the Xbox 360 server.
+Currently in early experimental state: the game runs and is playable as a basic recomp. Right now the main development focus is a proxy mode to allow PC clients to connect to the Xbox 360 server. The proxy mode works with game version 1.0.8.16603 and requires [Rehydrated.Bnet](https://github.com/Crypto137/Rehydrated.Bnet) to route the PC client to a local server.
 
 ## Building
 
@@ -29,3 +29,7 @@ Rehydrated also focuses on the vanilla pre-expansion version of the game, which 
 **How is AI used in this project?**
 
 This project is not "vibe coded". AI agents are not used in the development, and the vast majority of code is handwritten or generated with deterministic tools (e.g. protobuf). AI chatbots are used in some cases to replace writing one-off scripts (e.g. generating attribute enum from dumped attribute definitions). All AI output is checked and tested by a human developer before being commited.
+
+**Why is this project named Rehydrated?**
+
+The codename for Diablo 3 during its development was Hydra.
