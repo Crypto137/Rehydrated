@@ -969,6 +969,9 @@ XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, c
         if (subfield.ptDataType == DT_NULL)
             break;
 
+        if (!GameMessageTranslator::IsFieldPCCompatible(field.ptDataType, subfield))
+            continue;
+
         XTypeDescriptor* ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
         XDecoder::Result result = Decode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tDecoder);
         if (result)

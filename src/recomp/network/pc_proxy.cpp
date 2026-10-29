@@ -143,6 +143,7 @@ size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
     // This is roughly equivalent to NetworkParseGameDataBlock().
 
     // TODO: decode and queue messages to be passed to games in OnPostXServerReadUpdate()
+    // TODO: handle CMSG_ACCEPTED_DEATH and CMSG_REQUEST_EVENT_SKIP as SimpleMessage
 
     if (len < 4)
         return 0;
