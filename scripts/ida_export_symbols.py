@@ -5,7 +5,8 @@ import ida_funcs
 import ida_kernwin
 
 SKIP_PREFIXES = ["__", "j_"]
-SKIP_NAMES = ["Main", "qsort", "bsearch", "memcpy", "memmove", "memset", "memchr", "strchr", "strstr", "strncmp", "strncpy"]
+SKIP_NAMES = ["Main", "qsort", "bsearch", "memcpy", "memmove", "memset", "memchr", "strchr", "strstr", "strncmp", "strncpy",
+    "atoi", "fprintf", "strtol"]
 SYSTEM_SECTION_START = 0x82F8BD4C # XamInputGetCapabilities
 
 def format_str(s):
