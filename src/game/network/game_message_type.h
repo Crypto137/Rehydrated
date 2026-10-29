@@ -577,6 +577,15 @@ enum GameMessageTypeDescriptor : unsigned int
     DT_ADVERTIZE_PACKET = 0x82FE2694,
 };
 
+enum GameMessageFieldTypeDescriptor : unsigned int
+{
+    DT_GAME_SYNCED_DATA = 0x82F9D2F8,
+    DT_HERO_STATE_DATA = 0x82FA7AFC,
+    DT_QUEST_HISTORY_ENTRY = 0x82FA8308,
+    DT_REQUIRED_MESSAGE_HEADER = 0x82FA92F8,
+    DT_PLAY_LINE_PARAMS = 0x82FABCE0,
+};
+
 bool GetGameMessageTypeAndSize(GameMessageType eMessageType, unsigned int& pTypeDescriptor, unsigned int& dwSize, const char*& pszMessageLabel);
 
 const char* GameMessageTypeToName(GameMessageType eType);

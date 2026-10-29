@@ -8,7 +8,7 @@ struct RequiredMessageHeader;
 namespace GameMessageDumper
 {
 
-std::string PrintGameMessage(const RequiredMessageHeader* pMessage);
+std::string PrintGameMessage(const void* pMessage);
 
 void OnServerSendOutgoingMessages(const GameConnection* ptGameConnection);
 

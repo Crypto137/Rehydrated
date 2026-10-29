@@ -1053,6 +1053,13 @@ XDecoder::Result GameMessageEncoder::DecodeMessage(GameMessageType eMessageType,
     if (!GetGameMessageTypeAndSize(eMessageType, pTypeDescriptor, dwSize, pszMessageLabel))
         return XDecoder::RESULT_CORRUPTED;
 
+    u32 pTypeDescriptorOverride = GameMessageTranslator::GetTypeDescriptorOverride(eMessageType);
+    if (pTypeDescriptorOverride)
+    {
+        pTypeDescriptor = pTypeDescriptorOverride;
+        std::memset(pDecodeToBuffer, 0, dwSize);    // clear to zero out fields that may not get filled by decoding
+    }
+
     const XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<const XTypeDescriptor>(pTypeDescriptor);
 
     TypeDescriptorField dynamicField = {};
@@ -1062,6 +1069,10 @@ XDecoder::Result GameMessageEncoder::DecodeMessage(GameMessageType eMessageType,
     XDecoder::Result result = Decode(ptTypeDescHost, pDecodeToBuffer, dynamicField, tDecoder);
     if (result)
         return result;
+
+    RequiredMessageHeader* tHeader = static_cast<RequiredMessageHeader*>(pDecodeToBuffer);
+    tHeader->dwSize = static_cast<u16>(dwSize);
+    tHeader->eType = eMessageType;
 
     if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
     {

@@ -546,7 +546,7 @@ bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, const Type
     // TODO: clean this up
     switch (ptTypeDescriptor)
     {
-        case 0x82FA92F8:                    // RequiredMessageHeader
+        case DT_REQUIRED_MESSAGE_HEADER:
             if (field.nDataOffset == 2)
                 return false;
 
@@ -589,20 +589,20 @@ bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, const Type
 
             break;
 
-        case 0x82FABCE0:    // PlayLineParams
+        case DT_PLAY_LINE_PARAMS:
             // not sure if it's this one, or one of the three flags before it that need to be skipped
             if (field.nDataOffset == 20)    // bPlayerInitiated
                 return false;
 
             break;
 
-        case 0x82FA8308:    // PlayerQuestHistoryEntry
+        case DT_QUEST_HISTORY_ENTRY:
             if (field.nDataOffset == 4)     // nStepUID
                 return false;
 
             break;
 
-        case 0x82FA7AFC:    // HeroStateData
+        case DT_HERO_STATE_DATA:
             if (field.nDataOffset == 17048) // uBossKillFlags
                 return false;
 
@@ -616,6 +616,21 @@ bool GameMessageTranslator::IsFieldPCCompatible(u32 ptTypeDescriptor, const Type
     }
 
     return true;
+}
+
+u32 GameMessageTranslator::GetTypeDescriptorOverride(GameMessageType eConsoleType)
+{
+    switch (eConsoleType)
+    {
+        case CMSG_ACCEPTED_DEATH:
+            return DT_SIMPLE_MESSAGE;
+
+        case CMSG_REQUEST_EVENT_SKIP:
+            return DT_SIMPLE_MESSAGE;
+
+        default:
+            return 0;
+    }
 }
 
 int GameMessageTranslator::GetFieldBitCountOverride(u32 ptTypeDescriptor, const TypeDescriptorField& field)
@@ -649,7 +664,7 @@ int GameMessageTranslator::GetFieldBitCountOverride(u32 ptTypeDescriptor, const 
 
             break;
 
-        case 0x82F9D2F8:    // GameSyncedData
+        case DT_GAME_SYNCED_DATA:
             if (field.nDataOffset == 0)     // dwGameSyncedFlags
                 return 2;
 

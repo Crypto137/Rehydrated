@@ -142,12 +142,12 @@ std::string GetDataString(const void* pMessage, unsigned int pTypeDescriptor)
 
 }
 
-std::string GameMessageDumper::PrintGameMessage(const RequiredMessageHeader* pMessage)
+std::string GameMessageDumper::PrintGameMessage(const void* pMessage)
 {
     unsigned int pTypeDescriptor = 0;
     unsigned int dwSize = 0;
     const char* pszMessageLabel = nullptr;
-    GetGameMessageTypeAndSize(pMessage->eType, pTypeDescriptor, dwSize, pszMessageLabel);
+    GetGameMessageTypeAndSize(static_cast<const RequiredMessageHeader*>(pMessage)->eType, pTypeDescriptor, dwSize, pszMessageLabel);
 
     return std::format("{} ({})", pszMessageLabel, GetDataString(pMessage, pTypeDescriptor));
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rex/types.h>
+
 #include "game/attributes/attrib.h"
 #include "game/network/game_message.h"
 
@@ -23,6 +25,8 @@ void TranslateMessagePCToConsole(void* pMessage);
 bool IsMessagePCCompatible(void* pMessage);
 
 bool IsFieldPCCompatible(u32 ptTypeDescriptor, const TypeDescriptorField& field);
+
+u32 GetTypeDescriptorOverride(GameMessageType eConsoleType);
 
 int GetFieldBitCountOverride(u32 ptTypeDescriptor, const TypeDescriptorField& field);
 

@@ -39,6 +39,8 @@ private:
     PCProxy();
     ~PCProxy() = default;
 
+    void ReceiveMessages(const char* buf, size_t len);
+
     bool m_isEnabled;
     bool m_isReadingUpdate;
     TcpServer m_tcpServer;

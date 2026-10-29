@@ -1,5 +1,7 @@
 #include "recomp/network/pc_proxy.h"
 
+#include <string>
+
 #include <rex/logging.h>
 #include <rex/ppc.h>
 
@@ -7,6 +9,8 @@
 #include "core/network/tcp_session.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
+#include "game/sigma/type_descriptor/type_descriptor.h"
+#include "recomp/network/game_message_dumper.h"
 #include "recomp/network/game_message_encoder.h"
 #include "recomp/network/game_message_translator.h"
 #include "recomp/network/xencoder.h"
@@ -141,14 +145,70 @@ bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
 size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
 {
     // This is roughly equivalent to NetworkParseGameDataBlock().
+    size_t consumed = 0;
 
-    // TODO: decode and queue messages to be passed to games in OnPostXServerReadUpdate()
-    // TODO: handle CMSG_ACCEPTED_DEATH and CMSG_REQUEST_EVENT_SKIP as SimpleMessage
+    while (consumed < len)
+    {
+        if (len < 4)
+            break;
 
-    if (len < 4)
-        return 0;
+        XDecoder tDecoder = {};
+        tDecoder.SetData(buf + consumed, len);
+        
+        u32 dwSize = 0;
+        if (tDecoder.Get(dwSize, 32))
+            break;
 
-    // TODO: handle PC client input
-    REXLOG_INFO("OnDataReceived(): len={}", len);
-    return len;
+        if (dwSize > kEncodeBufferSize || dwSize > len)
+            break;
+
+        ReceiveMessages(buf + consumed + 4, dwSize - 4);
+
+        len -= dwSize;
+        consumed += dwSize;
+    }
+
+    return consumed;
+}
+
+void PCProxy::ReceiveMessages(const char* buf, size_t len)
+{
+    // This is roughly equivalent to sXServerReceive
+    char* ptDecodeBuffer = GetDecodeBuffer();
+
+    XDecoder tDecoder = {};
+    tDecoder.SetData(buf, len);
+
+    while (tDecoder.GetUsed() < tDecoder.GetSize())
+    {
+        size_t msgStart = tDecoder.GetUsed();
+
+        // We just read the id directly instead of using the whole type descriptor
+        // the original code does here.
+        u32 dwType = 0;
+        tDecoder.Get(dwType, 9);
+
+        GameMessageType eType = GameMessageTranslator::ConvertMessageTypePCToConsole(static_cast<GameMessageType>(dwType));
+        if (eType == MSG_INVALID)
+        {
+            REXLOG_WARN("Received invalid message id {}", dwType);
+            break;
+        }
+
+        if (eType == CMSG_KEEPALIVE)
+            continue;
+
+        tDecoder.SetUsed(msgStart);
+
+        XDecoder::Result result = GameMessageEncoder::DecodeMessage(eType, ptDecodeBuffer, kEncodeBufferSize, tDecoder);
+        if (result)
+        {
+            REXLOG_WARN("Received truncated or invalid message id {}", static_cast<int>(eType));
+            break;
+        }
+
+        // TODO: queue messages to be passed to games in OnPostXServerReadUpdate()
+        std::string str = GameMessageDumper::PrintGameMessage(ptDecodeBuffer);
+        REXLOG_INFO("Incoming PC message: {}", str);
+    }
 }
