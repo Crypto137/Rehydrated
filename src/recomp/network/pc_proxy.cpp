@@ -1,5 +1,6 @@
 #include "recomp/network/pc_proxy.h"
 
+#include <cstring>
 #include <string>
 
 #include <rex/logging.h>
@@ -104,7 +105,7 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
     encoder.SetUsed(0);
     encoder.Put(dwSize, 32);
 
-    REXLOG_INFO("OnServerSendOutgoingMessagesForGameConnection(): dwSize={}", dwSize);
+    //REXLOG_INFO("OnServerSendOutgoingMessagesForGameConnection(): dwSize={}", dwSize);
 
     std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
     if (session)
@@ -121,12 +122,19 @@ void PCProxy::OnPostXServerReadUpdate()
 
     m_isReadingUpdate = true;
 
-    // TODO: inject received PC messages by calling ServerEventReceive (guest)
-    // copy message data to buffer returned by NetworkGetDecodeBuffer() before passing
-    //u32 ptDecodeBufferGuest = Guest_NetworkGetDecodeBuffer();
-    //char* ptDecodeBuffer = MemoryUtils::GetHostPtr<char>(ptDecodeBufferGuest);
-    //std::memcpy(nullptr, nullptr, 0);
-    //Guest_ServerEventReceive(m_lastGuestSocketId, ptDecodeBufferGuest);
+    std::unique_lock<std::mutex> lock(m_pcMessageMutex);
+
+    u32 ptDecodeBufferGuest = Guest_NetworkGetDecodeBuffer();
+    char* ptDecodeBuffer = MemoryUtils::GetHostPtr<char>(ptDecodeBufferGuest);
+
+    while (!m_pcMessageQueue.empty())
+    {
+        auto it = m_pcMessageQueue.begin();
+        std::memcpy(ptDecodeBuffer, it->get(), kEncodeBufferSize);
+        m_pcMessageQueue.pop_front();
+        
+        Guest_ServerEventReceive(m_lastGuestSocketId, ptDecodeBufferGuest);
+    }
 
     m_isReadingUpdate = false;
 }
@@ -136,6 +144,7 @@ bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
     if (!m_isEnabled)
         return false;
 
+    REXLOG_INFO("OnServerEventReceive(): {}", idServerSocket);
     m_lastGuestSocketId = idServerSocket;
 
     // Suppress X360 client messages
@@ -144,6 +153,9 @@ bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
 
 size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
 {
+    if (!m_isEnabled)
+        return len;
+
     // This is roughly equivalent to NetworkParseGameDataBlock().
     size_t consumed = 0;
 
@@ -173,6 +185,8 @@ size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
 
 void PCProxy::ReceiveMessages(const char* buf, size_t len)
 {
+    std::unique_lock<std::mutex> lock(m_pcMessageMutex);
+
     // This is roughly equivalent to sXServerReceive
     char* ptDecodeBuffer = GetDecodeBuffer();
 
@@ -207,8 +221,13 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
             break;
         }
 
-        // TODO: queue messages to be passed to games in OnPostXServerReadUpdate()
-        std::string str = GameMessageDumper::PrintGameMessage(ptDecodeBuffer);
-        REXLOG_INFO("Incoming PC message: {}", str);
+        REXLOG_INFO("Incoming PC message: {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
+
+        if (eType != CMSG_JOIN_BNET_GAME)
+        {
+            std::unique_ptr<char[]> ptMessageBuffer = std::make_unique<char[]>(kEncodeBufferSize);
+            std::memcpy(ptMessageBuffer.get(), ptDecodeBuffer, kEncodeBufferSize);
+            m_pcMessageQueue.push_back(std::move(ptMessageBuffer));
+        }
     }
 }

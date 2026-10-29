@@ -1,5 +1,9 @@
 #pragma once
 
+#include <list>
+#include <memory>
+#include <mutex>
+
 #include <rex/types.h>
 
 #include "core/network/tcp_server.h"
@@ -45,4 +49,6 @@ private:
     bool m_isReadingUpdate;
     TcpServer m_tcpServer;
     u32 m_lastGuestSocketId;
+    std::list<std::unique_ptr<char[]>> m_pcMessageQueue;
+    std::mutex m_pcMessageMutex;
 };
