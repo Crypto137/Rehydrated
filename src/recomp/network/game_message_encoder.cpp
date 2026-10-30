@@ -173,7 +173,7 @@ size_t XTypeDescriptor_SizeOf(u32 ptTypeDescGuest)
         case DT_SNONAME_HANDLE:
         case DT_SNO_GROUP:
         case DT_TIME:
-        case DT_TIME_2:
+        case DT_TIME_SHORT:
         case DT_GBID:
         case DT_ATTRIBUTEPARAM:
         case DT_VELOCITY:
@@ -184,7 +184,7 @@ size_t XTypeDescriptor_SizeOf(u32 ptTypeDescGuest)
         case DT_ANIM_TAG:
         case DT_ACTOR_GROUP:
         case DT_INT:
-        case DT_INT_2:
+        case DT_VARIABLEARRAY_COUNT:
         case DT_DATAID:
         case DT_FLOAT:
         case DT_ANGLE:
@@ -771,7 +771,7 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, cons
     switch (field.ptDataType)
     {
         case DT_INT:
-        case DT_INT_2:
+        case DT_VARIABLEARRAY_COUNT:
         case DT_DATAID:
             return GenericIntEncode(lpDefinition, field, tEncoder);
 
@@ -830,7 +830,7 @@ XDecoder::Result DecodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefi
     switch (field.ptDataType)
     {
         case DT_INT:
-        case DT_INT_2:
+        case DT_VARIABLEARRAY_COUNT:
         case DT_DATAID:
             return GenericIntDecode(lpDefinition, field, tDecoder);
 
