@@ -3,6 +3,7 @@
 #include <cstring>
 #include <string>
 
+#include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/ppc.h>
 
@@ -19,10 +20,12 @@
 REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC server mode")
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
+REXCVAR_DEFINE_BOOL(server_log_incoming_messages_pc, false, "Hydra/Server", "Logs client -> server messages received from PC clients")
+    .lifecycle(rex::cvar::Lifecycle::kHotReload);
+
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
 REX_IMPORT(__imp__XServerSocketDisconnect, Guest_XServerSocketDisconnect, void(i32, i32));
-REX_IMPORT(__imp__ServerSendOutOfGameMessage, Guest_ServerSendOutOfGameMessage, void(i32, u32, i32, u32));
 
 namespace
 {
@@ -229,10 +232,12 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
     {
         size_t msgStart = tDecoder.GetUsed();
 
-        // We just read the id directly instead of using the whole type descriptor
+        // We just read the id directly instead of using the whole type descriptor thing
         // the original code does here.
         u32 dwType = 0;
-        tDecoder.Get(dwType, 9);
+        XDecoder::Result result = tDecoder.Get(dwType, 9);
+        if (result == XDecoder::RESULT_TRUNCATED && (tDecoder.GetSize() - tDecoder.GetUsed() < 8))
+            break;
 
         GameMessageType eType = GameMessageTranslator::ConvertMessageTypePCToConsole(static_cast<GameMessageType>(dwType));
         if (eType == MSG_INVALID)
@@ -246,7 +251,7 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
 
         tDecoder.SetUsed(msgStart);
 
-        XDecoder::Result result = GameMessageEncoder::DecodeMessage(eType, ptDecodeBuffer, kEncodeBufferSize, tDecoder);
+        result = GameMessageEncoder::DecodeMessage(eType, ptDecodeBuffer, kEncodeBufferSize, tDecoder);
         if (result)
         {
             if (result == XDecoder::RESULT_TRUNCATED)
@@ -258,7 +263,8 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
             break;
         }
 
-        REXLOG_INFO("Incoming PC message: {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
+        if (REXCVAR_GET(server_log_incoming_messages_pc))
+            REXLOG_INFO("INCOMING MESSAGE (PC): {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
 
         if (eType != CMSG_JOIN_BNET_GAME)
         {
