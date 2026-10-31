@@ -84,7 +84,8 @@ constexpr GameMessageTypeMapping s_MessageTypeMappings[] = {
     { SMSG_SAVEPOINT_INFO,                                    90 },
     { SMSG_HEARTHPORTAL_INFO,                                 91 },
     { SMSG_RETURNPOINT_INFO,                                  92 },
-    { SMSG_AFFIX,                                             93 },
+    //{ SMSG_AFFIX,                                             93 },
+    { SMSG_AFFIX,                                             0 },  // disabled until crashes are fixed
     { SMSG_RARE_MONSTER_NAMES,                                94 },
     { SMSG_RARE_ITEM_NAME,                                    95 },
     { SMSG_PORTAL_SPECIFIER,                                  96 },
@@ -409,6 +410,356 @@ constexpr Attrib s_ConsoleOnlyAttributes[] = {
 
 constexpr size_t kNumConsoleOnlyAttributes = sizeof(s_ConsoleOnlyAttributes) / sizeof(s_ConsoleOnlyAttributes[0]);
 
+struct GbidMapping
+{
+    GBID gbidConsole;
+    GBID gbidPC;
+};
+
+GbidMapping s_GbidMappings[] = {
+    // other
+    { 0x804E2322, 0x622256D4 }, // HealthPotionConsole -> HealthPotionMinor
+    // unique items (a _1xx suffix was added to legendaries on consoles, and gbids are name hashes)
+    { 0xBBD98ACE, 0x18908B6E },
+    { 0xBBEBA34F, 0x18908B6F },
+    { 0xBBFDBBD0, 0x18908B70 },
+    { 0xBC0FD451, 0x18908B71 },
+    { 0xBC21ECD2, 0x18908B72 },
+    { 0xBC340553, 0x18908B73 },
+    { 0xBC461DD4, 0x18908B74 },
+    { 0xBC583655, 0x18908B75 },
+    { 0xBC6A4ED6, 0x18908B76 },
+    { 0xBE1C9AEE, 0x18908B8E },
+    { 0xBE2EB36F, 0x18908B8F },
+    { 0xBE40CBF0, 0x18908B90 },
+    { 0xBE52E471, 0x18908B91 },
+    { 0xBE64FCF2, 0x18908B92 },
+    { 0xBE771573, 0x18908B93 },
+    { 0xBE892DF4, 0x18908B94 },
+    { 0x0809223C, 0xF2F19BDC },
+    { 0x082D533E, 0xF2F19BDE },
+    { 0x083F6BBF, 0xF2F19BDF },
+    { 0x08518440, 0xF2F19BE0 },
+    { 0x08639CC1, 0xF2F19BE1 },
+    { 0x0875B542, 0xF2F19BE2 },
+    { 0x0A827BDF, 0xF2F19BFF },
+    { 0x0C13B35D, 0xF546C47D },
+    { 0x0C37E45F, 0xF546C47F },
+    { 0x0CA47765, 0xF546C485 },
+    { 0x0E56C37D, 0xF546C49D },
+    { 0x0E68DBFE, 0xF546C49E },
+    { 0x1985A6A4, 0xB24C2C44 },
+    { 0x1997BF25, 0xB24C2C45 },
+    { 0x19A9D7A6, 0xB24C2C46 },
+    { 0x19BBF027, 0xB24C2C47 },
+    { 0x19CE08A8, 0xB24C2C48 },
+    { 0x19E02129, 0xB24C2C49 },
+    { 0x19F239AA, 0xB24C2C4A },
+    { 0x1A04522B, 0xB24C2C4B },
+    { 0x1A166AAC, 0xB24C2C4C },
+    { 0x9AF9984D, 0xD89FB16D },
+    { 0x9B0BB0CE, 0xD89FB16E },
+    { 0x9B1DC94F, 0xD89FB16F },
+    { 0x9B2FE1D0, 0xD89FB170 },
+    { 0x9B41FA51, 0xD89FB171 },
+    { 0x9B5412D2, 0xD89FB172 },
+    { 0x9B662B53, 0xD89FB173 },
+    { 0x9B7843D4, 0xD89FB174 },
+    { 0x9B8A5C55, 0xD89FB175 },
+    { 0x9D3CA86D, 0xD89FB18D },
+    { 0x9D60D96F, 0xD89FB18F },
+    { 0x9D72F1F0, 0xD89FB190 },
+    { 0x9D850A71, 0xD89FB191 },
+    { 0x9D9722F2, 0xD89FB192 },
+    { 0xE815CCED, 0x0F9A960D },
+    { 0xE85E2EF1, 0x0F9A9611 },
+    { 0xE8825FF3, 0x0F9A9613 },
+    { 0xE8947874, 0x0F9A9614 },
+    { 0xE8A690F5, 0x0F9A9615 },
+    { 0xEA58DD0D, 0x0F9A962D },
+    { 0xEA6AF58E, 0x0F9A962E },
+    { 0xEA7D0E0F, 0x0F9A962F },
+    { 0xEA8F2690, 0x0F9A9630 },
+    { 0xEAA13F11, 0x0F9A9631 },
+    { 0xEAB35792, 0x0F9A9632 },
+    { 0xEAD78894, 0x0F9A9634 },
+    { 0xEAE9A115, 0x0F9A9635 },
+    { 0xEAFBB996, 0x0F9A9636 },
+    { 0x1020F10E, 0x1E9ED1AE },
+    { 0x10695312, 0x1E9ED1B2 },
+    { 0x108D8414, 0x1E9ED1B4 },
+    { 0x109F9C95, 0x1E9ED1B5 },
+    { 0x10B1B516, 0x1E9ED1B6 },
+    { 0x1264012E, 0x1E9ED1CE },
+    { 0x12BE7BB3, 0x1E9ED1D3 },
+    { 0x17B66715, 0x38F45C35 },
+    { 0x17C87F96, 0x38F45C36 },
+    { 0x17DA9817, 0x38F45C37 },
+    { 0x17ECB098, 0x38F45C38 },
+    { 0x17FEC919, 0x38F45C39 },
+    { 0x1810E19A, 0x38F45C3A },
+    { 0x1822FA1B, 0x38F45C3B },
+    { 0x18472B1D, 0x38F45C3D },
+    { 0x19F97735, 0x38F45C55 },
+    { 0x1A0B8FB6, 0x38F45C56 },
+    { 0xB5E95F0F, 0x1786672F },
+    { 0xB5FB7790, 0x17866730 },
+    { 0xB60D9011, 0x17866731 },
+    { 0xB61FA892, 0x17866732 },
+    { 0xB643D994, 0x17866734 },
+    { 0xB6680A96, 0x17866736 },
+    { 0xB67A2317, 0x17866737 },
+    { 0xB83E87B0, 0x17866750 },
+    { 0x1D257087, 0x4B447CA7 },
+    { 0x1BA0141D, 0x0A40C53D },
+    { 0x1BB22C9E, 0x0A40C53E },
+    { 0x1BFA8EA2, 0x0A40C542 },
+    { 0x1DE3243D, 0x0A40C55D },
+    { 0x1E07553F, 0x0A40C55F },
+    { 0x1E196DC0, 0x0A40C560 },
+    { 0x1E2B8641, 0x0A40C561 },
+    { 0x1E3D9EC2, 0x0A40C562 },
+    { 0x1E4FB743, 0x0A40C563 },
+    { 0x1E73E845, 0x0A40C565 },
+    { 0x1E8600C6, 0x0A40C566 },
+    { 0x2092C763, 0x0A40C583 },
+    { 0x20A4DFE4, 0x0A40C584 },
+    { 0x20B6F865, 0x0A40C585 },
+    { 0xB3EE70D0, 0x926EC070 },
+    { 0xB4008951, 0x926EC071 },
+    { 0xB436D2D4, 0x926EC074 },
+    { 0xB448EB55, 0x926EC075 },
+    { 0x6DF93089, 0xEC848BA9 },
+    { 0x6E0B490A, 0xEC848BAA },
+    { 0x6E1D618B, 0xEC848BAB },
+    { 0x6E2F7A0C, 0xEC848BAC },
+    { 0x6E41928D, 0xEC848BAD },
+    { 0x6E65C38F, 0xEC848BAF },
+    { 0x6E77DC10, 0xEC848BB0 },
+    { 0x6E89F491, 0xEC848BB1 },
+    { 0x84205691, 0x4239EDB1 },
+    { 0x84326F12, 0x4239EDB2 },
+    { 0x8468B895, 0x4239EDB5 },
+    { 0x847AD116, 0x4239EDB6 },
+    { 0x848CE997, 0x4239EDB7 },
+    { 0x86514E30, 0x4239EDD0 },
+    { 0x90A80BBE, 0xCDE4145E },
+    { 0x90BA243F, 0xCDE4145F },
+    { 0x90CC3CC0, 0xCDE41460 },
+    { 0x90DE5541, 0xCDE41461 },
+    { 0x90F06DC2, 0xCDE41462 },
+    { 0x91028643, 0xCDE41463 },
+    { 0x91149EC4, 0xCDE41464 },
+    { 0x92C6EADC, 0xCDE4147C },
+    { 0x92D9035D, 0xCDE4147D },
+    { 0x92EB1BDE, 0xCDE4147E },
+    { 0x92FD345F, 0xCDE4147F },
+    { 0x93216561, 0xCDE41481 },
+    { 0x6B6A4E56, 0x347CCAF6 },
+    { 0x6B7C66D7, 0x347CCAF7 },
+    { 0x6B8E7F58, 0x347CCAF8 },
+    { 0x6BD6E15C, 0x347CCAFC },
+    { 0x6BE8F9DD, 0x347CCAFD },
+    { 0x6BFB125E, 0x347CCAFE },
+    { 0x6DBF76F7, 0x347CCB17 },
+    { 0x6DF5C07A, 0x347CCB1A },
+    { 0x6E07D8FB, 0x347CCB1B },
+    { 0x6E2C09FD, 0x347CCB1D },
+    { 0x22EAA361, 0x1EBE5281 },
+    { 0x22FCBBE2, 0x1EBE5282 },
+    { 0x230ED463, 0x1EBE5283 },
+    { 0x2320ECE4, 0x1EBE5284 },
+    { 0x23330565, 0x1EBE5285 },
+    { 0x23451DE6, 0x1EBE5286 },
+    { 0x23573667, 0x1EBE5287 },
+    { 0x2551E483, 0x1EBE52A3 },
+    { 0x259A4687, 0x1EBE52A7 },
+    { 0x9146B18C, 0x61AC032C },
+    { 0x9158CA0D, 0x61AC032D },
+    { 0x916AE28E, 0x61AC032E },
+    { 0x917CFB0F, 0x61AC032F },
+    { 0x91A12C11, 0x61AC0331 },
+    { 0x91B34492, 0x61AC0332 },
+    { 0x91C55D13, 0x61AC0333 },
+    { 0x91D77594, 0x61AC0334 },
+    { 0x9389C1AC, 0x61AC034C },
+    { 0x939BDA2D, 0x61AC034D },
+    { 0x93ADF2AE, 0x61AC034E },
+    { 0x93D223B0, 0x61AC0350 },
+    { 0x93E43C31, 0x61AC0351 },
+    { 0x93F654B2, 0x61AC0352 },
+    { 0x70136C94, 0x2A847A34 },
+    { 0x70258515, 0x2A847A35 },
+    { 0x70379D96, 0x2A847A36 },
+    { 0x705BCE98, 0x2A847A38 },
+    { 0x707FFF9A, 0x2A847A3A },
+    { 0x7092181B, 0x2A847A3B },
+    { 0x70A4309C, 0x2A847A3C },
+    { 0x72567CB4, 0x2A847A54 },
+    { 0x72689535, 0x2A847A55 },
+    { 0x741DFDB5, 0x2CD9A2D5 },
+    { 0x74301636, 0x2CD9A2D6 },
+    { 0x74422EB7, 0x2CD9A2D7 },
+    { 0x7478783A, 0x2CD9A2DA },
+    { 0x74AEC1BD, 0x2CD9A2DD },
+    { 0x76610DD5, 0x2CD9A2F5 },
+    { 0x76853ED7, 0x2CD9A2F7 },
+    { 0x60E153D0, 0x6B682370 },
+    { 0x6129B5D4, 0x6B682374 },
+    { 0x613BCE55, 0x6B682375 },
+    { 0x632463F0, 0x6B682390 },
+    { 0x63367C71, 0x6B682391 },
+    { 0x634894F2, 0x6B682392 },
+    { 0x637EDE75, 0x6B682395 },
+    { 0x64EBE4F1, 0x6DBD4C11 },
+    { 0x65222E74, 0x6DBD4C14 },
+    { 0x65465F76, 0x6DBD4C16 },
+    { 0x672EF511, 0x6DBD4C31 },
+    { 0x67532613, 0x6DBD4C33 },
+    { 0x9C9C713C, 0xFC356ADC },
+    { 0x9CAE89BD, 0xFC356ADD },
+    { 0x9CC0A23E, 0xFC356ADE },
+    { 0x9D090442, 0xFC356AE2 },
+    { 0x9D1B1CC3, 0xFC356AE3 },
+    { 0x9ECD68DB, 0xFC356AFB },
+    { 0x9EDF815C, 0xFC356AFC },
+    { 0x8F26D83C, 0x93A451DC },
+    { 0x53C093A9, 0x0CD75EC9 },
+    { 0x53E4C4AB, 0x0CD75ECB },
+    { 0x53F6DD2C, 0x0CD75ECC },
+    { 0x5408F5AD, 0x0CD75ECD },
+    { 0x5615BC4A, 0x0CD75EEA },
+    { 0x5627D4CB, 0x0CD75EEB },
+    { 0x0C9C816C, 0x35D4E30C },
+    { 0x0CAE99ED, 0x35D4E30D },
+    { 0x0CE4E370, 0x35D4E310 },
+    { 0x0CF6FBF1, 0x35D4E311 },
+    { 0x0D091472, 0x35D4E312 },
+    { 0x0D1B2CF3, 0x35D4E313 },
+    { 0x0D2D4574, 0x35D4E314 },
+    { 0x0EDF918C, 0x35D4E32C },
+    { 0x0F03C28E, 0x35D4E32E },
+    { 0x0F15DB0F, 0x35D4E32F },
+    { 0x0F27F390, 0x35D4E330 },
+    { 0xB99AAB16, 0x3D7CC7B6 },
+    { 0xB9ACC397, 0x3D7CC7B7 },
+    { 0xB9BEDC18, 0x3D7CC7B8 },
+    { 0xB9D0F499, 0x3D7CC7B9 },
+    { 0xEC1342E2, 0xEBA95982 },
+    { 0xEC255B63, 0xEBA95983 },
+    { 0xEC3773E4, 0xEBA95984 },
+    { 0xEC498C65, 0xEBA95985 },
+    { 0xEC5BA4E6, 0xEBA95986 },
+    { 0xEC6DBD67, 0xEBA95987 },
+    { 0xEC7FD5E8, 0xEBA95988 },
+    { 0xDD65A896, 0xD4650536 },
+    { 0xDD77C117, 0xD4650537 },
+    { 0xDD89D998, 0xD4650538 },
+    { 0xDD9BF219, 0xD4650539 },
+    { 0xDDAE0A9A, 0xD465053A },
+    { 0xDDC0231B, 0xD465053B },
+    { 0xDDD23B9C, 0xD465053C },
+    { 0xDDE4541D, 0xD465053D },
+    { 0xDDF66C9E, 0xD465053E },
+    { 0xDFA8B8B6, 0xD4650556 },
+    { 0xDFBAD137, 0xD4650557 },
+    { 0xDFCCE9B8, 0xD4650558 },
+    { 0xDFDF0239, 0xD4650559 },
+    { 0xDFF11ABA, 0xD465055A },
+    { 0xE003333B, 0xD465055B },
+    { 0xE027643D, 0xD465055D },
+    { 0xE0397CBE, 0xD465055E },
+    { 0xE04B953F, 0xD465055F },
+    { 0xE1FDE157, 0xD4650577 },
+    { 0xE20FF9D8, 0xD4650578 },
+    { 0xE2221259, 0xD4650579 },
+    { 0xE2342ADA, 0xD465057A },
+    { 0x3D2613A0, 0xFC257B40 },
+    { 0x3D4A44A2, 0xFC257B42 },
+    { 0x3D808E25, 0xFC257B45 },
+    { 0x3D92A6A6, 0xFC257B46 },
+    { 0x3DA4BF27, 0xFC257B47 },
+    { 0x3F6923C0, 0xFC257B60 },
+    { 0x3F7B3C41, 0xFC257B61 },
+    { 0xF130492C, 0x0E3ACACC },
+    { 0xF14261AD, 0x0E3ACACD },
+    { 0xF1547A2E, 0x0E3ACACE },
+    { 0xF18AC3B1, 0x0E3ACAD1 },
+    { 0xF19CDC32, 0x0E3ACAD2 },
+    { 0xF1AEF4B3, 0x0E3ACAD3 },
+    { 0xF1C10D34, 0x0E3ACAD4 },
+    { 0xF3F204D3, 0x0E3ACAF3 },
+    { 0x677480E1, 0x89F57001 },
+    { 0x67869962, 0x89F57002 },
+    { 0x6798B1E3, 0x89F57003 },
+    { 0x67AACA64, 0x89F57004 },
+    { 0xE226DC6A, 0x421D6F0A },
+    { 0xE238F4EB, 0x421D6F0B },
+    { 0xE24B0D6C, 0x421D6F0C },
+    { 0xE25D25ED, 0x421D6F0D },
+    { 0xE26F3E6E, 0x421D6F0E },
+    { 0xE28156EF, 0x421D6F0F },
+    { 0xE2936F70, 0x421D6F10 },
+    { 0xE2A587F1, 0x421D6F11 },
+    { 0xE2B7A072, 0x421D6F12 },
+    { 0xB42EAAFA, 0x11E4759A },
+    { 0xB440C37B, 0x11E4759B },
+    { 0xB452DBFC, 0x11E4759C },
+    { 0xB489257F, 0x11E4759F },
+    { 0xB49B3E00, 0x11E475A0 },
+    { 0xB4AD5681, 0x11E475A1 },
+    { 0xB4BF6F02, 0x11E475A2 },
+    { 0x12D640ED, 0x24410A0D },
+    { 0x12E8596E, 0x24410A0E },
+    { 0x12FA71EF, 0x24410A0F },
+    { 0x130C8A70, 0x24410A10 },
+    { 0x1342D3F3, 0x24410A13 },
+    { 0x1519510D, 0x24410A2D },
+    { 0x152B698E, 0x24410A2E },
+    { 0x153D820F, 0x24410A2F },
+    { 0x1561B311, 0x24410A31 },
+    { 0x1597FC94, 0x24410A34 },
+    { 0x15AA1515, 0x24410A35 },
+    { 0x15BC2D96, 0x24410A36 },
+    { 0x1780922F, 0x24410A4F },
+    { 0x16E0D20E, 0x269632AE },
+    { 0x16F2EA8F, 0x269632AF },
+    { 0x17050310, 0x269632B0 },
+    { 0x17171B91, 0x269632B1 },
+    { 0x174D6514, 0x269632B4 },
+    { 0x175F7D95, 0x269632B5 },
+    { 0x1923E22E, 0x269632CE },
+    { 0x1935FAAF, 0x269632CF },
+    { 0x19481330, 0x269632D0 },
+    { 0x196C4432, 0x269632D2 },
+    { 0x8B157728, 0x10205AC8 },
+    { 0x8B278FA9, 0x10205AC9 },
+    { 0x8B5DD92C, 0x10205ACC },
+    { 0x8B6FF1AD, 0x10205ACD },
+    { 0x8B820A2E, 0x10205ACE },
+    { 0x8B9422AF, 0x10205ACF },
+    { 0x49DD96F1, 0x09A5FE11 },
+    { 0x49EFAF72, 0x09A5FE12 },
+    { 0x4A25F8F5, 0x09A5FE15 },
+    { 0x4A5C4278, 0x09A5FE18 },
+    { 0x4C0E8E90, 0x09A5FE30 },
+    { 0x4C32BF92, 0x09A5FE32 },
+    { 0x4C44D813, 0x09A5FE33 },
+    { 0x4C9F5298, 0x09A5FE38 },
+    { 0xE24DDF54, 0x29F38CF4 },
+    { 0xE2721056, 0x29F38CF6 },
+    { 0xE28428D7, 0x29F38CF7 },
+    { 0xA9628546, 0x468F09E6 },
+    { 0xA9749DC7, 0x468F09E7 },
+    { 0xA986B648, 0x468F09E8 },
+    { 0xA998CEC9, 0x468F09E9 },
+    { 0xA9BCFFCB, 0x468F09EB },
+    { 0xABB7ADE7, 0x468F0A07 },
+    { 0xABC9C668, 0x468F0A08 },
+};
+
+constexpr size_t kNumGbidMappings = sizeof(s_GbidMappings) / sizeof(s_GbidMappings[0]);
+
 }
 
 GameMessageType GameMessageTranslator::ConvertMessageTypeConsoleToPC(GameMessageType eConsoleType)
@@ -456,6 +807,28 @@ Attrib GameMessageTranslator::ConvertAttribPCToConsole(Attrib ePCAttrib)
     return static_cast<Attrib>(nAttrib);
 }
 
+GBID GameMessageTranslator::ConvertGbidConsoleToPC(GBID gbidConsole)
+{
+    for (int i = 0; i < kNumGbidMappings; ++i)
+    {
+        if (gbidConsole == s_GbidMappings[i].gbidConsole)
+            return s_GbidMappings[i].gbidPC;
+    }
+
+    return gbidConsole;
+}
+
+GBID GameMessageTranslator::ConvertGbidPCToConsole(GBID gbidPC)
+{
+    for (int i = 0; i < kNumGbidMappings; ++i)
+    {
+        if (gbidPC == s_GbidMappings[i].gbidPC)
+            return s_GbidMappings[i].gbidConsole;
+    }
+
+    return gbidPC;
+}
+
 void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
 {
     RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
@@ -464,32 +837,84 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
 
     ptHeader->eType = ePCType;
 
-    if (eConsoleType == SMSG_CONNECTION_ESTABLISHED)
+    switch (eConsoleType)
     {
-        ConnectionEstablishedMessage* connectionEstablishedMessage = static_cast<ConnectionEstablishedMessage*>(pMessage);
-        connectionEstablishedMessage->dwSnoCoreDataHash = dwSNOCoreDataHashPC;
-    }
-    else if (eConsoleType == SMSG_REVEAL_TEAM)
-    {
-        RevealTeamMessage* revealTeamMessage = static_cast<RevealTeamMessage*>(pMessage);
-        if (revealTeamMessage->eTeamColoring == TEAM_COLOR_NEUTRAL)
-            revealTeamMessage->eTeamColoring = TEAM_COLOR_NONE;
-    }
-    else if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
-    {
-        AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
-        Attrib eConsoleAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
-        attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
-    }
-    else if (eConsoleType == SMSG_ATTRIBUTES_SET_VALUES)
-    {
-        AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
-        int nCount = attributesSetValuesMessage->nAttributeCount;
-        for (int i = 0; i < nCount; ++i)
+        case SMSG_CONNECTION_ESTABLISHED:
         {
-            Attrib eConsoleAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
-            attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
+            ConnectionEstablishedMessage* connectionEstablishedMessage = static_cast<ConnectionEstablishedMessage*>(pMessage);
+            connectionEstablishedMessage->dwSnoCoreDataHash = dwSNOCoreDataHashPC;
+            break;
         }
+
+        case SMSG_NEW_PLAYER:
+        {
+            NewPlayerMessage* newPlayerMessage = static_cast<NewPlayerMessage*>(pMessage);
+            HotbarButtonData& ptPotionButton = newPlayerMessage->tHeroStateData.tSavedData.tPotionBtn;
+            ptPotionButton.m_gbidItem = ConvertGbidConsoleToPC(ptPotionButton.m_gbidItem);
+            break;
+        }
+
+        case SMSG_REVEAL_TEAM:
+        {
+            RevealTeamMessage* revealTeamMessage = static_cast<RevealTeamMessage*>(pMessage);
+            if (revealTeamMessage->eTeamColoring == TEAM_COLOR_NEUTRAL)
+                revealTeamMessage->eTeamColoring = TEAM_COLOR_NONE;
+            break;
+        }
+
+        case SMSG_HERO_STATE:
+        {
+            HeroStateMessage* heroStateMessage = static_cast<HeroStateMessage*>(pMessage);
+            HotbarButtonData& ptPotionButton = heroStateMessage->tStateData.tSavedData.tPotionBtn;
+            ptPotionButton.m_gbidItem = ConvertGbidConsoleToPC(ptPotionButton.m_gbidItem);
+            break;
+        }
+
+        case SMSG_HERO_STATE_SAVEDDATA:
+        {
+            PlayerSavedDataMessage* playerSavedDataMessage = static_cast<PlayerSavedDataMessage*>(pMessage);
+            HotbarButtonData& ptPotionButton = playerSavedDataMessage->tSavedData.tPotionBtn;
+            ptPotionButton.m_gbidItem = ConvertGbidConsoleToPC(ptPotionButton.m_gbidItem);
+            break;
+        }
+
+        case SMSG_ACD_ENTER_KNOWN:
+        {
+            ACDEnterKnownMessage* acdEnterKnownMessage = static_cast<ACDEnterKnownMessage*>(pMessage);
+            if (acdEnterKnownMessage->hGB.eType == GB_ITEMS)
+                acdEnterKnownMessage->hGB.gbid = ConvertGbidConsoleToPC(acdEnterKnownMessage->hGB.gbid);
+            break;
+        }
+
+        case SMSG_ATTRIBUTE_SET_VALUE:
+        {
+            AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
+            Attrib eConsoleAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
+            attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
+            break;
+        }
+
+        case SMSG_ATTRIBUTES_SET_VALUES:
+        {
+            AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
+            int nCount = attributesSetValuesMessage->nAttributeCount;
+            for (int i = 0; i < nCount; ++i)
+            {
+                Attrib eConsoleAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
+                attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
+            }
+            break;
+        }
+
+        case CMSG_PLAYER_CHANGE_POTION_BUTTON:
+        {
+            GBIDDataMessage* gbidDataMessage = static_cast<GBIDDataMessage*>(pMessage);
+            gbidDataMessage->gbidData = ConvertGbidConsoleToPC(gbidDataMessage->gbidData);
+            break;
+        }
+
+        default:
+            break;
     }
 }
 
@@ -503,21 +928,69 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
 
     // FIXME?: AXEBADDATA attribs data loss, eTeamColoring data loss, SNO hash not being reverted
 
-    if (eConsoleType == SMSG_ATTRIBUTE_SET_VALUE)
+    switch (eConsoleType)
     {
-        AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
-        Attrib ePCAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
-        attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
-    }
-    else if (eConsoleType == SMSG_ATTRIBUTES_SET_VALUES)
-    {
-        AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
-        int nCount = attributesSetValuesMessage->nAttributeCount;
-        for (int i = 0; i < nCount; ++i)
+        case SMSG_NEW_PLAYER:
         {
-            Attrib ePCAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
-            attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
+            NewPlayerMessage* newPlayerMessage = static_cast<NewPlayerMessage*>(pMessage);
+            GBID gbidPotion = newPlayerMessage->tHeroStateData.tSavedData.tPotionBtn.m_gbidItem;
+            newPlayerMessage->tHeroStateData.tSavedData.tPotionBtn.m_gbidItem = ConvertGbidPCToConsole(gbidPotion);
+            break;
         }
+
+        case SMSG_HERO_STATE:
+        {
+            HeroStateMessage* heroStateMessage = static_cast<HeroStateMessage*>(pMessage);
+            HotbarButtonData& ptPotionButton = heroStateMessage->tStateData.tSavedData.tPotionBtn;
+            ptPotionButton.m_gbidItem = ConvertGbidPCToConsole(ptPotionButton.m_gbidItem);
+            break;
+        }
+
+        case SMSG_HERO_STATE_SAVEDDATA:
+        {
+            PlayerSavedDataMessage* playerSavedDataMessage = static_cast<PlayerSavedDataMessage*>(pMessage);
+            HotbarButtonData& ptPotionButton = playerSavedDataMessage->tSavedData.tPotionBtn;
+            ptPotionButton.m_gbidItem = ConvertGbidPCToConsole(ptPotionButton.m_gbidItem);
+            break;
+        }
+
+        case SMSG_ACD_ENTER_KNOWN:
+        {
+            ACDEnterKnownMessage* acdEnterKnownMessage = static_cast<ACDEnterKnownMessage*>(pMessage);
+            if (acdEnterKnownMessage->hGB.eType == GB_ITEMS)
+                acdEnterKnownMessage->hGB.gbid = ConvertGbidPCToConsole(acdEnterKnownMessage->hGB.gbid);
+            break;
+        }
+
+        case SMSG_ATTRIBUTE_SET_VALUE:
+        {
+            AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
+            Attrib ePCAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
+            attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
+            break;
+        }
+
+        case SMSG_ATTRIBUTES_SET_VALUES:
+        {
+            AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
+            int nCount = attributesSetValuesMessage->nAttributeCount;
+            for (int i = 0; i < nCount; ++i)
+            {
+                Attrib ePCAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
+                attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
+            }
+            break;
+        }
+
+        case CMSG_PLAYER_CHANGE_POTION_BUTTON:
+        {
+            GBIDDataMessage* gbidDataMessage = static_cast<GBIDDataMessage*>(pMessage);
+            gbidDataMessage->gbidData = ConvertGbidPCToConsole(gbidDataMessage->gbidData);
+            break;
+        }
+
+        default:
+            break;
     }
 }
 

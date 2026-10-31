@@ -52,7 +52,7 @@ enum ActorLocationType : int
     AL_COUNT,
 };
 
-typedef int GBID;
+typedef unsigned int GBID;
 typedef int DataID;
 typedef float Angle;
 

@@ -18,6 +18,10 @@ Attrib ConvertAttribConsoleToPC(Attrib eConsoleAttrib);
 
 Attrib ConvertAttribPCToConsole(Attrib ePCAttrib);
 
+GBID ConvertGbidConsoleToPC(GBID gbidConsole);
+
+GBID ConvertGbidPCToConsole(GBID gbidPC);
+
 void TranslateMessageConsoleToPC(void* pMessage);
 
 void TranslateMessagePCToConsole(void* pMessage);
