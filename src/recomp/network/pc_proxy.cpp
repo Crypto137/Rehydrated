@@ -21,6 +21,8 @@ REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC 
 
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
+REX_IMPORT(__imp__XServerSocketDisconnect, Guest_XServerSocketDisconnect, void(i32, i32));
+REX_IMPORT(__imp__ServerSendOutOfGameMessage, Guest_ServerSendOutOfGameMessage, void(i32, u32, i32, u32));
 
 namespace
 {
@@ -144,11 +146,41 @@ bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
     if (!m_isEnabled)
         return false;
 
-    REXLOG_INFO("OnServerEventReceive(): {}", idServerSocket);
-    m_guestSocketId = idServerSocket;
-
     // Suppress X360 client messages
     return !m_isReadingUpdate;
+}
+
+void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
+{
+    if (!m_isEnabled)
+        return;
+
+    REXLOG_INFO("OnServerSocketDisconnect(): idServerSocket=0x{:08X}, eReason={}", idServerSocket, eReason);
+
+    if (m_guestSocketId == idServerSocket)
+    {
+        m_guestSocketId = 0;
+
+        std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
+        if (session)
+            session->Disconnect();
+    }
+}
+
+void PCProxy::OnConnectionAccepted(u32 idServerSocket)
+{
+    if (!m_isEnabled)
+        return;
+
+    REXLOG_INFO("OnConnectionAccepted(): idServerSocket=0x{:08X}", idServerSocket);
+
+    if (m_guestSocketId)
+    {
+        REXLOG_WARN("OnConnectionAccepted(): Already bound to guest socket 0x{:08X}", m_guestSocketId);
+        return;
+    }
+
+    m_guestSocketId = idServerSocket;
 }
 
 size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
@@ -217,7 +249,12 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
         XDecoder::Result result = GameMessageEncoder::DecodeMessage(eType, ptDecodeBuffer, kEncodeBufferSize, tDecoder);
         if (result)
         {
-            REXLOG_WARN("Received truncated or invalid message id {}", static_cast<int>(eType));
+            if (result == XDecoder::RESULT_TRUNCATED)
+                REXLOG_WARN("Received truncated message (id={})", static_cast<int>(eType));
+            else if (result == XDecoder::RESULT_CORRUPTED)
+                REXLOG_WARN("Received corrupted message (id={})", static_cast<int>(eType));
+            else
+                REXLOG_WARN("Received bad message (id={}, result={})", static_cast<int>(eType), static_cast<int>(result));
             break;
         }
 

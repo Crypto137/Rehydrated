@@ -35,11 +35,13 @@ public:
 
     bool OnServerEventReceive(u32 idServerSocket, u32 pMessage);
 
+    void OnServerSocketDisconnect(u32 idServerSocket, i32 eReason);
+
+    void OnConnectionAccepted(u32 idServerSocket);
+
     size_t OnDataReceived(TcpSession* session, const char* buf, size_t len) override;
 
-    inline bool IsEnabled() const { return m_isEnabled; }
-
-    inline void SetGuestSocketId(u32 idServerSocket) { m_guestSocketId = idServerSocket; }
+    inline bool IsRoutingGuest() const { return m_isEnabled && m_guestSocketId; }
 
 private:
     PCProxy();

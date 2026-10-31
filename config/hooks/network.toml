@@ -54,11 +54,19 @@ registers = ["r3", "r4", "r5"]
 after_instruction = false
 return_on_true = true
 
-# temp hook to get server socket id (remove this later)
+# XServerSocketDisconnect requests a server socket to be disconnected.
+# The socket removal happens in XServerSocketFinishDisconnect, which may be deferred.
 [[midasm_hook]]
-address = 0x829B7FA0
-name = "HydraHook_sServerSocketMsgHandler"
-registers = ["r3", "r4", "r5"]
+address = 0x829B8488
+name = "HydraHook_XServerSocketDisconnect"
+registers = ["r3", "r4"]
+after_instruction = false
+
+# Hooks XServerReadUpdate when a new connection is accepted.
+[[midasm_hook]]
+address = 0x829B8580
+name = "HydraHook_XServerReadUpdate_OnJoined"
+registers = ["r3"]
 after_instruction = false
 
 # ServerMessageReceiveOutsideGame handles client messages before they are passed

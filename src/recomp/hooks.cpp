@@ -99,15 +99,22 @@ bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& 
     //REXLOG_INFO("XServerSendBuffer(): idServerSocket={:08X}, dwSize={}", idServerSocket, dwSize);
     
     // return true to prevent data from being flushed to the X360 client
-    return PCProxy::Instance().IsEnabled();
+    return PCProxy::Instance().IsRoutingGuest();
 }
 
-void HydraHook_sServerSocketMsgHandler(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5)
+void HydraHook_XServerSocketDisconnect(PPCRegister& r3, PPCRegister& r4)
+{
+    u32 idServerSocket = r3.u32;
+    i32 eReason = r4.s32;
+
+    PCProxy::Instance().OnServerSocketDisconnect(idServerSocket, eReason);
+}
+
+void HydraHook_XServerReadUpdate_OnJoined(PPCRegister& r3)
 {
     u32 idServerSocket = r3.u32;
 
-    // TODO: get socket id from server app globals instead
-    PCProxy::Instance().SetGuestSocketId(idServerSocket);
+    PCProxy::Instance().OnConnectionAccepted(idServerSocket);
 }
 
 void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)
