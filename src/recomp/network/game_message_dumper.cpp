@@ -6,6 +6,7 @@
 #include <rex/logging.h>
 
 #include "core/memory_utils.h"
+#include "game/attributes/attrib_defs.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
 
@@ -17,6 +18,26 @@ REXCVAR_DEFINE_BOOL(server_log_incoming_messages, false, "Hydra/Server", "Logs c
 
 namespace
 {
+
+std::string AttributeToString(const NetAttributeKeyValue& tKeyVal)
+{
+    AttribDef* cgarAttribDefs = MemoryUtils::GetHostPtr<AttribDef>(0x82F9DA88);
+    const char* pszName = MemoryUtils::GetHostPtr<const char>(cgarAttribDefs[tKeyVal.eKeyAttrib].pszName);
+
+    if (tKeyVal.nKeyParam.m_bExists && tKeyVal.nKeyParam.m_tValue)
+    {
+        return std::format("{}[{}] = {}",
+            pszName,
+            tKeyVal.nKeyParam.m_tValue.get(),
+            tKeyVal.nValue.get());
+    }
+    else
+    {
+        return std::format("{} = {}",
+            pszName,
+            tKeyVal.nValue.get());
+    }
+}
 
 std::string GetDataString(const void* pMessage, unsigned int pTypeDescriptor)
 {
@@ -133,6 +154,72 @@ std::string GetDataString(const void* pMessage, unsigned int pTypeDescriptor)
                 static_cast<int>(revealTeamMessage->eTeam.get()),
                 revealTeamMessage->dwTeamFlags.get(),
                 static_cast<int>(revealTeamMessage->eTeamColoring.get()));
+        }
+
+        case DT_TRICKLE_MESSAGE:
+        {
+            const TrickleMessage* trickleMessage = static_cast<const TrickleMessage*>(pMessage);
+            std::string str = std::format("ann=0x{:08X}, snoActor={}, tPlace={}, snoLevelArea={}, eTrickleInfoType={}, dwTrickleFlags=0x{:08X}",
+                static_cast<u32>(trickleMessage->ann.get()),
+                static_cast<i32>(trickleMessage->snoActor.get()),
+                "<UNDEFINED>",
+                static_cast<i32>(trickleMessage->snoLevelArea.get()),
+                static_cast<i32>(trickleMessage->eTrickleInfoType.get()),
+                static_cast<u32>(trickleMessage->dwTrickleFlags.get())
+            );
+
+            if (trickleMessage->nPlayerIndexOwner.m_bExists)
+                str += std::format(", nPlayerIndexOwner={}", trickleMessage->nPlayerIndexOwner.m_tValue.get());
+
+            if (trickleMessage->flHealthPercent.m_bExists)
+                str += std::format(", flHealthPercent={}", trickleMessage->flHealthPercent.m_tValue.get());
+
+            if (trickleMessage->dwHeadstoneCorpseReviveTime.m_bExists)
+                str += std::format(", dwHeadstoneCorpseReviveTime={}", trickleMessage->dwHeadstoneCorpseReviveTime.m_tValue.get());
+
+            if (trickleMessage->snoMinimapIcon.m_bExists)
+                str += std::format(", snoMinimapIcon={}", trickleMessage->snoMinimapIcon.m_tValue.get());
+
+            if (trickleMessage->hMinimapStringLabel.m_bExists)
+                str += std::format(", hMinimapStringLabel={}", trickleMessage->hMinimapStringLabel.m_tValue.get());
+
+            if (trickleMessage->hMinimapIconLabel.m_bExists)
+                str += std::format(", hMinimapIconLabel={}", trickleMessage->hMinimapIconLabel.m_tValue.get());
+
+            if (trickleMessage->snoStringList.m_bExists)
+                str += std::format(", snoStringList={}", trickleMessage->snoStringList.m_tValue.get());
+
+            if (trickleMessage->fMinDisplayRangeSq.m_bExists)
+                str += std::format(", fMinDisplayRangeSq={}", trickleMessage->fMinDisplayRangeSq.m_tValue.get());
+
+            if (trickleMessage->fMaxDisplayRangeSq.m_bExists)
+                str += std::format(", fMaxDisplayRangeSq={}", trickleMessage->fMaxDisplayRangeSq.m_tValue.get());
+
+            if (trickleMessage->field116.m_bExists)
+                str += std::format(", field116={}", trickleMessage->field116.m_tValue.get());
+
+            if (trickleMessage->field124.m_bExists)
+                str += std::format(", field124={}", trickleMessage->field124.m_tValue.get());
+
+            if (trickleMessage->field132.m_bExists)
+                str += std::format(", field132={}", trickleMessage->field132.m_tValue.get());
+
+            return str;
+        }
+
+        case DT_ATTRIBUTE_SET_VALUE_MESSAGE:
+        {
+            const AttributeSetValueMessage* attributeSetValueMessage = static_cast<const AttributeSetValueMessage*>(pMessage);
+            return AttributeToString(attributeSetValueMessage->tKeyVal);
+        }
+
+        case DT_ATTRIBUTES_SET_VALUES_MESSAGE:
+        {
+            const AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<const AttributesSetValuesMessage*>(pMessage);
+            std::string str = AttributeToString(attributesSetValuesMessage->atKeyVals[0]);
+            for (int i = 1; i < attributesSetValuesMessage->nAttributeCount; ++i)
+                str += std::format(", {}", AttributeToString(attributesSetValuesMessage->atKeyVals[i]));
+            return str;
         }
 
         default:
