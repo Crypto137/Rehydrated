@@ -85,8 +85,7 @@ constexpr GameMessageTypeMapping s_MessageTypeMappings[] = {
     { SMSG_SAVEPOINT_INFO,                                    90 },
     { SMSG_HEARTHPORTAL_INFO,                                 91 },
     { SMSG_RETURNPOINT_INFO,                                  92 },
-    //{ SMSG_AFFIX,                                             93 },
-    { SMSG_AFFIX,                                             0 },  // disabled until crashes are fixed
+    { SMSG_AFFIX,                                             93 },
     { SMSG_RARE_MONSTER_NAMES,                                94 },
     { SMSG_RARE_ITEM_NAME,                                    95 },
     { SMSG_PORTAL_SPECIFIER,                                  96 },
@@ -457,8 +456,6 @@ Attrib GameMessageTranslator::ConvertAttribPCToConsole(Attrib ePCAttrib)
     return static_cast<Attrib>(nAttrib);
 }
 
-#include <rex/logging.h>
-
 GBID GameMessageTranslator::ConvertGbidConsoleToPC(GameBalanceType eType, GBID gbidConsole)
 {
     const GbidMapping* mappings;
@@ -488,7 +485,11 @@ GBID GameMessageTranslator::ConvertGbidConsoleToPC(GameBalanceType eType, GBID g
             return mappings[i].gbidPC;
     }
 
-    return gbidConsole;
+    // Affix mappings are incomplete, so default to -1 (no affix).
+    if (eType == GB_AFFIXES)
+        return 0xFFFFFFFF;
+    else
+        return gbidConsole;
 }
 
 GBID GameMessageTranslator::ConvertGbidPCToConsole(GameBalanceType eType, GBID gbidPC)

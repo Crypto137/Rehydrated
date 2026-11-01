@@ -365,6 +365,7 @@ constexpr GbidMapping s_ItemGbidMappings[] = {
 constexpr size_t kNumItemGbidMappings = sizeof(s_ItemGbidMappings) / sizeof(s_ItemGbidMappings[0]);
 
 constexpr GbidMapping s_AffixGbidMappings[] = {
+    /* Disabled until crashes are fixed
     { 0xFCC58E94, 0xB45F71B4 },    // 1xx_AllStats 1 Legendary -> AllStats 1 Legendary
     { 0x94AF69E4, 0x3F85B104 },    // 1xx_AllStats 10 Legendary -> AllStats 10 Legendary
     { 0x1A0C1F25, 0xC4E26645 },    // 1xx_AllStats 11 Legendary -> AllStats 11 Legendary
@@ -3592,6 +3593,7 @@ constexpr GbidMapping s_AffixGbidMappings[] = {
     { 0x81C91CEA, 0x0B58D40A },    // 1xx_WeaponHitStun2h 7 -> WeaponHitStun2h 7
     { 0x81C91CEB, 0x0B58D40B },    // 1xx_WeaponHitStun2h 8 -> WeaponHitStun2h 8
     { 0x81C91CEC, 0x0B58D40C },    // 1xx_WeaponHitStun2h 9 -> WeaponHitStun2h 9
+    */
 };
 
 constexpr size_t kNumAffixGbidMappings = sizeof(s_AffixGbidMappings) / sizeof(s_AffixGbidMappings[0]);
