@@ -2,6 +2,7 @@
 
 #include "game/sigma/type_descriptor/type_descriptor.h"
 #include "recomp/network/gbid_mappings.h"
+#include "recomp/network/sno_mappings.h"
 
 namespace
 {
@@ -456,6 +457,60 @@ Attrib GameMessageTranslator::ConvertAttribPCToConsole(Attrib ePCAttrib)
     return static_cast<Attrib>(nAttrib);
 }
 
+SNO GameMessageTranslator::ConvertSnoConsoleToPC(SNOGroup snoGroup, SNO snoConsole)
+{
+    const SnoMapping* mappings;
+    size_t count;
+
+    switch (snoGroup)
+    {
+        case ACTOR_SNO:
+            mappings = s_ActorSnoMappings;
+            count = kNumActorSnoMappings;
+            break;
+
+        default:
+            mappings = nullptr;
+            count = 0;
+            break;
+    }
+
+    for (int i = 0; i < count; ++i)
+    {
+        if (mappings[i].snoConsole == snoConsole)
+            return mappings[i].snoPC;
+    }
+
+    return snoConsole;
+}
+
+SNO GameMessageTranslator::ConvertSnoPCToConsole(SNOGroup snoGroup, SNO snoPC)
+{
+    const SnoMapping* mappings;
+    size_t count;
+
+    switch (snoGroup)
+    {
+        case ACTOR_SNO:
+            mappings = s_ActorSnoMappings;
+            count = kNumActorSnoMappings;
+            break;
+
+        default:
+            mappings = nullptr;
+            count = 0;
+            break;
+    }
+
+    for (int i = 0; i < count; ++i)
+    {
+        if (mappings[i].snoPC == snoPC)
+            return mappings[i].snoConsole;
+    }
+
+    return snoPC;
+}
+
 GBID GameMessageTranslator::ConvertGbidConsoleToPC(GameBalanceType eType, GBID gbidConsole)
 {
     const GbidMapping* mappings;
@@ -576,6 +631,7 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
         case SMSG_ACD_ENTER_KNOWN:
         {
             ACDEnterKnownMessage* acdEnterKnownMessage = static_cast<ACDEnterKnownMessage*>(pMessage);
+            acdEnterKnownMessage->snoActor = ConvertSnoConsoleToPC(ACTOR_SNO, acdEnterKnownMessage->snoActor);
             acdEnterKnownMessage->hGB.gbid = ConvertGbidConsoleToPC(acdEnterKnownMessage->hGB.eType, acdEnterKnownMessage->hGB.gbid);
             break;
         }
@@ -670,6 +726,7 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
         case SMSG_ACD_ENTER_KNOWN:
         {
             ACDEnterKnownMessage* acdEnterKnownMessage = static_cast<ACDEnterKnownMessage*>(pMessage);
+            acdEnterKnownMessage->snoActor = ConvertSnoPCToConsole(ACTOR_SNO, acdEnterKnownMessage->snoActor);
             acdEnterKnownMessage->hGB.gbid = ConvertGbidPCToConsole(acdEnterKnownMessage->hGB.eType, acdEnterKnownMessage->hGB.gbid);
             break;
         }

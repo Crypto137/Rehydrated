@@ -2,6 +2,7 @@
 
 #include <rex/types.h>
 
+#include "game/types.h"
 #include "game/attributes/attrib.h"
 #include "game/network/game_message.h"
 
@@ -17,6 +18,10 @@ GameMessageType ConvertMessageTypePCToConsole(GameMessageType ePCType);
 Attrib ConvertAttribConsoleToPC(Attrib eConsoleAttrib);
 
 Attrib ConvertAttribPCToConsole(Attrib ePCAttrib);
+
+SNO ConvertSnoConsoleToPC(SNOGroup snoGroup, SNO snoConsole);
+
+SNO ConvertSnoPCToConsole(SNOGroup snoGroup, SNO snoPC);
 
 GBID ConvertGbidConsoleToPC(GameBalanceType eType, GBID gbidConsole);
 
