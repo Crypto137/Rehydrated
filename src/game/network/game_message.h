@@ -1603,12 +1603,13 @@ enum PlayerWarpReason : int
     WARP_SCRIPT,
     WARP_HEADSTONE,
     WARP_CONSOLE_PORTAL,
-    WARP_CHALLENGE,
+    //WARP_CHALLENGE,
     WARP_CANCELLED,
-    WARP_CONSOLE_PVP_SS,
+    //WARP_CONSOLE_PVP_SS,
     //WARP_TIERED_RIFT,
     //WARP_SET_DUNGEON,
     WARP_COUNT,
+    WARP_COUNT_PC = 12,
 };
 
 struct PlayerWarpedMessage

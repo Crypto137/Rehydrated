@@ -615,6 +615,19 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             break;
         }
 
+        case SMSG_PLAYER_WARPED:
+        {
+            PlayerWarpedMessage* playerWarpedMessage = static_cast<PlayerWarpedMessage*>(pMessage);
+            if (playerWarpedMessage->eWarpReason >= WARP_COUNT_PC)
+            {
+                if (playerWarpedMessage->eWarpReason == WARP_CONSOLE_PORTAL)
+                    playerWarpedMessage->eWarpReason = WARP_PORTAL;
+                else
+                    playerWarpedMessage->eWarpReason = WARP_UNKNOWN;
+            }
+            break;
+        }
+
         default:
             break;
     }
@@ -627,9 +640,6 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
     GameMessageType eConsoleType = ConvertMessageTypePCToConsole(ePCType);
 
     ptHeader->eType = eConsoleType;
-
-    // FIXME?: AXEBADDATA attribs data loss, eTeamColoring data loss, SNO hash not being reverted, affix GBID loss
-    // probably not an issue once we start using PC specific buffers
 
     switch (eConsoleType)
     {
