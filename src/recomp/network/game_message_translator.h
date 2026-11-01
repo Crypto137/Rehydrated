@@ -18,9 +18,9 @@ Attrib ConvertAttribConsoleToPC(Attrib eConsoleAttrib);
 
 Attrib ConvertAttribPCToConsole(Attrib ePCAttrib);
 
-GBID ConvertGbidConsoleToPC(GBID gbidConsole);
+GBID ConvertGbidConsoleToPC(GameBalanceType eType, GBID gbidConsole);
 
-GBID ConvertGbidPCToConsole(GBID gbidPC);
+GBID ConvertGbidPCToConsole(GameBalanceType eType, GBID gbidPC);
 
 void TranslateMessageConsoleToPC(void* pMessage);
 
