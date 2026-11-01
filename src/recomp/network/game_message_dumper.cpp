@@ -222,6 +222,22 @@ std::string GetDataString(const void* pMessage, unsigned int pTypeDescriptor)
             return str;
         }
 
+        case DT_AFFIX_MESSAGE:
+        {
+            const AffixMessage* affixMessage = static_cast<const AffixMessage*>(pMessage);
+            std::string str = std::format("ann=0x{:08X}, eAffixArray={}, aAffixGBIDs=[",
+                static_cast<int>(affixMessage->ann.get()),
+                static_cast<int>(affixMessage->eAffixArray.get()));
+            if (affixMessage->dwAffixArrayCount)
+            {
+                str += std::format("0x{:08X}", affixMessage->aAffixGBIDs[0].get());
+                for (int i = 1; i < affixMessage->dwAffixArrayCount; ++i)
+                    str += std::format(", 0x{:08X}", affixMessage->aAffixGBIDs[i].get());
+            }
+            str += "]";
+            return str;
+        }
+
         default:
             return "<UNDEFINED>";
     }

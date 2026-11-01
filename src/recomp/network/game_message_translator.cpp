@@ -605,6 +605,7 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             u32 count = affixMessage->dwAffixArrayCount;
             for (u32 i = 0; i < count; ++i)
                 affixMessage->aAffixGBIDs[i] = ConvertGbidConsoleToPC(GB_AFFIXES, affixMessage->aAffixGBIDs[i]);
+            break;
         }
 
         case SMSG_ATTRIBUTE_SET_VALUE:
