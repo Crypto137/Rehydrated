@@ -24,6 +24,8 @@ void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3);
 
 bool HydraHook_ServerEventReceive(PPCRegister& r3, PPCRegister& r4);
 
+void HydraHook_ServerPutMessageOnOutgoingQueue(PPCRegister& r3, PPCRegister& r4);
+
 bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5);
 
 void HydraHook_XServerSocketDisconnect(PPCRegister& r3, PPCRegister& r4);

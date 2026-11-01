@@ -35,6 +35,8 @@ public:
 
     bool OnServerEventReceive(u32 idServerSocket, u32 pMessage);
 
+    void OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessage);
+
     void OnServerSocketDisconnect(u32 idServerSocket, i32 eReason);
 
     void OnConnectionAccepted(u32 idServerSocket);
@@ -53,6 +55,7 @@ private:
     bool m_isReadingUpdate;
     TcpServer m_tcpServer;
     u32 m_guestSocketId;
-    std::list<std::unique_ptr<char[]>> m_pcMessageQueue;
+    std::list<std::unique_ptr<char[]>> m_outgoingMessages;
+    std::list<std::unique_ptr<char[]>> m_incomingMessages;
     std::mutex m_pcMessageMutex;
 };

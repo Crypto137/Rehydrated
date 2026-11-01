@@ -45,6 +45,13 @@ registers = ["r3", "r4"]
 after_instruction = false
 return_on_true = true
 
+# ServerPutMessageOnOutgoingQueue queues a message to be encoded and sent in ServerSendOutgoingMessages.
+[[midasm_hook]]
+address = 0x829555D8
+name = "HydraHook_ServerPutMessageOnOutgoingQueue"
+registers = ["r3", "r4"]
+after_instruction = false
+
 # XServerSendBuffer flushed encoded outgoing server messages to a socket.
 # r3 = u32 idServerSocket, r4 = void* pMessage, r5 = u32 dwSize
 [[midasm_hook]]

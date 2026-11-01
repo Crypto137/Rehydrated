@@ -45,6 +45,28 @@ char* GetDecodeBuffer()
     return buffer.get();
 }
 
+std::unique_ptr<char[]> PacketBufferAlloc(u32 dwSize)
+{
+    // Sizes match pool buckets in the original code.
+    // Potentially we can implement pooling as well.
+    if (dwSize <= 8)
+        return std::make_unique<char[]>(8);
+
+    if (dwSize <= 32)
+        return std::make_unique<char[]>(32);
+
+    if (dwSize <= 128)
+        return std::make_unique<char[]>(128);
+
+    if (dwSize <= 256)
+        return std::make_unique<char[]>(256);
+
+    if (dwSize <= 1024)
+        return std::make_unique<char[]>(1024);
+
+    return std::make_unique<char[]>(kEncodeBufferSize);
+}
+
 }
 
 PCProxy::PCProxy() :
@@ -84,23 +106,16 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
     encoder.SetData(encodeBuffer, kEncodeBufferSize);
     encoder.SetUsed(32);
 
-    TPacketBufferListNode* listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(ptGameConnection->tOutgoingPacketBufferList.m_pHead);
-    while (listNode)
+    // PC compatibility is checked before messages are put to m_outgoingMessages
+    while (!m_outgoingMessages.empty())
     {
-        PacketBuffer* tPacketBuffer = MemoryUtils::GetHostPtr<PacketBuffer>(listNode->m_tData);
-        RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(listNode->m_tData + 8);
-        
-        // TODO: Handle persistence messages separately?
-        GameMessageType pcType = GameMessageTranslator::ConvertMessageTypeConsoleToPC(pMessage->eType);
-        if (GameMessageTranslator::IsMessagePCCompatible(pMessage))
-        {
-            // Stop when the encode buffer is filled. This may potentially cause issues on initial load
-            // because we drop some messages, so some things may end up being sent twice.
-            if (!GameMessageEncoder::EncodeMessage(pMessage, encoder))
-                break;
-        }
+        auto it = m_outgoingMessages.begin();
 
-        listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
+        // Stop when the encode buffer is filled.
+        if (!GameMessageEncoder::EncodeMessage(it->get(), encoder))
+            break;
+
+        m_outgoingMessages.pop_front();
     }
 
     size_t dwSize = encoder.GetUsedBytes();
@@ -109,8 +124,6 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
 
     encoder.SetUsed(0);
     encoder.Put(dwSize, 32);
-
-    //REXLOG_INFO("OnServerSendOutgoingMessagesForGameConnection(): dwSize={}", dwSize);
 
     std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
     if (session)
@@ -132,11 +145,11 @@ void PCProxy::OnPostXServerReadUpdate()
     u32 ptDecodeBufferGuest = Guest_NetworkGetDecodeBuffer();
     char* ptDecodeBuffer = MemoryUtils::GetHostPtr<char>(ptDecodeBufferGuest);
 
-    while (!m_pcMessageQueue.empty())
+    while (!m_incomingMessages.empty())
     {
-        auto it = m_pcMessageQueue.begin();
+        auto it = m_incomingMessages.begin();
         std::memcpy(ptDecodeBuffer, it->get(), kEncodeBufferSize);
-        m_pcMessageQueue.pop_front();
+        m_incomingMessages.pop_front();
         
         Guest_ServerEventReceive(m_guestSocketId, ptDecodeBufferGuest);
     }
@@ -151,6 +164,22 @@ bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
 
     // Suppress X360 client messages
     return !m_isReadingUpdate;
+}
+
+void PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessage)
+{
+    if (!m_isEnabled)
+        return;
+    
+    RequiredMessageHeader* ptHeader = MemoryUtils::GetHostPtr<RequiredMessageHeader>(pMessage);
+
+    // TODO: Pass persistence messages to the Xbox 360 client? Or handle them in host code?
+    if (GameMessageTranslator::IsMessagePCCompatible(ptHeader))
+    {
+        std::unique_ptr<char[]> ptPacketBuffer = PacketBufferAlloc(ptHeader->dwSize);
+        std::memcpy(ptPacketBuffer.get(), ptHeader, ptHeader->dwSize);
+        m_outgoingMessages.push_back(std::move(ptPacketBuffer));
+    }
 }
 
 void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
@@ -268,9 +297,10 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
 
         if (eType != CMSG_JOIN_BNET_GAME)
         {
-            std::unique_ptr<char[]> ptMessageBuffer = std::make_unique<char[]>(kEncodeBufferSize);
-            std::memcpy(ptMessageBuffer.get(), ptDecodeBuffer, kEncodeBufferSize);
-            m_pcMessageQueue.push_back(std::move(ptMessageBuffer));
+            RequiredMessageHeader* ptHeader = reinterpret_cast<RequiredMessageHeader*>(ptDecodeBuffer);
+            std::unique_ptr<char[]> ptPacketBuffer = PacketBufferAlloc(ptHeader->dwSize);
+            std::memcpy(ptPacketBuffer.get(), ptHeader, ptHeader->dwSize);
+            m_incomingMessages.push_back(std::move(ptPacketBuffer));
         }
     }
 }

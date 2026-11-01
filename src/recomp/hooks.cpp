@@ -90,6 +90,14 @@ bool HydraHook_ServerEventReceive(PPCRegister& r3, PPCRegister& r4)
     return PCProxy::Instance().OnServerEventReceive(idServerSocket, pMessage);
 }
 
+void HydraHook_ServerPutMessageOnOutgoingQueue(PPCRegister& r3, PPCRegister& r4)
+{
+    u32 idGameConnection = r3.u32;
+    u32 pMessage = r4.u32;
+
+    PCProxy::Instance().OnServerPutMessageOnOutgoingQueue(idGameConnection, pMessage);
+}
+
 bool HydraHook_XServerSendBuffer(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5)
 {
     u32 idServerSocket = r3.u32;
