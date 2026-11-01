@@ -3597,3 +3597,24 @@ constexpr GbidMapping s_AffixGbidMappings[] = {
 };
 
 constexpr size_t kNumAffixGbidMappings = sizeof(s_AffixGbidMappings) / sizeof(s_AffixGbidMappings[0]);
+
+static inline void GetGbidMappings(GameBalanceType eType, const GbidMapping*& mappings, size_t& count)
+{
+    switch (eType)
+    {
+        case GB_ITEMS:
+            mappings = s_ItemGbidMappings;
+            count = kNumItemGbidMappings;
+            break;
+
+        case GB_AFFIXES:
+            mappings = s_AffixGbidMappings;
+            count = kNumAffixGbidMappings;
+            break;
+
+        default:
+            mappings = nullptr;
+            count = 0;
+            break;
+    }
+}

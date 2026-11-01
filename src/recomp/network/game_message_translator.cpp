@@ -461,19 +461,7 @@ SNO GameMessageTranslator::ConvertSnoConsoleToPC(SNOGroup snoGroup, SNO snoConso
 {
     const SnoMapping* mappings;
     size_t count;
-
-    switch (snoGroup)
-    {
-        case ACTOR_SNO:
-            mappings = s_ActorSnoMappings;
-            count = kNumActorSnoMappings;
-            break;
-
-        default:
-            mappings = nullptr;
-            count = 0;
-            break;
-    }
+    GetSnoMappings(snoGroup, mappings, count);
 
     for (int i = 0; i < count; ++i)
     {
@@ -488,19 +476,7 @@ SNO GameMessageTranslator::ConvertSnoPCToConsole(SNOGroup snoGroup, SNO snoPC)
 {
     const SnoMapping* mappings;
     size_t count;
-
-    switch (snoGroup)
-    {
-        case ACTOR_SNO:
-            mappings = s_ActorSnoMappings;
-            count = kNumActorSnoMappings;
-            break;
-
-        default:
-            mappings = nullptr;
-            count = 0;
-            break;
-    }
+    GetSnoMappings(snoGroup, mappings, count);
 
     for (int i = 0; i < count; ++i)
     {
@@ -515,24 +491,7 @@ GBID GameMessageTranslator::ConvertGbidConsoleToPC(GameBalanceType eType, GBID g
 {
     const GbidMapping* mappings;
     size_t count;
-
-    switch (eType)
-    {
-        case GB_ITEMS:
-            mappings = s_ItemGbidMappings;
-            count = kNumItemGbidMappings;
-            break;
-
-        case GB_AFFIXES:
-            mappings = s_AffixGbidMappings;
-            count = kNumAffixGbidMappings;
-            break;
-
-        default:
-            mappings = nullptr;
-            count = 0;
-            break;
-    }
+    GetGbidMappings(eType, mappings, count);
 
     for (size_t i = 0; i < count; ++i)
     {
@@ -551,24 +510,7 @@ GBID GameMessageTranslator::ConvertGbidPCToConsole(GameBalanceType eType, GBID g
 {
     const GbidMapping* mappings;
     size_t count;
-
-    switch (eType)
-    {
-        case GB_ITEMS:
-            mappings = s_ItemGbidMappings;
-            count = kNumItemGbidMappings;
-            break;
-
-        case GB_AFFIXES:
-            mappings = s_AffixGbidMappings;
-            count = kNumAffixGbidMappings;
-            break;
-
-        default:
-            mappings = nullptr;
-            count = 0;
-            break;
-    }
+    GetGbidMappings(eType, mappings, count);
 
     for (int i = 0; i < count; ++i)
     {
@@ -577,6 +519,17 @@ GBID GameMessageTranslator::ConvertGbidPCToConsole(GameBalanceType eType, GBID g
     }
 
     return gbidPC;
+}
+
+namespace
+{
+
+void TranslatePlayerSavedDataConsoleToPC(PlayerSavedData& tPlayerSavedData)
+{
+    HotbarButtonData& ptPotionButton = tPlayerSavedData.tPotionBtn;
+    ptPotionButton.m_gbidItem = GameMessageTranslator::ConvertGbidConsoleToPC(GB_ITEMS, ptPotionButton.m_gbidItem);
+}
+
 }
 
 void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
@@ -599,8 +552,7 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
         case SMSG_NEW_PLAYER:
         {
             NewPlayerMessage* newPlayerMessage = static_cast<NewPlayerMessage*>(pMessage);
-            HotbarButtonData& ptPotionButton = newPlayerMessage->tHeroStateData.tSavedData.tPotionBtn;
-            ptPotionButton.m_gbidItem = ConvertGbidConsoleToPC(GB_ITEMS, ptPotionButton.m_gbidItem);
+            TranslatePlayerSavedDataConsoleToPC(newPlayerMessage->tHeroStateData.tSavedData);
             break;
         }
 
@@ -615,16 +567,14 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
         case SMSG_HERO_STATE:
         {
             HeroStateMessage* heroStateMessage = static_cast<HeroStateMessage*>(pMessage);
-            HotbarButtonData& ptPotionButton = heroStateMessage->tStateData.tSavedData.tPotionBtn;
-            ptPotionButton.m_gbidItem = ConvertGbidConsoleToPC(GB_ITEMS, ptPotionButton.m_gbidItem);
+            TranslatePlayerSavedDataConsoleToPC(heroStateMessage->tStateData.tSavedData);
             break;
         }
 
         case SMSG_HERO_STATE_SAVEDDATA:
         {
             PlayerSavedDataMessage* playerSavedDataMessage = static_cast<PlayerSavedDataMessage*>(pMessage);
-            HotbarButtonData& ptPotionButton = playerSavedDataMessage->tSavedData.tPotionBtn;
-            ptPotionButton.m_gbidItem = ConvertGbidConsoleToPC(GB_ITEMS, ptPotionButton.m_gbidItem);
+            TranslatePlayerSavedDataConsoleToPC(playerSavedDataMessage->tSavedData);
             break;
         }
 
@@ -633,6 +583,19 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             ACDEnterKnownMessage* acdEnterKnownMessage = static_cast<ACDEnterKnownMessage*>(pMessage);
             acdEnterKnownMessage->snoActor = ConvertSnoConsoleToPC(ACTOR_SNO, acdEnterKnownMessage->snoActor);
             acdEnterKnownMessage->hGB.gbid = ConvertGbidConsoleToPC(acdEnterKnownMessage->hGB.eType, acdEnterKnownMessage->hGB.gbid);
+            break;
+        }
+
+        case SMSG_TRICKLE_UPDATE:
+        {
+            TrickleMessage* trickleMessage = static_cast<TrickleMessage*>(pMessage);
+            trickleMessage->snoActor = ConvertSnoConsoleToPC(ACTOR_SNO, trickleMessage->snoActor);
+            trickleMessage->snoLevelArea = ConvertSnoConsoleToPC(LEVELAREA_SNO, trickleMessage->snoLevelArea);
+            if (trickleMessage->snoStringList.m_bExists)
+            {
+                SNO snoStringList = static_cast<SNO>(trickleMessage->snoStringList.m_tValue.get());
+                trickleMessage->snoStringList.m_tValue = ConvertSnoConsoleToPC(STRINGLIST_SNO, snoStringList);
+            }
             break;
         }
 
@@ -699,38 +662,6 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
 
     switch (eConsoleType)
     {
-        case SMSG_NEW_PLAYER:
-        {
-            NewPlayerMessage* newPlayerMessage = static_cast<NewPlayerMessage*>(pMessage);
-            GBID gbidPotion = newPlayerMessage->tHeroStateData.tSavedData.tPotionBtn.m_gbidItem;
-            newPlayerMessage->tHeroStateData.tSavedData.tPotionBtn.m_gbidItem = ConvertGbidPCToConsole(GB_ITEMS, gbidPotion);
-            break;
-        }
-
-        case SMSG_HERO_STATE:
-        {
-            HeroStateMessage* heroStateMessage = static_cast<HeroStateMessage*>(pMessage);
-            HotbarButtonData& ptPotionButton = heroStateMessage->tStateData.tSavedData.tPotionBtn;
-            ptPotionButton.m_gbidItem = ConvertGbidPCToConsole(GB_ITEMS, ptPotionButton.m_gbidItem);
-            break;
-        }
-
-        case SMSG_HERO_STATE_SAVEDDATA:
-        {
-            PlayerSavedDataMessage* playerSavedDataMessage = static_cast<PlayerSavedDataMessage*>(pMessage);
-            HotbarButtonData& ptPotionButton = playerSavedDataMessage->tSavedData.tPotionBtn;
-            ptPotionButton.m_gbidItem = ConvertGbidPCToConsole(GB_ITEMS, ptPotionButton.m_gbidItem);
-            break;
-        }
-
-        case SMSG_ACD_ENTER_KNOWN:
-        {
-            ACDEnterKnownMessage* acdEnterKnownMessage = static_cast<ACDEnterKnownMessage*>(pMessage);
-            acdEnterKnownMessage->snoActor = ConvertSnoPCToConsole(ACTOR_SNO, acdEnterKnownMessage->snoActor);
-            acdEnterKnownMessage->hGB.gbid = ConvertGbidPCToConsole(acdEnterKnownMessage->hGB.eType, acdEnterKnownMessage->hGB.gbid);
-            break;
-        }
-
         case SMSG_ATTRIBUTE_SET_VALUE:
         {
             AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
