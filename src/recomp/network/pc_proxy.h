@@ -50,6 +50,7 @@ private:
     ~PCProxy() = default;
 
     void ReceiveMessages(const char* buf, size_t len);
+    void SendSystemBroadcast(const char* gameText);
 
     bool m_isEnabled;
     bool m_isReadingUpdate;

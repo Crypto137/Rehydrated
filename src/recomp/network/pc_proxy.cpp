@@ -181,6 +181,10 @@ void PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessa
         std::memcpy(ptPacketBuffer.get(), ptHeader, ptHeader->dwSize);
         m_outgoingMessages.push_back(std::move(ptPacketBuffer));
     }
+    else if (ptHeader->eType == SMSG_CONSOLE_SAVE)
+    {
+        SendSystemBroadcast("Saving...");
+    }
 }
 
 void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
@@ -304,4 +308,16 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
             m_incomingMessages.push_back(std::move(ptPacketBuffer));
         }
     }
+}
+
+void PCProxy::SendSystemBroadcast(const char* broadcastText)
+{
+    BroadcastTextMessage broadcastTextMessage = {};
+    broadcastTextMessage.tHeader.dwSize = 1032;
+    broadcastTextMessage.tHeader.eType = SMSG_SYSTEM_BROADCAST;
+    strcpy_s(broadcastTextMessage.szMsg, 1024, broadcastText);
+
+    std::unique_ptr<char[]> ptPacketBuffer = PacketBufferAlloc(broadcastTextMessage.tHeader.dwSize);
+    std::memcpy(ptPacketBuffer.get(), &broadcastTextMessage, broadcastTextMessage.tHeader.dwSize);
+    m_outgoingMessages.push_back(std::move(ptPacketBuffer));
 }
