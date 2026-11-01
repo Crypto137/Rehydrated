@@ -148,7 +148,8 @@ void PCProxy::OnPostXServerReadUpdate()
     while (!m_incomingMessages.empty())
     {
         auto it = m_incomingMessages.begin();
-        std::memcpy(ptDecodeBuffer, it->get(), kEncodeBufferSize);
+        RequiredMessageHeader* ptHeader = reinterpret_cast<RequiredMessageHeader*>(it->get());
+        std::memcpy(ptDecodeBuffer, ptHeader, ptHeader->dwSize);
         m_incomingMessages.pop_front();
         
         Guest_ServerEventReceive(m_guestSocketId, ptDecodeBufferGuest);
