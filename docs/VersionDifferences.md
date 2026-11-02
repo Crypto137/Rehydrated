@@ -4,6 +4,10 @@ This file documents the differences between the vanilla pre-expansion versions o
 
 ## Vanilla Differences
 
+- There are five playable classes: Barbarian, Demon Hunter, Monk, Witch Doctor, and Wizard. Crusader and Necromancer are not available.
+
+- There is no Act V.
+
 - There is no Adventure mode, Bounties, or Nephalem Rifts. All farming is done via the Campaign mode.
 
 - The Campaign is split into Normal/Nightmare/Hell/Inferno difficulty modes, similarly to Normal/Nightmare/Hell in Diablo II.
@@ -30,7 +34,7 @@ This file documents the differences between the vanilla pre-expansion versions o
 
 - Legendary specific affixes are a lot less impactful.
 
-- All items can be traded without limitations.
+- All items can be traded without limitations, either directly, or using the Auction House system.
 
 - The Mystic crafter NPC is disabled.
 
@@ -38,7 +42,11 @@ This file documents the differences between the vanilla pre-expansion versions o
 
 ## Xbox 360 Differences
 
-- Monster Power levels were renamed to Difficulty with 8 options (Easy/Medium/Hard/Master 1-5).
+- The server-side logic and data were embedded into the game, allowing offline play and peer-to-peer multiplayer.
+
+- Monster Power levels were renamed to Difficulty and consolidated to eight options (Easy/Medium/Hard/Master 1-5).
+
+- All items now occupy a single inventory slot.
 
 - Different health potion tiers were consolidated into a single health potion that heals for a percentage amount.
 
@@ -48,6 +56,12 @@ This file documents the differences between the vanilla pre-expansion versions o
 
 - Legendaries can roll as higher level versions when dropped by higher level monsters.
 
+- The Auction House system was removed.
+
+- The UI and controls were redesigned for controllers.
+
 - A dodge roll action was added for all classes to make it easier to hit-and-run on a controller.
 
 - Some skill animations and VFX were adjusted.
+
+- PC Achievements were renamed to Challenges, and there are fewer of them. Additionally, the Xbox achievement system was integrated.
