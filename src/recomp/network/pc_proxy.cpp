@@ -182,7 +182,6 @@ bool PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessa
 
     RequiredMessageHeader* ptHeader = MemoryUtils::GetHostPtr<RequiredMessageHeader>(pMessage);
 
-    // TODO: Pass persistence messages to the Xbox 360 client? Or handle them in host code?
     if (GameMessageTranslator::IsMessagePCCompatible(ptHeader))
     {
         std::unique_ptr<char[]> ptPacketBuffer = PacketBufferAlloc(ptHeader->dwSize);
@@ -195,7 +194,7 @@ bool PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessa
     }
 
     ptGameConnection->bNeedHeartBeat = true;
-    return true;
+    return !GameMessageTranslator::IsMessageAllowedForConsolePassthrough(ptHeader);
 }
 
 void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)

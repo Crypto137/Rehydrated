@@ -31,6 +31,8 @@ void TranslateMessageConsoleToPC(void* pMessage);
 
 void TranslateMessagePCToConsole(void* pMessage);
 
+bool IsMessageAllowedForConsolePassthrough(void* pMessage);
+
 bool IsMessagePCCompatible(void* pMessage);
 
 bool IsFieldPCCompatible(u32 ptTypeDescriptor, const TypeDescriptorField& field);

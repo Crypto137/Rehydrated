@@ -695,6 +695,21 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
     }
 }
 
+bool GameMessageTranslator::IsMessageAllowedForConsolePassthrough(void* pMessage)
+{
+    RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
+    GameMessageType eConsoleType = ptHeader->eType;
+
+    switch (eConsoleType)
+    {
+        case SMSG_QUIT:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
 bool GameMessageTranslator::IsMessagePCCompatible(void* pMessage)
 {
     RequiredMessageHeader* ptHeader = static_cast<RequiredMessageHeader*>(pMessage);
