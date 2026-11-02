@@ -528,4 +528,12 @@ enum SocketDisconnectReason
     SDR_BOOT,
 };
 
-
+// TODO: clean up entries that didn't exist in 17339
+enum RevivalType : int
+{
+    REVIVAL_TYPE_IN_TOWN,
+    REVIVAL_TYPE_AT_CHECKPOINT,
+    REVIVAL_TYPE_AT_CORPSE_DELAYED,
+    REVIVAL_TYPE_AT_CORPSE_NOW,
+    REVIVAL_TYPE_AT_CORPSE_NOW_DO_NOT_WARP,
+};

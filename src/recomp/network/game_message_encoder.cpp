@@ -6,6 +6,7 @@
 #include <rex/logging.h>
 
 #include "core/memory_utils.h"
+#include "game/types.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/attributes/attribute_compressor.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
@@ -1101,6 +1102,13 @@ XDecoder::Result GameMessageEncoder::DecodeMessage(GameMessageType eMessageType,
             if (result)
                 return result;
         }
+    }
+    else if (eMessageType == CMSG_ACCEPTED_DEATH)
+    {
+        // Leaving value for CMSG_ACCEPTED_DEATH at zero corresponds to REVIVAL_TYPE_IN_TOWN.
+        // This is not accurate to the PC version, which used the equivalent of AT_CHECKPOINT.
+        IntDataMessage* intDataMessage = static_cast<IntDataMessage*>(pDecodeToBuffer);
+        intDataMessage->nData = REVIVAL_TYPE_AT_CHECKPOINT;
     }
 
     return XDecoder::RESULT_VALID;
