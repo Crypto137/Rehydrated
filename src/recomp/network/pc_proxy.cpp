@@ -194,7 +194,11 @@ bool PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessa
     }
 
     ptGameConnection->bNeedHeartBeat = true;
-    return !GameMessageTranslator::IsMessageAllowedForConsolePassthrough(ptHeader);
+    
+    if (GameMessageTranslator::IsMessageAllowedForConsolePassthrough(ptHeader))
+        return false;
+
+    return true;
 }
 
 void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)

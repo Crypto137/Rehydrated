@@ -702,7 +702,81 @@ bool GameMessageTranslator::IsMessageAllowedForConsolePassthrough(void* pMessage
 
     switch (eConsoleType)
     {
+        // Currenly we allow a lot of stuff (probably more than necessary)
+        // to be replicated in order for the client to have enough data to save.
+        // TODO: Implement a custom version of CHero::Synchronize() and then
+        // call Console::GamerProfile::Save() from server code instead.
         case SMSG_QUIT:
+        case SMSG_CONNECTION_ESTABLISHED:
+        case SMSG_NEW_PLAYER:
+        case SMSG_PLAYER_BANNER:
+        case SMSG_HERO_STATE:
+        case SMSG_HERO_STATE_SAVEDDATA:
+        case SMSG_HERO_STATE_PLAYERFLAGS:
+        case SMSG_HERO_STATE_WAYPOINTS:
+        case SMSG_HERO_STATE_LASTSAVEPOINT:
+        case SMSG_ACD_ENTER_KNOWN:
+        case SMSG_ACD_EXIT_KNOWN:
+        case SMSG_PLAYER_ENTER_KNOWN:
+        case SMSG_ACD_INVENTORY_POSITION:
+        case SMSG_ACD_INVENTORY_UPDATE_ACTOR_SNO:
+        case SMSG_TRICKLE_UPDATE:
+        case SMSG_TRICKLE_REMOVE:
+        case SMSG_SAVEPOINT_INFO:
+        case SMSG_HEARTHPORTAL_INFO:
+        case SMSG_RETURNPOINT_INFO:
+        case SMSG_AFFIX:
+        case SMSG_RARE_ITEM_NAME:
+        case SMSG_PORTAL_SPECIFIER:
+        case SMSG_ATTRIBUTE_SET_VALUE:
+        case SMSG_ATTRIBUTES_SET_VALUES:
+        case SMSG_VISUAL_INVENTORY:
+        case SMSG_STACK_NOTIFY:
+        case SMSG_STACK_DECREASE_NOTIFY:
+        case SMSG_IDENTIFY_NOTIFY:
+        case SMSG_ITEM_DELETE_NOTIFY:
+        case SMSG_ASSIGNED_SKILL_TO_SLOT:
+        case SMSG_ASSIGNED_TRAIT_TO_SLOT:
+        case SMSG_AUTOASSIGNED_TO_BUTTON:
+        case SMSG_HEARTBEAT:
+        case SMSG_QUEST_UPDATE:
+        case SMSG_QUEST_METER:
+        case SMSG_QUEST_COUNTER:
+        case SMSG_QUEST_REWARD:
+        case SMSG_PLAYER_LEVEL:
+        case SMSG_PLAYER_ALT_LEVEL:
+        case SMSG_SET_HIRELING_DEAD:
+        case SMSG_GOLD_MODIFIED:
+        case SMSG_ACT:
+        case SMSG_INVENTORY_CREATE:
+        case SMSG_GAME_SYNCED_DATA:
+        case SMSG_LORE_LEARNED:
+        case SMSG_CRAFTING_DATA_BLACKSMITH:
+        case SMSG_CRAFTING_DATA_JEWELER:
+        case SMSG_CRAFTING_DATA_MYSTIC:
+        case SMSG_CRAFTING_DATA_BLACKSMITH_INITIAL:
+        case SMSG_CRAFTING_DATA_JEWELER_INITIAL:
+        case SMSG_CRAFTING_DATA_MYSTIC_INITIAL:
+        case SMSG_VENDOR_TRAIN_RESULTS:
+        case SMSG_VENDOR_LEVEL_UP:
+        case SMSG_HIGHEST_UNLOCKED_DIFFICULTY_LEVEL:
+        case SMSG_CURRENT_DIFFICULTY_AND_HANDICAP_LEVEL:
+        case SMSG_HARDCORE_MODE_UNLOCKED:
+        case SMSG_CONSOLE_VALIDATE_HERO:
+        case SMSG_CONSOLE_VALIDATE_ACCOUNT:
+        case SMSG_CONSOLE_SAVE:
+        case SMSG_CONSOLE_SYNC_HERO_SAVED_QUESTS:
+        case SMSG_CONSOLE_SYNC_HERO_QUEST_HISTORY:
+        case SMSG_CONSOLE_SYNC_HERO_QUEST_REWARD_HISTORY:
+        case SMSG_CONSOLE_SYNC_HERO_SAVED_CONVERSATIONS:
+        case SMSG_CONSOLE_SYNC_HERO_ACTIVE_HIRELING:
+        case SMSG_CONSOLE_SYNC_HERO_TIME_PLAYED:
+        case SMSG_CONSOLE_SYNC_ACCOUNT_ACHIEVEMENT_CRITERIA_UPDATE:
+        case SMSG_CONSOLE_COUNTER_PLAYER_MONSTERS_KILLED:
+        case SMSG_CONSOLE_COUNTER_PLAYER_ELITES_KILLED:
+        case SMSG_CONSOLE_COUNTER_PLAYER_GOLD_COLLECTED:
+        case SMSG_CONSOLE_GAME_ENDED:
+        case SMSG_SAVE_BANNER_RESPONSE:
             return true;
 
         default:
