@@ -1,10 +1,12 @@
 # Rehydrated
 
-Rehydrated is a ReXGlue based recompilation project for the vanilla version of Diablo 3 (C1.0.0.17339). This targets the vanilla version specifically, and not later Ultimate Evil Edition releases that include the Reaper of Souls expansion.
+Rehydrated is a ReXGlue based recompilation project for the vanilla version of Diablo 3 (C1.0.0.17339). This targets the vanilla version specifically, and not later Ultimate Evil Edition releases that include the Reaper of Souls expansion. You can find out more about the differences between versions [here](./docs/VersionDifferences.md).
 
-This project is intended for local use only. You also need a legally acquired copy of the game to run it.
+This is not a server emulator, and this project is intended for local use only. You need a legally acquired copy of the game to run it.
 
 Currently in early experimental state: the game runs and is playable as a basic recomp. Right now the main development focus is a proxy mode to allow PC clients to connect to the Xbox 360 server. The proxy mode works with game version 1.0.8.16603 and requires [Rehydrated.Bnet](https://github.com/Crypto137/Rehydrated.Bnet) to route the PC client to a local server.
+
+Feel free to join the [Discord server](https://discord.gg/BtdsgtfuKN) if you want to discuss this project.
 
 ## Building
 
