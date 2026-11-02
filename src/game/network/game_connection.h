@@ -43,7 +43,7 @@ struct GameConnection
     char uPlayerCount;
     TPacketBufferList tOutgoingPacketBufferList;
     rex::be<u32> dword2C;   // m_ConstructorCalled for TPacketBufferList?
-    rex::be<u32> dword30;   // bInGame?
+    rex::be<u32> bInGame;
     rex::be<i32> bDisposing;
     rex::be<i32> bTerminateConnectionWhenOutgoingQueueEmpty;
     rex::be<i32> bNeedHeartBeat;

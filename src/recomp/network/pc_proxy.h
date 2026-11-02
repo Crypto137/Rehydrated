@@ -35,15 +35,13 @@ public:
 
     bool OnServerEventReceive(u32 idServerSocket, u32 pMessage);
 
-    void OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessage);
+    bool OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessage);
 
     void OnServerSocketDisconnect(u32 idServerSocket, i32 eReason);
 
     void OnConnectionAccepted(u32 idServerSocket);
 
     size_t OnDataReceived(TcpSession* session, const char* buf, size_t len) override;
-
-    inline bool IsRoutingGuest() const { return m_isEnabled && m_guestSocketId; }
 
 private:
     PCProxy();

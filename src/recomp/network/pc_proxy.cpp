@@ -25,7 +25,7 @@ REXCVAR_DEFINE_BOOL(server_log_incoming_messages_pc, false, "Hydra/Server", "Log
 
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
-REX_IMPORT(__imp__XServerSocketDisconnect, Guest_XServerSocketDisconnect, void(i32, i32));
+REX_IMPORT(__imp__GameConnectionTryToGet, Guest_GameConnectionTryToGet, u32(u32));
 
 namespace
 {
@@ -167,11 +167,19 @@ bool PCProxy::OnServerEventReceive(u32 idServerSocket, u32 pMessage)
     return !m_isReadingUpdate;
 }
 
-void PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessage)
+bool PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessage)
 {
     if (!m_isEnabled)
-        return;
+        return false;
     
+    u32 ptGameConnectionGuest = Guest_GameConnectionTryToGet(idGameConnection);
+    GameConnection* ptGameConnection = MemoryUtils::GetHostPtr<GameConnection>(ptGameConnectionGuest);
+    if (!ptGameConnection)
+        return false;
+
+    if (ptGameConnection->idServerSocket != m_guestSocketId)
+        return false;
+
     RequiredMessageHeader* ptHeader = MemoryUtils::GetHostPtr<RequiredMessageHeader>(pMessage);
 
     // TODO: Pass persistence messages to the Xbox 360 client? Or handle them in host code?
@@ -185,6 +193,9 @@ void PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessa
     {
         SendSystemBroadcast("Saving...");
     }
+
+    ptGameConnection->bNeedHeartBeat = true;
+    return true;
 }
 
 void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
@@ -197,6 +208,9 @@ void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
     if (m_guestSocketId == idServerSocket)
     {
         m_guestSocketId = 0;
+
+        m_outgoingMessages.clear();
+        m_incomingMessages.clear();
 
         std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
         if (session)
