@@ -745,6 +745,8 @@ bool GameMessageTranslator::IsMessageAllowedForConsolePassthrough(void* pMessage
         case SMSG_QUEST_REWARD:
         case SMSG_PLAYER_LEVEL:
         case SMSG_PLAYER_ALT_LEVEL:
+        case SMSG_ATTACH_PET:
+        case SMSG_DETACH_PET:
         case SMSG_SET_HIRELING_DEAD:
         case SMSG_GOLD_MODIFIED:
         case SMSG_ACT:
