@@ -23,6 +23,7 @@ REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC 
 REXCVAR_DEFINE_BOOL(server_log_incoming_messages_pc, false, "Hydra/Server", "Logs client -> server messages received from PC clients")
     .lifecycle(rex::cvar::Lifecycle::kHotReload);
 
+REX_IMPORT(__imp__ItemHasLabel, Guest_ItemHasLabel, u32(u32, u32));
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
 REX_IMPORT(__imp__GameConnectionTryToGet, Guest_GameConnectionTryToGet, u32(u32));
@@ -96,6 +97,25 @@ bool PCProxy::PartyCanStartGame()
     }
 
     return true;
+}
+
+bool PCProxy::ItemIsLargeSlotItem(u32 gbidItem) const
+{
+    // Potentially we can add a separate toggle to enable large slot items in console mode for consistency.
+    if (!m_isEnabled)
+        return false;
+
+    // This code mimics the PC-side implementation (as of 1.0.8) that is removed from console builds.
+    if (Guest_ItemHasLabel(gbidItem, ITL_ARMOR) && !Guest_ItemHasLabel(gbidItem, ITL_BELT))
+        return true;
+
+    if (Guest_ItemHasLabel(gbidItem, ITL_WEAPON))
+        return true;
+
+    if (Guest_ItemHasLabel(gbidItem, ITL_OFFHAND))
+        return true;
+
+    return false;
 }
 
 void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection)

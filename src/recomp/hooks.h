@@ -4,6 +4,8 @@
 
 // Game
 
+void HydraHook_ItemIsLargeSlotItem(PPCRegister& r3);
+
 void HydraHook_SGameInitializeGame(PPCRegister& r3);
 
 // Input

@@ -15,6 +15,12 @@ struct GameConnection;
 
 // Game
 
+void HydraHook_ItemIsLargeSlotItem(PPCRegister& r3)
+{
+    GBID gbidItem = r3.u32;
+    r3.u32 = PCProxy::Instance().ItemIsLargeSlotItem(gbidItem) ? 1 : 0;
+}
+
 void HydraHook_SGameInitializeGame(PPCRegister& r3)
 {
     const GameParams* tParams = MemoryUtils::GetHostPtr<GameParams>(r3.u32);

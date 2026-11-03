@@ -1,3 +1,11 @@
+# ItemIsLargeSlotItem returns true for gbids corresponding to items that occupy two slots.
+[[midasm_hook]]
+address = 0x8270B0F8
+name = "HydraHook_ItemIsLargeSlotItem"
+registers = ["r3"]
+after_instruction = false
+return = true
+
 # Hooks SGameInitializeGame, which is called when a game instance
 # is initialized with GameParams server-side.
 [[midasm_hook]]
