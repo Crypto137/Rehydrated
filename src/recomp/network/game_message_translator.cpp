@@ -594,6 +594,42 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             break;
         }
 
+        case SMSG_ENTER_WORLD:
+        {
+            EnterWorldMessage* enterWorldMessage = static_cast<EnterWorldMessage*>(pMessage);
+            enterWorldMessage->snoWorld = ConvertSnoConsoleToPC(WORLD_SNO, enterWorldMessage->snoWorld);
+            break;
+        }
+
+        case SMSG_REVEAL_SCENE:
+        {
+            RevealSceneMessage* revealSceneMessage = static_cast<RevealSceneMessage*>(pMessage);
+            revealSceneMessage->snoScene = ConvertSnoConsoleToPC(SCENE_SNO, revealSceneMessage->snoScene);
+            revealSceneMessage->snoSceneGroup = ConvertSnoConsoleToPC(SCENEGROUP_SNO, revealSceneMessage->snoSceneGroup);
+
+            SceneSpecification& tSceneSpec = revealSceneMessage->tSceneSpec;
+            for (int i = 0; i < 4; ++i)
+                tSceneSpec.arSnoLevelAreas[i] = ConvertSnoConsoleToPC(LEVELAREA_SNO, tSceneSpec.arSnoLevelAreas[i]);
+            tSceneSpec.snoPrevWorld = ConvertSnoConsoleToPC(WORLD_SNO, tSceneSpec.snoPrevWorld);
+            tSceneSpec.snoPrevLevelArea = ConvertSnoConsoleToPC(LEVELAREA_SNO, tSceneSpec.snoPrevLevelArea);
+            tSceneSpec.snoNextWorld = ConvertSnoConsoleToPC(WORLD_SNO, tSceneSpec.snoNextWorld);
+            tSceneSpec.snoNextLevelArea = ConvertSnoConsoleToPC(LEVELAREA_SNO, tSceneSpec.snoNextLevelArea);
+            tSceneSpec.snoMusic = ConvertSnoConsoleToPC(MUSIC_SNO, tSceneSpec.snoMusic);
+            tSceneSpec.snoAmbient = ConvertSnoConsoleToPC(AMBIENTSOUND_SNO, tSceneSpec.snoAmbient);
+            tSceneSpec.snoReverb = ConvertSnoConsoleToPC(REVERB_SNO, tSceneSpec.snoReverb);
+            tSceneSpec.snoWeather = ConvertSnoConsoleToPC(WEATHER_SNO, tSceneSpec.snoWeather);
+            tSceneSpec.snoPresetWorld = ConvertSnoConsoleToPC(WORLD_SNO, tSceneSpec.snoPresetWorld);
+
+            break;
+        }
+
+        case SMSG_REVEAL_WORLD:
+        {
+            RevealWorldMessage* revealWorldMessage = static_cast<RevealWorldMessage*>(pMessage);
+            revealWorldMessage->snoWorld = ConvertSnoConsoleToPC(WORLD_SNO, revealWorldMessage->snoWorld);
+            break;
+        }
+
         case SMSG_REVEAL_TEAM:
         {
             RevealTeamMessage* revealTeamMessage = static_cast<RevealTeamMessage*>(pMessage);
@@ -637,6 +673,13 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             break;
         }
 
+        case SMSG_MAP_REVEAL_SCENE:
+        {
+            MapRevealSceneMessage* mapRevealSceneMessage = static_cast<MapRevealSceneMessage*>(pMessage);
+            mapRevealSceneMessage->snoScene = ConvertSnoConsoleToPC(SCENE_SNO, mapRevealSceneMessage->snoScene);
+            break;
+        }
+
         case SMSG_AFFIX:
         {
             AffixMessage* affixMessage = static_cast<AffixMessage*>(pMessage);
@@ -662,6 +705,17 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             break;
         }
 
+        case SMSG_VISUAL_INVENTORY:
+        {
+            VisualInventoryMessage* visualInventoryMessage = static_cast<VisualInventoryMessage*>(pMessage);
+            for (int i = 0; i < 8; ++i)
+            {
+                VisualItem& tVisualItem = visualInventoryMessage->tEquipment.tVisualItem[i];
+                tVisualItem.gbidItem = ConvertGbidConsoleToPC(GB_ITEMS, tVisualItem.gbidItem);
+            }
+            break;
+        }
+
         case SMSG_PLAYER_WARPED:
         {
             PlayerWarpedMessage* playerWarpedMessage = static_cast<PlayerWarpedMessage*>(pMessage);
@@ -672,6 +726,15 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
                 else
                     playerWarpedMessage->eWarpReason = WARP_UNKNOWN;
             }
+            break;
+        }
+
+        case SMSG_GAME_TESTING_START_SAMPLING:
+        {
+            // probably don't really need this one, but why not
+            GameTestingSamplingStartMessage* gameTestingSamplingStartMessage = static_cast<GameTestingSamplingStartMessage*>(pMessage);
+            gameTestingSamplingStartMessage->snoWorld = ConvertSnoConsoleToPC(WORLD_SNO, gameTestingSamplingStartMessage->snoWorld);
+            gameTestingSamplingStartMessage->snoScene = ConvertSnoConsoleToPC(SCENE_SNO, gameTestingSamplingStartMessage->snoScene);
             break;
         }
 

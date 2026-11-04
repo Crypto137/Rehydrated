@@ -15,6 +15,8 @@ struct SnoMapping
 };
 
 constexpr SnoMapping s_ActorSnoMappings[] = {
+    { 304315,   4440 },    // healthPotion_Console -> healthPotion_Minor
+
     { 255340, 255289 },    // hero_bugWings_barbF
     { 255737, 255668 },    // hero_bugWings_barbM
     { 255738, 255669 },    // hero_bugWings_DHF
@@ -132,9 +134,9 @@ constexpr SnoMapping s_ActorSnoMappings[] = {
 constexpr size_t kNumActorSnoMappings = sizeof(s_ActorSnoMappings) / sizeof(s_ActorSnoMappings[0]);
 
 constexpr SnoMapping s_ConversationSnoMappings[] = {
-    { 275335, 275484 },    // Dueling1
-    { 275341, 275485 },    // Dueling2
-    { 275435, 275487 },    // Dueling4
+    { 275484, 275335 },    // Dueling1
+    { 275485, 275341 },    // Dueling2
+    { 275487, 275435 },    // Dueling4
 };
 
 constexpr size_t kNumConversationSnoMappings = sizeof(s_ConversationSnoMappings) / sizeof(s_ConversationSnoMappings[0]);
@@ -150,11 +152,11 @@ constexpr SnoMapping s_EncounterSnoMappings[] = {
 constexpr size_t kNumEncounterSnoMappings = sizeof(s_EncounterSnoMappings) / sizeof(s_EncounterSnoMappings[0]);
 
 constexpr SnoMapping s_LevelAreaSnoMappings[] = {
-    { 256080, 256132 },    // Uber_BossWorld2
-    { 256734, 256745 },    // Uber_BossWorld3
-    { 256766, 256768 },    // Uber_BossWorld1
-    { 257115, 257118 },    // Uber_PortalWorld
-    { 269860, 270071 },    // DuelWorld
+    { 256132, 256080 },    // Uber_BossWorld2
+    { 256745, 256734 },    // Uber_BossWorld3
+    { 256768, 256766 },    // Uber_BossWorld1
+    { 257118, 257115 },    // Uber_PortalWorld
+    { 270071, 269860 },    // DuelWorld
 };
 
 constexpr size_t kNumLevelAreaSnoMappings = sizeof(s_LevelAreaSnoMappings) / sizeof(s_LevelAreaSnoMappings[0]);
@@ -336,6 +338,9 @@ constexpr SnoMapping s_PowerSnoMappings[] = {
 constexpr size_t kNumPowerSnoMappings = sizeof(s_PowerSnoMappings) / sizeof(s_PowerSnoMappings[0]);
 
 constexpr SnoMapping s_SceneSnoMappings[] = {
+    { 303775,  31365 },    // caOut_StingingWinds_E07_S10_con -> caOut_StingingWinds_E07_S10
+    { 304004,  83416 },    // trOut_oldTristram_TreeCave_con -> trOut_oldTristram_TreeCave
+
     { 256705, 256695 },    // Uber_Skeletal_Throne
     { 257211, 257179 },    // Uber_BossWorld2_Arena
     { 257567, 257204 },    // Uber_Boss_PortalWorld
@@ -383,11 +388,11 @@ constexpr SnoMapping s_WeatherSnoMappings[] = {
 constexpr size_t kNumWeatherSnoMappings = sizeof(s_WeatherSnoMappings) / sizeof(s_WeatherSnoMappings[0]);
 
 constexpr SnoMapping s_WorldSnoMappings[] = {
-    { 256072, 256137 },    // Uber_BossWorld1
-    { 256078, 256138 },    // Uber_BossWorld2
-    { 256592, 256600 },    // Uber_BossWorld3
-    { 257114, 257119 },    // Uber_PortalWorld
-    { 275156, 275194 },    // PvP_Duel_Small
+    { 256137, 256072 },    // Uber_BossWorld1
+    { 256138, 256078 },    // Uber_BossWorld2
+    { 256600, 256592 },    // Uber_BossWorld3
+    { 257119, 257114 },    // Uber_PortalWorld
+    { 275194, 275156 },    // PvP_Duel_Small
 };
 
 constexpr size_t kNumWorldSnoMappings = sizeof(s_WorldSnoMappings) / sizeof(s_WorldSnoMappings[0]);
