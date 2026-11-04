@@ -657,6 +657,9 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             ACDEnterKnownMessage* acdEnterKnownMessage = static_cast<ACDEnterKnownMessage*>(pMessage);
             acdEnterKnownMessage->snoActor = ConvertSnoConsoleToPC(ACTOR_SNO, acdEnterKnownMessage->snoActor);
             acdEnterKnownMessage->hGB.gbid = ConvertGbidConsoleToPC(acdEnterKnownMessage->hGB.eType, acdEnterKnownMessage->hGB.gbid);
+
+            SNOName& tSNOName = acdEnterKnownMessage->tSNOName;
+            tSNOName.snoHandle = ConvertSnoConsoleToPC(tSNOName.snoGroup, tSNOName.snoHandle);
             break;
         }
 
@@ -716,6 +719,21 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             break;
         }
 
+        /* Disabled because this breaks conversations for some reason?
+        case SMSG_NPC_INTERACT:
+        {
+            NPCInteractOptionsMessage* npcInteractOptionsMessage = static_cast<NPCInteractOptionsMessage*>(pMessage);
+            int nNumInteractions = npcInteractOptionsMessage->nNumInteractions;
+            for (int i = 0; i < nNumInteractions; ++i)
+            {
+                NPCInteraction& tNPCInteraction = npcInteractOptionsMessage->tNPCInteraction[i];
+                if (tNPCInteraction.eType == NIT_TALK_DIALOG)
+                    tNPCInteraction.dwData = ConvertSnoConsoleToPC(CONVERSATION_SNO, static_cast<SNO>(tNPCInteraction.dwData.get()));
+            }
+            break;
+        }
+        */
+
         case SMSG_PLAYER_WARPED:
         {
             PlayerWarpedMessage* playerWarpedMessage = static_cast<PlayerWarpedMessage*>(pMessage);
@@ -726,6 +744,22 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
                 else
                     playerWarpedMessage->eWarpReason = WARP_UNKNOWN;
             }
+            break;
+        }
+
+        case SMSG_PLAY_CONV_LINE:
+        {
+            PlayConvLineMessage* playConvLineMessage = static_cast<PlayConvLineMessage*>(pMessage);
+            PlayLineParams& tParams = playConvLineMessage->tParams;
+            tParams.snoConversation = ConvertSnoConsoleToPC(CONVERSATION_SNO, tParams.snoConversation);
+            tParams.snoSpeakerActor = ConvertSnoConsoleToPC(ACTOR_SNO, tParams.snoSpeakerActor);
+            break;
+        }
+
+        case SMSG_END_CONV:
+        {
+            EndConversationMessage* endConversationMessage = static_cast<EndConversationMessage*>(pMessage);
+            endConversationMessage->snoConversation = ConvertSnoConsoleToPC(CONVERSATION_SNO, endConversationMessage->snoConversation);
             break;
         }
 
@@ -789,6 +823,20 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
         {
             GBIDDataMessage* gbidDataMessage = static_cast<GBIDDataMessage*>(pMessage);
             gbidDataMessage->gbidData = ConvertGbidPCToConsole(GB_ITEMS, gbidDataMessage->gbidData);
+            break;
+        }
+
+        case CMSG_REQUEST_CONV_ADVANCE:
+        {
+            AdvanceConvMessage* advanceConvMessage = static_cast<AdvanceConvMessage*>(pMessage);
+            advanceConvMessage->snoConv = ConvertSnoPCToConsole(CONVERSATION_SNO, advanceConvMessage->snoConv);
+            break;
+        }
+
+        case CMSG_UPDATE_CONV_AUTO_ADVANCE:
+        {
+            UpdateConvAutoAdvanceMessage* updateConvAutoAdvance = static_cast<UpdateConvAutoAdvanceMessage*>(pMessage);
+            updateConvAutoAdvance->snoConv = ConvertSnoPCToConsole(CONVERSATION_SNO, updateConvAutoAdvance->snoConv);
             break;
         }
 

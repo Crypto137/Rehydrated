@@ -1279,7 +1279,18 @@ struct TryWaypointMessage
 
 enum NPCInteractionType
 {
-    // TODO
+    NIT_INVALID,
+    NIT_CANCEL,
+    NIT_TALK_IMPORTANT,
+    NIT_TALK_DIALOG,
+    NIT_PET_DISMISS,
+    NIT_CRAFT,
+    NIT_IDENTIFY,
+    NIT_HIRE,
+    NIT_INVENTORY,
+    NIT_CUSTOMIZATION,
+    //NIT_EQUIPMENT_MANAGER,
+    NIT_NUM_TYPES,
 };
 
 struct NPCInteraction

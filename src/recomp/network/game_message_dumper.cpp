@@ -238,6 +238,31 @@ std::string GetDataString(const void* pMessage, unsigned int pTypeDescriptor)
             return str;
         }
 
+        case DT_NPC_INTERACT_OPTIONS_MESSAGE:
+        {
+            const NPCInteractOptionsMessage* npcInteractOptionsMessage = static_cast<const NPCInteractOptionsMessage*>(pMessage);
+
+            std::string str = std::format("annTalkingTo=0x{:08X}", static_cast<int>(npcInteractOptionsMessage->annTalkingTo.get()));
+
+            str += ", tNPCInteraction = [";
+            int nNumInteractions = npcInteractOptionsMessage->nNumInteractions;
+            for (int i = 0; i < nNumInteractions; ++i)
+            {
+                const NPCInteraction& tNPCInteraction = npcInteractOptionsMessage->tNPCInteraction[i];
+                str += std::format("({}) eType={}, dwData=0x{:08X}, dwData2=0x{:08X}, dwFlags=0x{:08X}; ",
+                    i,
+                    static_cast<int>(tNPCInteraction.eType.get()),
+                    tNPCInteraction.dwData.get(),
+                    tNPCInteraction.dwData2.get(),
+                    tNPCInteraction.dwFlags.get());
+            }
+            str += "]";
+
+            str += std::format(", ePreferredMenu={}", static_cast<int>(npcInteractOptionsMessage->ePreferredMenu.get()));
+
+            return str;
+        }
+
         default:
             return "<UNDEFINED>";
     }
