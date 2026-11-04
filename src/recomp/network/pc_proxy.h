@@ -58,5 +58,7 @@ private:
     u32 m_guestSocketId;
     std::list<std::unique_ptr<char[]>> m_outgoingMessages;
     std::list<std::unique_ptr<char[]>> m_incomingMessages;
-    std::mutex m_pcMessageMutex;
+    // We don't have a mutex for outgoing messages because that queue
+    // should be interacted with only from the guest server thread.
+    std::mutex m_incomingMessageMutex;
 };

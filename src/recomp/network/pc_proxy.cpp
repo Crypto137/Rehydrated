@@ -160,19 +160,20 @@ void PCProxy::OnPostXServerReadUpdate()
 
     m_isReadingUpdate = true;
 
-    std::unique_lock<std::mutex> lock(m_pcMessageMutex);
-
     u32 ptDecodeBufferGuest = Guest_NetworkGetDecodeBuffer();
     char* ptDecodeBuffer = MemoryUtils::GetHostPtr<char>(ptDecodeBufferGuest);
 
-    while (!m_incomingMessages.empty())
     {
-        auto it = m_incomingMessages.begin();
-        RequiredMessageHeader* ptHeader = reinterpret_cast<RequiredMessageHeader*>(it->get());
-        std::memcpy(ptDecodeBuffer, ptHeader, ptHeader->dwSize);
-        m_incomingMessages.pop_front();
-        
-        Guest_ServerEventReceive(m_guestSocketId, ptDecodeBufferGuest);
+        std::unique_lock<std::mutex> lock(m_incomingMessageMutex);
+        while (!m_incomingMessages.empty())
+        {
+            auto it = m_incomingMessages.begin();
+            RequiredMessageHeader* ptHeader = reinterpret_cast<RequiredMessageHeader*>(it->get());
+            std::memcpy(ptDecodeBuffer, ptHeader, ptHeader->dwSize);
+            m_incomingMessages.pop_front();
+
+            Guest_ServerEventReceive(m_guestSocketId, ptDecodeBufferGuest);
+        }
     }
 
     m_isReadingUpdate = false;
@@ -233,7 +234,11 @@ void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
         m_guestSocketId = 0;
 
         m_outgoingMessages.clear();
-        m_incomingMessages.clear();
+
+        {
+            std::unique_lock<std::mutex> lock(m_incomingMessageMutex);
+            m_incomingMessages.clear();
+        }
 
         std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
         if (session)
@@ -291,7 +296,7 @@ size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
 
 void PCProxy::ReceiveMessages(const char* buf, size_t len)
 {
-    std::unique_lock<std::mutex> lock(m_pcMessageMutex);
+    std::unique_lock<std::mutex> lock(m_incomingMessageMutex);
 
     // This is roughly equivalent to sXServerReceive
     char* ptDecodeBuffer = GetDecodeBuffer();
