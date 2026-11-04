@@ -1,6 +1,5 @@
 #pragma once
 
-#include <rex/ppc.h>    // IntelliSense seems to break if we don't include this for some reason???
 #include <rex/system/kernel_state.h>
 
 namespace MemoryUtils {
