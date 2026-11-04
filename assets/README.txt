@@ -1,0 +1,1 @@
+Extract Default.xex and the CPKs folder from a vanilla US disc image of Diablo 3 for Xbox 360 (MD5 3360CCDA2970F81AD75DE8EC02D2AE1E) and put them in this folder.
