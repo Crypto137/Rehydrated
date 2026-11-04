@@ -1,5 +1,7 @@
 #include "recomp/network/game_message_translator.h"
 
+#include "core/memory_utils.h"
+#include "game/attributes/attrib_defs.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
 #include "recomp/network/gbid_mappings.h"
 #include "recomp/network/sno_mappings.h"
@@ -526,8 +528,44 @@ namespace
 
 void TranslatePlayerSavedDataConsoleToPC(PlayerSavedData& tPlayerSavedData)
 {
-    HotbarButtonData& ptPotionButton = tPlayerSavedData.tPotionBtn;
-    ptPotionButton.m_gbidItem = GameMessageTranslator::ConvertGbidConsoleToPC(GB_ITEMS, ptPotionButton.m_gbidItem);
+    HotbarButtonData& pPotionButton = tPlayerSavedData.tPotionBtn;
+    pPotionButton.m_gbidItem = GameMessageTranslator::ConvertGbidConsoleToPC(GB_ITEMS, pPotionButton.m_gbidItem);
+
+    HirelingSavedData& tHirelingSavedData = tPlayerSavedData.tHirelingSavedData;
+    for (int i = 0; i < 4; ++i)
+    {
+        HirelingInfo& tHireling = tHirelingSavedData.tHireling[i];
+        for (int j = 0; j < 4; ++j)
+            tHireling.arnPowerKeyParam[j] = GameMessageTranslator::ConvertSnoConsoleToPC(POWER_SNO, tHireling.arnPowerKeyParam[j]);
+    }
+}
+
+void TranslateAttribConsoleToPC(NetAttributeKeyValue& tKeyVal)
+{
+    Attrib eConsoleAttrib = tKeyVal.eKeyAttrib;
+    Attrib ePCAttrib = GameMessageTranslator::ConvertAttribConsoleToPC(eConsoleAttrib);
+    tKeyVal.eKeyAttrib = ePCAttrib;
+
+    if (tKeyVal.nKeyParam.m_bExists)
+    {
+        const AttribDef& tAttribDef = MemoryUtils::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
+        if (tAttribDef.eParameterType == APT_SKILL)
+            tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoConsoleToPC(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.get()));
+    }
+}
+
+void TranslateAttribPCToConsole(NetAttributeKeyValue& tKeyVal)
+{
+    Attrib ePCAttrib = tKeyVal.eKeyAttrib;
+    Attrib eConsoleAttrib = GameMessageTranslator::ConvertAttribPCToConsole(ePCAttrib);
+    tKeyVal.eKeyAttrib = eConsoleAttrib;
+
+    if (tKeyVal.nKeyParam.m_bExists)
+    {
+        const AttribDef& tAttribDef = MemoryUtils::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
+        if (tAttribDef.eParameterType == APT_SKILL)
+            tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoPCToConsole(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.get()));
+    }
 }
 
 }
@@ -611,8 +649,7 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
         case SMSG_ATTRIBUTE_SET_VALUE:
         {
             AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
-            Attrib eConsoleAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
-            attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
+            TranslateAttribConsoleToPC(attributeSetValueMessage->tKeyVal);
             break;
         }
 
@@ -621,17 +658,7 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
             int nCount = attributesSetValuesMessage->nAttributeCount;
             for (int i = 0; i < nCount; ++i)
-            {
-                Attrib eConsoleAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
-                attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribConsoleToPC(eConsoleAttrib);
-            }
-            break;
-        }
-
-        case CMSG_PLAYER_CHANGE_POTION_BUTTON:
-        {
-            GBIDDataMessage* gbidDataMessage = static_cast<GBIDDataMessage*>(pMessage);
-            gbidDataMessage->gbidData = ConvertGbidConsoleToPC(GB_ITEMS, gbidDataMessage->gbidData);
+                TranslateAttribConsoleToPC(attributesSetValuesMessage->atKeyVals[i]);
             break;
         }
 
@@ -663,11 +690,19 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
 
     switch (eConsoleType)
     {
+        case CMSG_ACCEPTED_DEATH:
+        {
+            // Leaving the value for CMSG_ACCEPTED_DEATH at zero corresponds to REVIVAL_TYPE_IN_TOWN.
+            // This is not accurate to the PC version, which used the equivalent of AT_CHECKPOINT.
+            IntDataMessage* intDataMessage = static_cast<IntDataMessage*>(pMessage);
+            intDataMessage->nData = REVIVAL_TYPE_AT_CHECKPOINT;
+            break;
+        }
+
         case SMSG_ATTRIBUTE_SET_VALUE:
         {
             AttributeSetValueMessage* attributeSetValueMessage = static_cast<AttributeSetValueMessage*>(pMessage);
-            Attrib ePCAttrib = attributeSetValueMessage->tKeyVal.eKeyAttrib;
-            attributeSetValueMessage->tKeyVal.eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
+            TranslateAttribPCToConsole(attributeSetValueMessage->tKeyVal);
             break;
         }
 
@@ -676,10 +711,14 @@ void GameMessageTranslator::TranslateMessagePCToConsole(void* pMessage)
             AttributesSetValuesMessage* attributesSetValuesMessage = static_cast<AttributesSetValuesMessage*>(pMessage);
             int nCount = attributesSetValuesMessage->nAttributeCount;
             for (int i = 0; i < nCount; ++i)
-            {
-                Attrib ePCAttrib = attributesSetValuesMessage->atKeyVals[i].eKeyAttrib;
-                attributesSetValuesMessage->atKeyVals[i].eKeyAttrib = ConvertAttribPCToConsole(ePCAttrib);
-            }
+                TranslateAttribPCToConsole(attributesSetValuesMessage->atKeyVals[i]);
+            break;
+        }
+
+        case CMSG_TRY_CHOOSE_HIRELING_SKILL:
+        {
+            HirelingRequestLearnSkillMessage* hirelingRequestLearnSkillMessage = static_cast<HirelingRequestLearnSkillMessage*>(pMessage);
+            hirelingRequestLearnSkillMessage->snoSkill = ConvertSnoPCToConsole(POWER_SNO, hirelingRequestLearnSkillMessage->snoSkill);
             break;
         }
 

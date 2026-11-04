@@ -321,7 +321,7 @@ struct HirelingInfo
     rex::be<i32> field8;    // max 0x7F, bit count 7
     rex::be<i32> field12;
     rex::be<i32> fDead;
-    rex::be<i32> arnPowerKeyParam[4];
+    rex::be<SNO> arnPowerKeyParam[4];
 };
 
 struct HirelingSavedData
@@ -1384,7 +1384,7 @@ struct HirelingInfoUpdateMessage
     rex::be<i32> fDead;
     rex::be<GBID> gbidName;
     rex::be<i32> eValidClass;
-    rex::be<i32> arnPowerKeyParam[5];
+    rex::be<SNO> arnPowerKeyParam[5];
     rex::be<ACDNetworkName> annItems[6];
     rex::be<i32> nPlayerIndex;
 };

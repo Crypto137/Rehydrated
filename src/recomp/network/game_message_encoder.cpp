@@ -16,8 +16,6 @@
 namespace
 {
 
-constexpr u32 cgarAttribDefs = 0x82F9DA88;
-
 bool AttributeCompressor_EncodeUncompressed(AttributeCompressorUncompressed* ptCompressor, XEncoder& tEncoder, NetAttributeKeyValue& tKeyValue)
 {
     u32 dwBits = ptCompressor->m_dwBits;
@@ -1073,7 +1071,11 @@ XDecoder::Result GameMessageEncoder::DecodeMessage(GameMessageType eMessageType,
 
     RequiredMessageHeader* tHeader = static_cast<RequiredMessageHeader*>(pDecodeToBuffer);
     tHeader->dwSize = static_cast<u16>(dwSize);
-    tHeader->eType = eMessageType;
+    tHeader->eType = GameMessageTranslator::ConvertMessageTypeConsoleToPC(eMessageType);
+
+    // Calling ConvertMessageTypeConsoleToPC() above is kinda dumb because we immediately convert it back,
+    // but it keeps TranslateMessagePCToConsole() semantics clean. There should be a more elegant way to solve this.
+    GameMessageTranslator::TranslateMessagePCToConsole(pDecodeToBuffer);
 
     if (pTypeDescriptor == DT_GENERIC_BLOB_MESSAGE)
     {
@@ -1102,13 +1104,6 @@ XDecoder::Result GameMessageEncoder::DecodeMessage(GameMessageType eMessageType,
             if (result)
                 return result;
         }
-    }
-    else if (eMessageType == CMSG_ACCEPTED_DEATH)
-    {
-        // Leaving value for CMSG_ACCEPTED_DEATH at zero corresponds to REVIVAL_TYPE_IN_TOWN.
-        // This is not accurate to the PC version, which used the equivalent of AT_CHECKPOINT.
-        IntDataMessage* intDataMessage = static_cast<IntDataMessage*>(pDecodeToBuffer);
-        intDataMessage->nData = REVIVAL_TYPE_AT_CHECKPOINT;
     }
 
     return XDecoder::RESULT_VALID;

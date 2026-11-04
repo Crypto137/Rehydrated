@@ -7,6 +7,8 @@
 
 struct AttributeCompressor;
 
+constexpr u32 cgarAttribDefs = 0x82F9DA88;
+
 enum AttributeParameterType
 {
     APT_NONE = -1,
