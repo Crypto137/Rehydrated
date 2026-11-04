@@ -16,7 +16,7 @@ protected:
 
     // Override virtual hooks for customization:
     // void OnPostInitLogging() override {}
-    // void OnPreSetup(rex::RuntimeConfig& config) override {}
+    void OnPreSetup(rex::RuntimeConfig& config) override;
     // void OnLoadXexImage(std::string& xex_image) override {}
     // void OnPostLoadXexImage() override {}
     void OnPostSetup() override;
@@ -25,5 +25,5 @@ protected:
     // std::unique_ptr<rex::ui::AchievementNotificationDialog>
     // CreateAchievementNotificationDialog() override;
     // void OnShutdown() override {}
-    // void OnConfigurePaths(rex::PathConfig& paths) override {}
+    void OnConfigurePaths(rex::PathConfig& paths) override;
 };

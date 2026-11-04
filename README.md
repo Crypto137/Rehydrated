@@ -22,8 +22,6 @@ This is still at the proof-of-concept stage, so expect some tinkering to get it 
   
   - Building for the first time and when changes are made to .toml files can be slow, especially in debug mode. You should prefer the release mode by default.
 
-- If you get a black screen with UI on top of it, press `F4` to open settings and enable `execute_unclipped_draw_vs_on_cpu` under `GPU`.
-
 ## FAQ
 
 **What makes this different from other similar projects?**
