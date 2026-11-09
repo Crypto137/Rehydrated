@@ -52,6 +52,8 @@ This file documents the differences between the vanilla pre-expansion versions o
 
 - Additional tiers of affixes were added, raising the ceiling of equipment power.
 
+- Rare items now drop already identified, and the identification cast time was removed.
+
 - New affixes were added for some of the Legendary items.
 
 - Legendaries can roll as higher level versions when dropped by higher level monsters.

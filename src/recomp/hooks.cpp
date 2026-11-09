@@ -6,6 +6,7 @@
 
 #include "core/memory_utils.h"
 #include "game/game.h"
+#include "game/types.h"
 #include "recomp/static_data_dumper.h"
 #include "recomp/network/game_message_dumper.h"
 #include "recomp/network/pc_proxy.h"
@@ -38,6 +39,16 @@ void HydraHook_SGameInitializeGame(PPCRegister& r3)
         tParams->szServerAddress,
         tParams->szReplayFileName,
         tParams->szGameName);
+}
+
+void HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified(PPCRegister& r25, PPCRegister& r26)
+{
+    ItemQualityLevel eIQL = static_cast<ItemQualityLevel>(r25.s32);
+    i32& bIsIdentified = r26.s32;
+
+    // TODO: make this configurable
+    if (eIQL >= IQL_RARE_4_AFFIX && eIQL <= IQL_RARE_6_AFFIX)
+        bIsIdentified = 0;
 }
 
 // Input

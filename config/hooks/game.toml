@@ -13,3 +13,12 @@ address = 0x828DA598
 name = "HydraHook_SGameInitializeGame"
 registers = ["r3"]
 after_instruction = false
+
+# Here we hook LootCreateItem after it sets the isIdentified bool (r26)
+# based on item quality level (r25). On consoles only legendary (IQL 9)
+# items drop as unidentified by default.
+[[midasm_hook]]
+address = 0x829781A4
+name = "HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified"
+registers = ["r25", "r26"]
+after_instruction = false

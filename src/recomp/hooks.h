@@ -8,6 +8,8 @@ void HydraHook_ItemIsLargeSlotItem(PPCRegister& r3);
 
 void HydraHook_SGameInitializeGame(PPCRegister& r3);
 
+void HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified(PPCRegister& r25, PPCRegister& r26);
+
 // Input
 
 void HydraHook_PostInputUpdate(PPCRegister& r3);

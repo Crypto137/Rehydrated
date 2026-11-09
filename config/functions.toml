@@ -791,6 +791,7 @@
 0x826CB1C0 = { name = "AppGetTicks" }
 0x826CB550 = { name = "GameCommonDataExists" }
 0x826CB5B0 = { name = "GameActiveGameCommonDataIsClient" }
+0x826CB5E0 = { name = "GameActiveGameCommonDataIsServer" }
 0x826CB618 = { name = "GameSetActiveGameCommonData" }
 0x826CB6A0 = { name = "sFileSystemInitialize" }
 0x826CB8F0 = { name = "FileSystemDisposeForApp" }
@@ -986,6 +987,7 @@
 0x82710290 = { name = "ItemAddBaseAttributesForItem" }
 0x82713360 = { name = "ItemsAddItemAffixGBID" }
 0x827134A8 = { name = "ItemGenerateCommon" }
+0x82713E40 = { name = "CItemGenerate" }
 0x82714018 = { name = "ItemsDisposeForGame" }
 0x82714F38 = { name = "ItemsInitializeForGame" }
 0x82717770 = { name = "VisualInventoryInitializeForGame" }
@@ -1025,6 +1027,7 @@
 0x82735318 = { name = "FastAttribInitializeForGame" }
 0x82736EC8 = { name = "FastAttribInitializeForApp" }
 0x827371B8 = { name = "FastAttribDisposeForApp" }
+0x82737550 = { name = "FastAttribSetValueInt" }
 0x82737AF0 = { name = "FastAttribDisposeForGame" }
 0x8273DAE8 = { name = "GameBalanceGroupDef__GetMaxCount" }
 0x8273DAF0 = { name = "GameBalanceGroupDef__GetSNOPackDestination" }
@@ -2143,6 +2146,8 @@
 0x82971178 = { name = "FlippiesInitializeForGame" }
 0x829737C8 = { name = "LootInitializeForGame" }
 0x82973820 = { name = "LootDisposeForGame" }
+0x82977E90 = { name = "LootCreateItem" }
+0x8297B8A0 = { name = "SItemGenerate" }
 0x8297B990 = { name = "SItemPlayerIdentify" }
 0x8297F560 = { name = "SWorldPlayerEnter" }
 0x82980250 = { name = "SWorldsInitializeForGame" }

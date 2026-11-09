@@ -1980,24 +1980,6 @@ struct PlayerDeSyncSnapMessage
     rex::be<i32> nPlayerIndex;
 };
 
-enum ItemQualityLevel : int
-{
-    IQL_INVALID = -1,
-    IQL_INFERIOR,
-    IQL_NORMAL,
-    IQL_SUPERIOR,
-    IQL_MAGIC_1_AFFIX,
-    IQL_MAGIC_2_AFFIX,
-    IQL_MAGIC_3_AFFIX,
-    IQL_RARE_4_AFFIX,
-    IQL_RARE_5_AFFIX,
-    IQL_RARE_6_AFFIX,
-    IQL_LEGENDARY,
-    //IQL_SPECIAL,  // the field specifies -1 to 10 range, so IQL_SPECIAL was probably added later
-    IQL_NUM_ITEM_QUALITY_LEVELS,
-    IQL_DISPLAY_AS_SET_ITEM = IQL_NUM_ITEM_QUALITY_LEVELS,
-};
-
 struct SalvageResultsMessage
 {
     RequiredMessageHeader tHeader;
