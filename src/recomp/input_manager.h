@@ -1,9 +1,15 @@
 #pragma once
 
-#include <atomic>
+#include <list>
+#include <memory>
+#include <mutex>
 
 #include <rex/ui/window.h>
 #include <rex/ui/window_listener.h>
+
+#include "game/input.h"
+
+using InputQueue = std::list<BufferedInput>;
 
 class InputManager : public rex::ui::WindowInputListener, public rex::ui::WindowListener
 {
@@ -33,7 +39,9 @@ private:
     InputManager();
     ~InputManager() = default;
 
-    std::atomic<bool> m_mouseMoved;
-    std::atomic<f32> m_mouseX;
-    std::atomic<f32> m_mouseY;
+    void QueueInput(const BufferedInput& input);
+
+    std::unique_ptr<InputQueue> m_currentInput;
+    std::unique_ptr<InputQueue> m_pendingInput;
+    std::mutex m_inputMutex;
 };
