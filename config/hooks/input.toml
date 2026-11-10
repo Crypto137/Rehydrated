@@ -1,6 +1,6 @@
-# Hooks InputUpdate just before it returns.
+# Hooks InputUpdate where we can push input events via InputBufferInput().
 [[midasm_hook]]
-address = 0x82340C00
-name = "HydraHook_PostInputUpdate"
-registers = ["r3"]
+address = 0x82340490
+name = "HydraHook_InputUpdate"
+registers = []
 after_instruction = false

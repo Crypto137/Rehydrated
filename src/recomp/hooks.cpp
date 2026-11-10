@@ -7,6 +7,7 @@
 #include "core/memory_utils.h"
 #include "game/game.h"
 #include "game/types.h"
+#include "recomp/input_manager.h"
 #include "recomp/static_data_dumper.h"
 #include "recomp/network/game_message_dumper.h"
 #include "recomp/network/pc_proxy.h"
@@ -52,9 +53,9 @@ void HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified(PPCRegister& r2
 }
 
 // Input
-void HydraHook_PostInputUpdate(PPCRegister& r3)
+void HydraHook_InputUpdate()
 {
-    // not using this for anything yet
+    InputManager::Instance().OnGuestInputUpdate();
 }
 
 // Network

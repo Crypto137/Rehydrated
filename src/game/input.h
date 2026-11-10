@@ -1,0 +1,267 @@
+#pragma once
+
+#include <rex/types.h>
+
+#include "game/sigma/math/ivector2d.h"
+#include "game/sigma/math/vector2d.h"
+
+enum InputMsg : int
+{
+    INPUTMSG_CHARACTER,
+    INPUTMSG_KEYDOWNONCE,
+    INPUTMSG_KEYDOWN,
+    INPUTMSG_KEYSTILLDOWN,
+    INPUTMSG_KEYUP,
+    INPUTMSG_MOUSEMOVE,
+    INPUTMSG_LEFTMOUSEDOWN,
+    INPUTMSG_LEFTMOUSEUP,
+    INPUTMSG_LEFTMOUSEDOUBLECLICK,
+    INPUTMSG_LEFTMOUSESTILLDOWN_NO_DELAY,
+    INPUTMSG_LEFTMOUSESTILLDOWN,
+    INPUTMSG_MIDDLEMOUSEDOWN,
+    INPUTMSG_MIDDLEMOUSEUP,
+    INPUTMSG_MIDDLEMOUSEDOUBLECLICK,
+    INPUTMSG_MIDDLEMOUSESTILLDOWN_NO_DELAY,
+    INPUTMSG_MIDDLEMOUSESTILLDOWN,
+    INPUTMSG_RIGHTMOUSEDOWN,
+    INPUTMSG_RIGHTMOUSEUP,
+    INPUTMSG_RIGHTMOUSEDOUBLECLICK,
+    INPUTMSG_RIGHTMOUSESTILLDOWN_NO_DELAY,
+    INPUTMSG_RIGHTMOUSESTILLDOWN,
+    INPUTMSG_BUTTONDOWNONCE,
+    INPUTMSG_BUTTONDOWN,
+    INPUTMSG_BUTTONUP,
+    INPUTMSG_MOUSEWHEEL,
+    INPUTMSG_LEFTSTICK,
+    INPUTMSG_RIGHTSTICK,
+    INPUTMSG_LEFTTRIGGER,
+    INPUTMSG_RIGHTTRIGGER,
+    INPUTMSG_CONTROLLERBUTTONDOWN,
+    INPUTMSG_CONTROLLERBUTTONSTILLDOWN,
+    INPUTMSG_CONTROLLERBUTTONHELDDOWN,
+    INPUTMSG_CONTROLLERBUTTONREPEAT,
+    INPUTMSG_CONTROLLERBUTTONUP,
+    INPUTMSG_GESTUREFLICK,
+    INPUTMSG_IME_START_COMPOSITION,
+    INPUTMSG_IME_END_COMPOSITION,
+    INPUTMSG_IME_SHOW_COMPOSITION,
+    INPUTMSG_IME_INSERT_RESULT,
+    INPUTMSG_IME_LANGUAGE_CHANGE,
+    INPUTMSG_IME_OPEN_CANDIDATES,
+    INPUTMSG_IME_CHANGE_CANDIDATES,
+    INPUTMSG_IME_CLOSE_CANDIDATES,
+    INPUTMSG_IME_SHOWREADING,
+    INPUTMSG_IME_HIDEREADING,
+    INPUTMSG_IME_LAST,
+    NUM_INPUTMSG_TYPES,
+};
+
+enum Key : int
+{
+    KEY_NONE = -1,
+    KEY_ESCAPE,
+    KEY_1,
+    KEY_2,
+    KEY_3,
+    KEY_4,
+    KEY_5,
+    KEY_6,
+    KEY_7,
+    KEY_8,
+    KEY_9,
+    KEY_0,
+    KEY_MINUS,
+    KEY_EQUALS,
+    KEY_BACK,
+    KEY_TAB,
+    KEY_Q,
+    KEY_W,
+    KEY_E,
+    KEY_R,
+    KEY_T,
+    KEY_Y,
+    KEY_U,
+    KEY_I,
+    KEY_O,
+    KEY_P,
+    KEY_LBRACKET,
+    KEY_RBRACKET,
+    KEY_RETURN,
+    KEY_LCONTROL,
+    KEY_A,
+    KEY_S,
+    KEY_D,
+    KEY_F,
+    KEY_G,
+    KEY_H,
+    KEY_J,
+    KEY_K,
+    KEY_L,
+    KEY_SEMICOLON,
+    KEY_APOSTROPHE,
+    KEY_GRAVE,
+    KEY_LSHIFT,
+    KEY_BACKSLASH,
+    KEY_Z,
+    KEY_X,
+    KEY_C,
+    KEY_V,
+    KEY_B,
+    KEY_N,
+    KEY_M,
+    KEY_COMMA,
+    KEY_PERIOD,
+    KEY_SLASH,
+    KEY_RSHIFT,
+    KEY_MULTIPLY,
+    KEY_LMENU,
+    KEY_SPACE,
+    KEY_CAPITAL,
+    KEY_F1,
+    KEY_F2,
+    KEY_F3,
+    KEY_F4,
+    KEY_F5,
+    KEY_F6,
+    KEY_F7,
+    KEY_F8,
+    KEY_F9,
+    KEY_F10,
+    KEY_NUMLOCK,
+    KEY_SCROLL,
+    KEY_NUMPAD7,
+    KEY_NUMPAD8,
+    KEY_NUMPAD9,
+    KEY_SUBTRACT,
+    KEY_NUMPAD4,
+    KEY_NUMPAD5,
+    KEY_NUMPAD6,
+    KEY_ADD,
+    KEY_NUMPAD1,
+    KEY_NUMPAD2,
+    KEY_NUMPAD3,
+    KEY_NUMPAD0,
+    KEY_DECIMAL,
+    KEY_OEM_102,
+    KEY_F11,
+    KEY_F12,
+    KEY_F13,
+    KEY_F14,
+    KEY_F15,
+    KEY_KANA,
+    KEY_ABNT_C1,
+    KEY_CONVERT,
+    KEY_NOCONVERT,
+    KEY_YEN,
+    KEY_ABNT_C2,
+    KEY_NUMPADEQUALS,
+    KEY_PREVTRACK,
+    KEY_AT,
+    KEY_COLON,
+    KEY_UNDERLINE,
+    KEY_KANJI,
+    KEY_STOP,
+    KEY_AX,
+    KEY_UNLABELED,
+    KEY_NEXTTRACK,
+    KEY_NUMPADENTER,
+    KEY_RCONTROL,
+    KEY_MUTE,
+    KEY_CALCULATOR,
+    KEY_PLAYPAUSE,
+    KEY_MEDIASTOP,
+    KEY_VOLUMEDOWN,
+    KEY_VOLUMEUP,
+    KEY_WEBHOME,
+    KEY_NUMPADCOMMA,
+    KEY_DIVIDE,
+    KEY_SYSRQ,
+    KEY_RMENU,
+    KEY_PAUSE,
+    KEY_HOME,
+    KEY_UP,
+    KEY_PRIOR,
+    KEY_LEFT,
+    KEY_RIGHT,
+    KEY_END,
+    KEY_DOWN,
+    KEY_NEXT,
+    KEY_INSERT,
+    KEY_DELETE,
+    KEY_LWIN,
+    KEY_RWIN,
+    KEY_APPS,
+    KEY_POWER,
+    KEY_SLEEP,
+    KEY_WAKE,
+    KEY_WEBSEARCH,
+    KEY_WEBFAVORITES,
+    KEY_WEBREFRESH,
+    KEY_WEBSTOP,
+    KEY_WEBFORWARD,
+    KEY_WEBBACK,
+    KEY_MYCOMPUTER,
+    KEY_MAIL,
+    KEY_MEDIASELECT,
+    KEY_MOUSE1,
+    KEY_MOUSE2,
+    KEY_MOUSE3,
+    KEY_MOUSE4,
+    KEY_MOUSE5,
+    KEY_MOUSEWHEELUP,
+    KEY_MOUSEWHEELDOWN,
+    KEY_F16,
+    KEY_F17,
+    KEY_F18,
+    KEY_F19,
+    KEY_OEM_8,
+    NUM_KEYS,
+};
+
+enum MouseButton : int
+{
+    NO_MOUSE_BUTTON = -1,
+    LEFT_MOUSE_BUTTON,
+    MIDDLE_MOUSE_BUTTON,
+    RIGHT_MOUSE_BUTTON,
+    NUM_MOUSE_BUTTONS,
+};
+
+
+struct BufferedCharData
+{
+    char szUTF8[6];
+};
+
+struct BufferedKeyData
+{
+    rex::be<u32> wPlatformKey;
+    rex::be<Key> eKey;
+    rex::be<i32> bExactMatch;
+};
+
+struct BufferedMouseData
+{
+    IVector2D p;
+    rex::be<i32> nDeltaMouseWheel;
+    rex::be<MouseButton> eMouseButton;
+};
+
+struct BufferedControllerData
+{
+    rex::be<i32> nControllerIndex;
+    rex::be<i32> eInputButton;
+    Vector2D vLeftStick;
+    Vector2D vRightStick;
+    rex::be<i32> nRightTriggerPos;
+    rex::be<i32> nLeftTriggerPos;
+};
+
+struct BufferedInput
+{
+    rex::be<InputMsg> eInputMsg;
+    BufferedCharData tBufCharData;
+    BufferedKeyData tBufKeyData;
+    BufferedMouseData tBufMouseData;
+    BufferedControllerData tBufControllerData;
+};

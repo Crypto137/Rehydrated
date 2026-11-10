@@ -20,7 +20,7 @@ protected:
     // void OnLoadXexImage(std::string& xex_image) override {}
     // void OnPostLoadXexImage() override {}
     void OnPostSetup() override;
-    // void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override {}
+    void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override;
     // std::unique_ptr<rex::ui::ImGuiDialog> CreateAchievementsOverlay() override;
     // std::unique_ptr<rex::ui::AchievementNotificationDialog>
     // CreateAchievementNotificationDialog() override;

@@ -63,6 +63,8 @@
 0x823548E8 = { name = "Console__Online__sNetworkThread" }
 0x823555F8 = { name = "Console__Online__InitializeForApp" }
 0x8236BEF0 = { name = "_InputUpdate" }
+0x8236C080 = { name = "BufferedInput__BufferedInput" }
+0x8236C0F0 = { name = "InputBufferInput" }
 0x8236C678 = { name = "FontGroupDef__GetMaxCount" }
 0x8236C680 = { name = "FontGroupDef__Write" }
 0x8236C748 = { name = "FontGroupDef__GetDefaultData" }

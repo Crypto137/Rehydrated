@@ -6,6 +6,7 @@
 #include <rex/cvar.h>
 #include <rex/logging.h>
 
+#include "recomp/input_manager.h"
 #include "recomp/network/pc_proxy.h"
 
 #include "generated/default/rehydrated_init.h"
@@ -31,6 +32,11 @@ void RehydratedApp::OnPostSetup()
     rex::cvar::SetFlagByName("execute_unclipped_draw_vs_on_cpu", "true");
 
     PCProxy::Instance().Initialize();
+}
+
+void RehydratedApp::OnCreateDialogs(rex::ui::ImGuiDrawer* drawer)
+{
+    InputManager::Instance().Initialize(window());
 }
 
 void RehydratedApp::OnConfigurePaths(rex::PathConfig& paths)
