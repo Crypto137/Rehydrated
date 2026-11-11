@@ -1,3 +1,12 @@
+# Converts the platform-specific value stored in tBufKeyData.wPlatformKey
+# to a platform-agnostic one, which is then written to tBufKeyData.eKey.
+[[midasm_hook]]
+address = 0x8233FCB0
+name = "HydraHook_InputPlatformKeyConvert"
+registers = ["r3"]
+after_instruction = false
+return = true
+
 # Hooks InputUpdate where we can push input events via InputBufferInput().
 [[midasm_hook]]
 address = 0x82340490

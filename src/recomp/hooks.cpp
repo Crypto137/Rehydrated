@@ -53,6 +53,12 @@ void HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified(PPCRegister& r2
 }
 
 // Input
+void HydraHook_InputPlatformKeyConvert(PPCRegister& r3)
+{
+    // Don't need to do anything, just keep the original value passed in r3 as is.
+    // We have this hook so that InputPlatformKeyConvert() calls don't crash the game.
+}
+
 void HydraHook_InputUpdate()
 {
     InputManager::Instance().OnGuestInputUpdate();

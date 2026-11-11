@@ -35,6 +35,7 @@
 0x8233E0F0 = { name = "CGameGlobalsInit" }
 0x8233E5F0 = { name = "ClientIdle" }
 0x8233EC80 = { name = "CGameAsyncRenderInit" }
+0x8233FCB0 = { name = "InputPlatformKeyConvert" }
 0x82340490 = { name = "InputUpdate" }
 0x82341878 = { name = "Console__Online__PartyIsHost" }
 0x823418A0 = { name = "Console__Online__PartyCanStartGame" }
@@ -132,8 +133,11 @@
 0x82378318 = { name = "TextureGroupDef__MemFree" }
 0x82378370 = { name = "TextureGroupDef__GetSNOPackDestination" }
 0x82378378 = { name = "TextureGroupDef__CanReferenceOtherSNOs" }
+0x82378808 = { name = "ConvertUICToPixels" }
 0x8237B000 = { name = "SpritesInitialize" }
 0x8237B188 = { name = "SpritesDispose" }
+0x8237B950 = { name = "SpriteDrawDeferred" }
+0x8237BC18 = { name = "SpriteDrawDeferredRotated" }
 0x8237DBD8 = { name = "ShaderGroupDef__GetMaxCount" }
 0x8237DBE0 = { name = "ShaderGroupDef__Write" }
 0x8237DBE8 = { name = "ShaderGroupDef__WriteExternalDef" }
@@ -319,6 +323,8 @@
 0x8246BEA8 = { name = "AppearanceGroupDef___MemFree" }
 0x8246BEE8 = { name = "AppearanceGroupDef__MemFree" }
 0x8246BF40 = { name = "AppearanceGroupDef__GetSNOPackDestination" }
+0x824775D8 = { name = "sDraw" }
+0x824777E0 = { name = "Console__UISaveIcon__Update" }
 0x8247CCF0 = { name = "Console__GamerProfile__GetPrimaryProfileUserIndex" }
 0x8247CEF0 = { name = "Console__GamerProfile__GetAccount" }
 0x8247CFE8 = { name = "Console__GamerProfile__IsHeroLoaded" }

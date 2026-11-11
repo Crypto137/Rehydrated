@@ -66,6 +66,9 @@ void InputManager::OnMouseUp(rex::ui::MouseEvent& e)
 
 void InputManager::OnMouseMove(rex::ui::MouseEvent& e)
 {
+    // Not currently using this because it appears the console UI doesn't have handling
+    // for mouse and keyboard events (maybe something is just broken?).
+
     /* early experimental stuff
     BufferedInput tInput = {};
     tInput.eInputMsg = INPUTMSG_MOUSEMOVE;

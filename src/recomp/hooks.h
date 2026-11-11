@@ -12,6 +12,8 @@ void HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified(PPCRegister& r2
 
 // Input
 
+void HydraHook_InputPlatformKeyConvert();
+
 void HydraHook_InputUpdate();
 
 // Network
