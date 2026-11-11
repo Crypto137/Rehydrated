@@ -41,7 +41,7 @@ enum InputMsg : int
     INPUTMSG_CONTROLLERBUTTONHELDDOWN,
     INPUTMSG_CONTROLLERBUTTONREPEAT,
     INPUTMSG_CONTROLLERBUTTONUP,
-    INPUTMSG_GESTUREFLICK,
+    //INPUTMSG_GESTUREFLICK,
     INPUTMSG_IME_START_COMPOSITION,
     INPUTMSG_IME_END_COMPOSITION,
     INPUTMSG_IME_SHOW_COMPOSITION,
@@ -227,6 +227,29 @@ enum MouseButton : int
     NUM_MOUSE_BUTTONS,
 };
 
+enum InputButton : int
+{
+    BUTTON_INVALID = -1,
+    BUTTON_1,
+    BUTTON_2,
+    BUTTON_3,
+    BUTTON_4,
+    BUTTON_LEFT_SHOULDER,
+    BUTTON_RIGHT_SHOULDER,
+    BUTTON_LEFT_TRIGGER,
+    BUTTON_RIGHT_TRIGGER,
+    BUTTON_DPAD_UP,
+    BUTTON_DPAD_DOWN,
+    BUTTON_DPAD_LEFT,
+    BUTTON_DPAD_RIGHT,
+    BUTTON_BACK,
+    BUTTON_START,
+    BUTTON_LEFT_STICK_BUTTON,
+    BUTTON_RIGHT_STICK_BUTTON,
+    //BUTTON_TOUCH_PAD,
+    //BUTTON_OPTIONS,
+    CONSOLE_BUTTON_COUNT,
+};
 
 struct BufferedCharData
 {
@@ -250,7 +273,7 @@ struct BufferedMouseData
 struct BufferedControllerData
 {
     rex::be<i32> nControllerIndex;
-    rex::be<i32> eInputButton;
+    rex::be<InputButton> eInputButton;
     Vector2D vLeftStick;
     Vector2D vRightStick;
     rex::be<i32> nRightTriggerPos;
