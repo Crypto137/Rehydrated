@@ -39,6 +39,7 @@
 0x8233E0F0 = { name = "CGameGlobalsInit" }
 0x8233E5F0 = { name = "ClientIdle" }
 0x8233EC80 = { name = "CGameAsyncRenderInit" }
+0x8233F8B0 = { name = "RActorTryToGet" }
 0x8233FCB0 = { name = "InputPlatformKeyConvert" }
 0x82340490 = { name = "InputUpdate" }
 0x82341878 = { name = "Console__Online__PartyIsHost" }
@@ -69,6 +70,9 @@
 0x823555F8 = { name = "Console__Online__InitializeForApp" }
 0x8236BC50 = { name = "InputRegisterListener" }
 0x8236BD08 = { name = "InputUnregisterListener" }
+0x8236BE30 = { name = "InputShiftKeyIsDown" }
+0x8236BE60 = { name = "InputCtrlKeyIsDown" }
+0x8236BE90 = { name = "InputAltKeyIsDown" }
 0x8236BEF0 = { name = "_InputUpdate" }
 0x8236C080 = { name = "BufferedInput__BufferedInput" }
 0x8236C0F0 = { name = "InputBufferInput" }
@@ -119,6 +123,7 @@
 0x8236DBF8 = { name = "GroupDefinition__GetEstCacheSizeLimit" }
 0x8236DC00 = { name = "GroupDefinition__AllowMultipleCheckout" }
 0x8236DC60 = { name = "ComplexTypeDescriptor__ToVariant" }
+0x823711B8 = { name = "GfxStereo3DEnabled" }
 0x82371298 = { name = "GfxForceDeviceReset" }
 0x82375308 = { name = "TextureGroupDef__GetMaxCount" }
 0x82375310 = { name = "TextureGroupDef__GetDefaultData" }
@@ -140,6 +145,7 @@
 0x82378370 = { name = "TextureGroupDef__GetSNOPackDestination" }
 0x82378378 = { name = "TextureGroupDef__CanReferenceOtherSNOs" }
 0x82378808 = { name = "ConvertUICToPixels" }
+0x82378B08 = { name = "UI_ConstrainRectToViewport" }
 0x8237B000 = { name = "SpritesInitialize" }
 0x8237B188 = { name = "SpritesDispose" }
 0x8237B950 = { name = "SpriteDrawDeferred" }
@@ -159,6 +165,7 @@
 0x8237E2A8 = { name = "ShaderGroupDef__MemFree" }
 0x8237E300 = { name = "ShaderGroupDef__GetSNOPackDestination" }
 0x8237E308 = { name = "ShaderGroupDef__CanReferenceOtherSNOs" }
+0x8237E9F8 = { name = "UIText__GetTextRenderedSizeUIC" }
 0x82387B60 = { name = "CHero__InitializeForGame" }
 0x823886A8 = { name = "CHero__Validate" }
 0x823889A8 = { name = "CHero__Synchronize" }
@@ -179,6 +186,9 @@
 0x823969C8 = { name = "Sky__DisposeForGame" }
 0x82397430 = { name = "CameraManagerInitializeForGame" }
 0x82397480 = { name = "CameraManagerDisposeForGame" }
+0x823976F8 = { name = "sGetCamera" }
+0x82397918 = { name = "CameraManagerGetCamera" }
+0x823987C8 = { name = "WorldPointToScreenPointUICUnclipped" }
 0x82399E68 = { name = "sGameModeActions" }
 0x82399EF8 = { name = "CGameModeInitializeForGame" }
 0x8239A120 = { name = "CGameModeDisposeForGame" }
@@ -243,9 +253,13 @@
 0x823B7A28 = { name = "Weather__DisposeForGame" }
 0x823BBBD0 = { name = "CinematographyInitialize" }
 0x823BBC70 = { name = "CinematographyDispose" }
+0x823BCBF8 = { name = "UI_GetMousedOverControl" }
 0x823BD818 = { name = "UI_GetWindowFromID" }
 0x823BD820 = { name = "UI_GetTextFromID" }
+0x823BD920 = { name = "UI_GetRActorFromID" }
 0x823BDC68 = { name = "UI_SetCapture" }
+0x823BE718 = { name = "UI_SendMessage" }
+0x823BF3B8 = { name = "UI_DeleteControl" }
 0x823BF8E0 = { name = "UI_CloseAllTabs" }
 0x823C0288 = { name = "UI_Input" }
 0x823C1A18 = { name = "UI_InitializeForGame" }
@@ -260,6 +274,8 @@
 0x823CDD28 = { name = "CutscenesInitializeForGame" }
 0x823CDE50 = { name = "CutscenesDisposeForGame" }
 0x823CE6D0 = { name = "CutsceneTryToCancelConsole" }
+0x823D0FC8 = { name = "RActorGetTopPoint" }
+0x823D4DC0 = { name = "RActorGetTooltip" }
 0x823DAC40 = { name = "RActorsInitializeForGame" }
 0x823DAFB8 = { name = "RActorsDisposeForGame" }
 0x823E8C50 = { name = "EffectGroupDisposeForGame" }
@@ -319,9 +335,12 @@
 0x82436490 = { name = "ShaderMapGroupDef__GetSNOPackDestination" }
 0x824364F8 = { name = "GroupDefinition__CanReferenceOtherSNOs" }
 0x82443BA0 = { name = "MessageSendToServer" }
+0x82446BA8 = { name = "Prefs__GetKeyModifierFlags" }
 0x8244A1A8 = { name = "Prefs__Load" }
 0x8244A4C8 = { name = "Prefs__InitializeForApp" }
+0x8244A4D0 = { name = "Prefs__CheckAction" }
 0x8244A820 = { name = "Prefs__GetUIActionFromInput" }
+0x8244C250 = { name = "UIID__SetInternal" }
 0x8244C580 = { name = "UIIDCreateFromParent" }
 0x8244C5C8 = { name = "UIID__SetFromParent" }
 0x8244D618 = { name = "Prefetch__TakeSNOElement" }
@@ -516,6 +535,9 @@
 0x82558E18 = { name = "UIConfirmation__OnButton2" }
 0x8255A570 = { name = "UIGame__MenuIsActive" }
 0x8255A578 = { name = "UIGame__ModalIsActive" }
+0x8255AE08 = { name = "sSetRActorTooltip" }
+0x8255E818 = { name = "sSetRActorTooltip2" }
+0x8255EF10 = { name = "UIGame__UpdateRActorTooltips" }
 0x82562E48 = { name = "WeatherGroupDef__GetMaxCount" }
 0x82562EA8 = { name = "WeatherGroupDef__WeatherGroupDef" }
 0x82563020 = { name = "WeatherGroupDef__GetDefaultData" }
@@ -524,6 +546,7 @@
 0x82563188 = { name = "WeatherGroupDef___MemFree" }
 0x825631C8 = { name = "WeatherGroupDef__MemFree" }
 0x82563220 = { name = "WeatherGroupDef__GetSNOPackDestination" }
+0x82572580 = { name = "sGetTargetedActorFromList" }
 0x82572AE0 = { name = "CPlayerUtilResolveClick" }
 0x825740F8 = { name = "ControlSchemeDefinitionGroupDef__GetMaxCount" }
 0x82574100 = { name = "ControlSchemeDefinitionGroupDef__GetDefaultData" }
@@ -740,6 +763,7 @@
 0x826089A0 = { name = "UIGamesList__Console__OnCancel" }
 0x82608A18 = { name = "UIGamesList__Console__OnRefresh" }
 0x82609280 = { name = "UIGamesList__Console__OnAccept" }
+0x8261B5D8 = { name = "UIRActor__CreateRActor" }
 0x8263B478 = { name = "OnlineService__LogStream__operator_insertion_char_internal" }
 0x82648768 = { name = "UIInventory__Console__OnLeftStick" }
 0x826487D0 = { name = "UIInventory__Console__OnRightStick" }
@@ -3025,6 +3049,7 @@
 0x82A738C8 = { name = "DisplayInternalError" }
 0x82A73D00 = { name = "ErrorManagerInitialize" }
 0x82A74A00 = { name = "CRefString__str" }
+0x82A74A08 = { name = "CRefString__Length" }
 0x82A74A98 = { name = "XHashKey_char_const_ptr" }
 0x82A74CE8 = { name = "CRefString__CRefString" }
 0x82A75500 = { name = "CRefString__dtor_CRefString" }
@@ -3069,6 +3094,7 @@
 0x82A84D58 = { name = "XNetAddress__ToString" }
 0x82A84E20 = { name = "RandSetSeed_Internal" }
 0x82A84EB8 = { name = "RandInit" }
+0x82A860D8 = { name = "Rect2D__AlignToRect" }
 0x82A881B8 = { name = "XTypeDescriptor__GetField" }
 0x82A881C8 = { name = "XTypeDescriptor__GetName" }
 0x82A881D0 = { name = "XTypeDescriptor__VariantsEqual" }

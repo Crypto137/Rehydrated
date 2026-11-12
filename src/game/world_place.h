@@ -8,5 +8,5 @@
 struct WorldPlace
 {
     Vector3D wp;
-    SWorldID idSWorld;
+    rex::be<SWorldID> idSWorld;
 };

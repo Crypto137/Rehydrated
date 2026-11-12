@@ -44,6 +44,11 @@ enum ACDNetworkName : int
     ANN_INVALID = -1,
 };
 
+enum RActorID : int
+{
+    RACTORID_INVALID = -1,
+};
+
 enum ActorLocationType : int
 {
     AL_NONE = -1,

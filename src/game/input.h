@@ -2,6 +2,8 @@
 
 #include <rex/types.h>
 
+#include "game/target.h"
+#include "game/types.h"
 #include "game/sigma/math/ivector2d.h"
 #include "game/sigma/math/vector2d.h"
 
@@ -287,4 +289,14 @@ struct BufferedInput
     BufferedKeyData tBufKeyData;
     BufferedMouseData tBufMouseData;
     BufferedControllerData tBufControllerData;
+};
+
+struct ResolvedClick
+{
+    rex::be<RActorID> idRActor;
+    rex::be<SNO> snoOriginalPower;
+    rex::be<SNO> snoPower;
+    rex::be<i32> bPlayItemSound;
+    rex::be<ACDID> idACDItemToUse;
+    Target tTarget;
 };
