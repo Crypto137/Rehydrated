@@ -6,6 +6,7 @@
 
 #include "core/memory_utils.h"
 #include "game/game.h"
+#include "game/target.h"
 #include "game/types.h"
 #include "recomp/input_manager.h"
 #include "recomp/static_data_dumper.h"
@@ -62,6 +63,12 @@ void HydraHook_InputPlatformKeyConvert(PPCRegister& r3)
 void HydraHook_InputUpdate()
 {
     InputManager::Instance().OnGuestInputUpdate();
+}
+
+void HydraHook_CPlayerUtilGetTarget(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCRegister& r6, PPCRegister& r7, PPCRegister& r8)
+{
+    // Clear the ResolvedClick pointer to force this function to go through the full path like on PC.
+    r8.s32 = 0;
 }
 
 // Network

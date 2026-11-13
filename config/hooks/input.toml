@@ -13,3 +13,10 @@ address = 0x82340490
 name = "HydraHook_InputUpdate"
 registers = []
 after_instruction = false
+
+# CPlayerUtilGetTarget has an early out on consoles that needs to be adjusted for PC input to work.
+[[midasm_hook]]
+address = 0x825717F0
+name = "HydraHook_CPlayerUtilGetTarget"
+registers = ["r3", "r4", "r5", "r6", "r7", "r8"]
+after_instruction = false

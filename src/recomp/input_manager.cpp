@@ -1,9 +1,13 @@
 #include "recomp/input_manager.h"
 
+#include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/ppc.h>
 
 #include "core/memory_utils.h"
+
+REXCVAR_DEFINE_BOOL(enable_mnk_input, false, "Hydra/Gameplay", "Enables mouse and keyboard input")
+    .lifecycle(rex::cvar::Lifecycle::kHotReload);
 
 namespace
 {
@@ -56,7 +60,46 @@ void InputManager::OnGuestInputUpdate()
 
 void InputManager::OnMouseDown(rex::ui::MouseEvent& e)
 {
+    if (!REXCVAR_GET(enable_mnk_input))
+        return;
 
+    BufferedInput tInput = {};
+
+    switch (e.button())
+    {
+        case rex::ui::MouseEvent::Button::kLeft:
+            tInput.eInputMsg = INPUTMSG_LEFTMOUSEDOWN;
+            tInput.tBufMouseData.eMouseButton = LEFT_MOUSE_BUTTON;
+            break;
+
+        case rex::ui::MouseEvent::Button::kRight:
+            tInput.eInputMsg = INPUTMSG_RIGHTMOUSEDOWN;
+            tInput.tBufMouseData.eMouseButton = RIGHT_MOUSE_BUTTON;
+            break;
+
+        case rex::ui::MouseEvent::Button::kMiddle:
+            tInput.eInputMsg = INPUTMSG_MIDDLEMOUSEDOWN;
+            tInput.tBufMouseData.eMouseButton = MIDDLE_MOUSE_BUTTON;
+            break;
+
+        case rex::ui::MouseEvent::Button::kX1:
+            tInput.eInputMsg = INPUTMSG_KEYDOWN;
+            tInput.tBufKeyData.wPlatformKey = KEY_MOUSE4;
+            break;
+
+        case rex::ui::MouseEvent::Button::kX2:
+            tInput.eInputMsg = INPUTMSG_KEYDOWN;
+            tInput.tBufKeyData.wPlatformKey = KEY_MOUSE5;
+            break;
+
+        default:
+            return;
+    }
+    
+    tInput.tBufMouseData.p.x = e.x();
+    tInput.tBufMouseData.p.y = e.y();
+
+    QueueInput(tInput);
 }
 
 void InputManager::OnMouseUp(rex::ui::MouseEvent& e)
@@ -66,10 +109,9 @@ void InputManager::OnMouseUp(rex::ui::MouseEvent& e)
 
 void InputManager::OnMouseMove(rex::ui::MouseEvent& e)
 {
-    // Not currently using this because it appears the console UI doesn't have handling
-    // for mouse and keyboard events (maybe something is just broken?).
+    if (!REXCVAR_GET(enable_mnk_input))
+        return;
 
-    /* early experimental stuff
     BufferedInput tInput = {};
     tInput.eInputMsg = INPUTMSG_MOUSEMOVE;
     tInput.tBufMouseData.eMouseButton = NO_MOUSE_BUTTON;
@@ -77,7 +119,6 @@ void InputManager::OnMouseMove(rex::ui::MouseEvent& e)
     tInput.tBufMouseData.p.y = e.y();
 
     QueueInput(tInput);
-    */
 }
 
 void InputManager::OnMouseWheel(rex::ui::MouseEvent& e)
