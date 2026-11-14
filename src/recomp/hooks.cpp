@@ -60,9 +60,9 @@ void HydraHook_InputPlatformKeyConvert(PPCRegister& r3)
     // We have this hook so that InputPlatformKeyConvert() calls don't crash the game.
 }
 
-void HydraHook_InputUpdate()
+bool HydraHook_InputUpdate()
 {
-    InputManager::Instance().OnGuestInputUpdate();
+    return InputManager::Instance().OnGuestInputUpdate();
 }
 
 void HydraHook_CPlayerUtilGetTarget(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCRegister& r6, PPCRegister& r7, PPCRegister& r8)

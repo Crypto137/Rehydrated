@@ -6,7 +6,7 @@
 
 #include "core/memory_utils.h"
 
-REXCVAR_DEFINE_BOOL(enable_mnk_input, false, "Hydra/Gameplay", "Enables mouse and keyboard input")
+REXCVAR_DEFINE_BOOL(enable_mnk_input, false, "Hydra/Gameplay", "(EXPERIMENTAL) Enables mouse and keyboard input")
     .lifecycle(rex::cvar::Lifecycle::kHotReload);
 
 namespace
@@ -43,7 +43,7 @@ void InputManager::Initialize(rex::ui::Window* window)
     REXLOG_INFO("Input initialized");
 }
 
-void InputManager::OnGuestInputUpdate()
+bool InputManager::OnGuestInputUpdate()
 {
     {
         std::unique_lock<std::mutex> lock(m_inputMutex);
@@ -51,11 +51,20 @@ void InputManager::OnGuestInputUpdate()
     }
 
     InputQueue& currentInput = *m_currentInput;
+
+    if (!REXCVAR_GET(enable_mnk_input))
+    {
+        currentInput.clear();
+        return false;
+    }
+
     while (!currentInput.empty())
     {
         InputBufferInput(currentInput.front(), 0);
         currentInput.pop_front();
     }
+
+    return true;
 }
 
 void InputManager::OnMouseDown(rex::ui::MouseEvent& e)

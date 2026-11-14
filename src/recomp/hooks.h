@@ -14,7 +14,7 @@ void HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified(PPCRegister& r2
 
 void HydraHook_InputPlatformKeyConvert(PPCRegister& r3);
 
-void HydraHook_InputUpdate();
+bool HydraHook_InputUpdate();
 
 void HydraHook_CPlayerUtilGetTarget(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCRegister& r6, PPCRegister& r7, PPCRegister& r8);
 

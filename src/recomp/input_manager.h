@@ -27,7 +27,7 @@ public:
 
     void Initialize(rex::ui::Window* window);
 
-    void OnGuestInputUpdate();
+    bool OnGuestInputUpdate();
 
     // WindowInputListener
     void OnMouseDown(rex::ui::MouseEvent& e) override;

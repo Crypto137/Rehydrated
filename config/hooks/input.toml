@@ -13,6 +13,7 @@ address = 0x82340490
 name = "HydraHook_InputUpdate"
 registers = []
 after_instruction = false
+return_on_true = true
 
 # CPlayerUtilGetTarget has an early out on consoles that needs to be adjusted for PC input to work.
 [[midasm_hook]]
