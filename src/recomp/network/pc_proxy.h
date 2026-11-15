@@ -29,8 +29,6 @@ public:
 
     bool PartyCanStartGame();
 
-    bool ItemIsLargeSlotItem(u32 gbidItem) const;
-
     void OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection);
 
     void OnPostXServerReadUpdate();

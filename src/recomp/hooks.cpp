@@ -8,6 +8,7 @@
 #include "game/game.h"
 #include "game/target.h"
 #include "game/types.h"
+#include "recomp/gameplay_options.h"
 #include "recomp/input_manager.h"
 #include "recomp/static_data_dumper.h"
 #include "recomp/network/game_message_dumper.h"
@@ -21,7 +22,9 @@ struct GameConnection;
 void HydraHook_ItemIsLargeSlotItem(PPCRegister& r3)
 {
     GBID gbidItem = r3.u32;
-    r3.u32 = PCProxy::Instance().ItemIsLargeSlotItem(gbidItem) ? 1 : 0;
+    i32& bIsLargeSlotItem = r3.s32;
+
+    bIsLargeSlotItem = GameplayOptions::ItemIsLargeSlotItem(gbidItem) ? 1 : 0;
 }
 
 void HydraHook_SGameInitializeGame(PPCRegister& r3)
@@ -48,9 +51,7 @@ void HydraHook_LootCreateItem_IsItemQualityLevelDropUnidentified(PPCRegister& r2
     ItemQualityLevel eIQL = static_cast<ItemQualityLevel>(r25.s32);
     i32& bIsIdentified = r26.s32;
 
-    // TODO: make this configurable
-    if (eIQL >= IQL_RARE_4_AFFIX && eIQL <= IQL_RARE_6_AFFIX)
-        bIsIdentified = 0;
+    bIsIdentified = GameplayOptions::ItemIsQualityLevelDropUnidentified(eIQL) ? 0 : 1;
 }
 
 // Input
