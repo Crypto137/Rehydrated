@@ -590,6 +590,14 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
         case SMSG_NEW_PLAYER:
         {
             NewPlayerMessage* newPlayerMessage = static_cast<NewPlayerMessage*>(pMessage);
+
+            // Replace account/hero ids with placeholders that match our current Battle.net implementation.
+            // If there is a mismatch here, the dummy Battle.net hero will show up as a party member.
+            newPlayerMessage->tAccountId.id_high = 0x0200000000000000;
+            newPlayerMessage->tAccountId.id_low = 1;
+            newPlayerMessage->tHeroId.id_high = 0x0300000000000000;
+            newPlayerMessage->tHeroId.id_low = 1;
+
             TranslatePlayerSavedDataConsoleToPC(newPlayerMessage->tHeroStateData.tSavedData);
             break;
         }

@@ -417,7 +417,7 @@ struct NewPlayerMessage
 {
     RequiredMessageHeader tHeader;
     rex::be<i32> nPlayerIndex;
-    OnlineService::HeroId uHeroId;
+    OnlineService::HeroId tHeroId;
     OnlineService::GameAccountHandle tAccountId;
     char usHeroName[49];
     rex::be<Team> eTeam;
