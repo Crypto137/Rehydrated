@@ -2,6 +2,8 @@
 
 #include <rex/system/kernel_state.h>
 
+#include "core/types.h"
+
 namespace Memory {
 
 template <typename T>

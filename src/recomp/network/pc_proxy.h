@@ -4,8 +4,7 @@
 #include <memory>
 #include <mutex>
 
-#include <rex/types.h>
-
+#include "core/types.h"
 #include "core/network/tcp_server.h"
 #include "core/network/tcp_session_consumer.h"
 

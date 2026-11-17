@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rex/types.h>
-
 #include "game/types.h"
 #include "game/attributes/attrib.h"
 #include "game/network/game_message.h"
