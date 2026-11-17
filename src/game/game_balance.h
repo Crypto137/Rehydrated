@@ -1,7 +1,6 @@
 #pragma once
 
-#include <rex/types.h>
-
+#include "core/memory.h"
 #include <game/types.h>
 
 // TODO: clean up entries that didn't exist in 17339
@@ -66,6 +65,6 @@ enum GameBalanceType : int
 
 struct GBHandle
 {
-    rex::be<GameBalanceType> eType;
-    rex::be<GBID> gbid;
+    be<GameBalanceType> eType;
+    be<GBID> gbid;
 };

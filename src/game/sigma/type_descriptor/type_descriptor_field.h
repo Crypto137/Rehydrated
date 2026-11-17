@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rex/system/xtypes.h>
+#include "core/memory.h"
 
 struct XTypeDescriptor;
 
@@ -33,31 +33,31 @@ enum TypeDescriptorFieldFlags : int
 
 struct SymbolicEntry
 {
-    rex::be<i32> nValue;
-    rex::TypedGuestPointer<char> sName;
+    be<i32> nValue;
+    be_ptr<char> sName;
 };
 
 struct TypeDescriptorField
 {
-    rex::TypedGuestPointer<const char> szFieldName;
-    rex::TypedGuestPointer<XTypeDescriptor> ptDataType;
-    rex::be<i32> nDataOffset;
-    rex::TypedGuestPointer<void> vDefaultFieldValue;
-    rex::TypedGuestPointer<void> vMinFieldValue;
-    rex::TypedGuestPointer<void> vMaxFieldValue;
-    rex::be<u32> dwFlags;
-    rex::TypedGuestPointer<XTypeDescriptor> ptAuxDataType;
-    rex::be<i32> nSerOffset;
-    rex::be<i32> nCount;
-    rex::be<i32> nUsedElementsOffset;
-    rex::be<i16> nBitCount;
-    rex::be<i16> nArraySizeBitCount;
-    rex::be<u32> dwFilter;
-    rex::be<i32> eTagBase;
-    rex::TypedGuestPointer<SymbolicEntry> pSymbolTable;
-    rex::be<i32> nBit;
-    rex::TypedGuestPointer<void> pfnStringToInt;
-    rex::TypedGuestPointer<void> pfnIntToString;
-    rex::be<i32> nVariantTypeValue;
+    be_ptr<const char> szFieldName;
+    be_ptr<XTypeDescriptor> ptDataType;
+    be<i32> nDataOffset;
+    be_ptr<void> vDefaultFieldValue;
+    be_ptr<void> vMinFieldValue;
+    be_ptr<void> vMaxFieldValue;
+    be<u32> dwFlags;
+    be_ptr<XTypeDescriptor> ptAuxDataType;
+    be<i32> nSerOffset;
+    be<i32> nCount;
+    be<i32> nUsedElementsOffset;
+    be<i16> nBitCount;
+    be<i16> nArraySizeBitCount;
+    be<u32> dwFilter;
+    be<i32> eTagBase;
+    be_ptr<SymbolicEntry> pSymbolTable;
+    be<i32> nBit;
+    be_ptr<void> pfnStringToInt;
+    be_ptr<void> pfnIntToString;
+    be<i32> nVariantTypeValue;
     char szDynamicFieldName[64];
 };

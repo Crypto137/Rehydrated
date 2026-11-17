@@ -1,14 +1,14 @@
 #pragma once
 
-#include <rex/types.h>
+#include "core/memory.h"
 
 struct FastAttribKey
 {
-    rex::be<i32> nValue;
+    be<i32> nValue;
 };
 
 union FastAttribValue
 {
-    rex::be<f32> flValue;
-    rex::be<i32> nValue;
+    be<f32> flValue;
+    be<i32> nValue;
 };

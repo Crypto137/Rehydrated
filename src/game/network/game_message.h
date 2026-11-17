@@ -1,7 +1,6 @@
 #pragma once
 
-#include <rex/types.h>
-
+#include "core/memory.h"
 #include "game/game.h"
 #include "game/game_balance.h"
 #include "game/scene.h"
@@ -18,29 +17,29 @@
 
 struct RequiredMessageHeader
 {
-    rex::be<u16> dwSize;
+    be<u16> dwSize;
     char nControllerIndex;
     char nPadding;
-    rex::be<GameMessageType> eType;
+    be<GameMessageType> eType;
 };
 
 template <typename T>
 struct XOptional
 {
-    rex::be<i32> m_bExists;
+    be<i32> m_bExists;
     T m_tValue;
 };
 
 struct SNOName
 {
-    rex::be<SNOGroup> snoGroup;
-    rex::be<SNO> snoHandle;
+    be<SNOGroup> snoGroup;
+    be<SNO> snoHandle;
 };
 
 struct RNG
 {
-    rex::be<u32> dwSeed;
-    rex::be<u32> dwCarry;
+    be<u32> dwSeed;
+    be<u32> dwCarry;
 };
 
 struct RGBAColor
@@ -61,37 +60,37 @@ struct SimpleMessage
 struct DWordDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> dwData;
+    be<u32> dwData;
 };
 
 struct IntDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nData;
+    be<i32> nData;
 };
 
 struct BoolDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> bVal;
+    be<i32> bVal;
 };
 
 struct DataIDDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<DataID> id;
+    be<DataID> id;
 };
 
 struct ANNDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
 };
 
 struct SNODataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoData;
+    be<SNO> snoData;
 };
 
 struct SNONameDataMessage
@@ -103,26 +102,26 @@ struct SNONameDataMessage
 struct GBIDDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<GBID> gbidData;
+    be<GBID> gbidData;
 };
 
 struct PlayerIndexMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
+    be<i32> nPlayerIndex;
 };
 
 struct PlayerDWordDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> dwData;
-    rex::be<i32> nPlayerIndex;
+    be<u32> dwData;
+    be<i32> nPlayerIndex;
 };
 
 struct GenericBlobMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> uBlobSize;
+    be<u32> uBlobSize;
 };
 
 struct PRTransformMessage
@@ -136,10 +135,10 @@ struct PRTransformMessage
 struct TryConsoleCommand
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
+    be<i32> nPlayerIndex;
     char usMessage[1024];
     WorldPlace tPlaceTarget;
-    rex::be<ACDNetworkName> annTarget;
+    be<ACDNetworkName> annTarget;
 };
 
 // TODO: clean up entries that didn't exist in 17339
@@ -165,24 +164,24 @@ enum QuitReason : int
 struct QuitGameMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<QuitReason> eReason;
+    be<QuitReason> eReason;
 };
 
 struct PreloadSceneDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SSceneID> idSScene;
-    rex::be<SNO> snoScene;
-    rex::be<SNO> snoLevelAreas[4];
+    be<SSceneID> idSScene;
+    be<SNO> snoScene;
+    be<SNO> snoLevelAreas[4];
 };
 
 struct PreloadACDDataMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<SNO> snoActor;
-    rex::be<WeaponClass> eWeaponClass;
-    rex::be<GBID> gbidMonsterAffixes[8];
+    be<ACDNetworkName> ann;
+    be<SNO> snoActor;
+    be<WeaponClass> eWeaponClass;
+    be<GBID> gbidMonsterAffixes[8];
 };
 
 struct JoinBNetGameMessage
@@ -190,43 +189,43 @@ struct JoinBNetGameMessage
     RequiredMessageHeader tHeader;
     OnlineService::HeroId uHeroId;
     OnlineService::GameId tGameId;
-    rex::be<SGameID> idSGame;   // to be confirmed
-    rex::be<u64> uAuthToken;
-    rex::be<XLocale> eXLocale;
-    rex::be<u32> uProtocolHash;
-    rex::be<u32> dwSNOCoreDataHash;
+    be<SGameID> idSGame;   // to be confirmed
+    be<u64> uAuthToken;
+    be<XLocale> eXLocale;
+    be<u32> uProtocolHash;
+    be<u32> dwSNOCoreDataHash;
 };
 
 struct JoinLANGameMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SGameID> idSGame;
+    be<SGameID> idSGame;
     char szAccount[128];
     char szHero[49];
-    rex::be<XLocale> eXLocale;
+    be<XLocale> eXLocale;
 };
 
 struct JoinConsoleGameMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<XLocale> eXLocale;
+    be<XLocale> eXLocale;
     char uControllerIndex;
-    rex::be<u32> uLicenses;
+    be<u32> uLicenses;
 };
 
 struct VersionsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> uSNOPackHash;
-    rex::be<u32> uProtocolHash;
+    be<u32> uSNOPackHash;
+    be<u32> uProtocolHash;
     char szBuildVer[32];
 };
 
 struct StackPortionMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItem;
-    rex::be<u64> uAmount;
+    be<ACDNetworkName> annItem;
+    be<u64> uAmount;
 };
 
 enum LogoutContext : int
@@ -240,16 +239,16 @@ enum LogoutContext : int
 struct LogoutContextMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<LogoutContext> eLogoutContext;
+    be<LogoutContext> eLogoutContext;
 };
 
 struct LogoutTickTimeMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<LogoutContext> eContext;
-    rex::be<u32> uMinWaitTicks;
-    rex::be<u32> uMaxWaitTicks;
-    rex::be<u32> uKickTicks;
+    be<LogoutContext> eContext;
+    be<u32> uMinWaitTicks;
+    be<u32> uMaxWaitTicks;
+    be<u32> uKickTicks;
 };
 
 struct StashIconStateMessage
@@ -283,13 +282,13 @@ enum LogEventType
 struct Message
 {
     RequiredMessageHeader tHeader;
-    rex::be<LogEventType> eEventType;
-    rex::be<ACDNetworkName> idACDSource;
-    rex::be<ACDNetworkName> idACDTarget;
-    rex::be<SNO> snoData;
-    rex::be<f32> flParam1;
-    rex::be<f32> flParam2;
-    rex::be<u32> dwParam1;
+    be<LogEventType> eEventType;
+    be<ACDNetworkName> idACDSource;
+    be<ACDNetworkName> idACDTarget;
+    be<SNO> snoData;
+    be<f32> flParam1;
+    be<f32> flParam2;
+    be<u32> dwParam1;
 };
 
 }  // namespace CombatLog
@@ -297,66 +296,66 @@ struct Message
 struct ConnectionEstablishedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
-    rex::be<u32> dwAnimSyncedSeed;
-    rex::be<u32> dwSnoCoreDataHash;
+    be<i32> nPlayerIndex;
+    be<u32> dwAnimSyncedSeed;
+    be<u32> dwSnoCoreDataHash;
 };
 
 struct GameSetupMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> dwFirstHeartbeat;
+    be<u32> dwFirstHeartbeat;
 };
 
 struct HotbarButtonData
 {
-    rex::be<SNO> m_snoPower;
-    rex::be<RuneType> m_eRuneType;
-    rex::be<GBID> m_gbidItem;
+    be<SNO> m_snoPower;
+    be<RuneType> m_eRuneType;
+    be<GBID> m_gbidItem;
 };
 
 struct HirelingInfo
 {
-    rex::be<HirelingClass> eClass;
-    rex::be<GBID> gbidName;
-    rex::be<i32> field8;    // max 0x7F, bit count 7
-    rex::be<i32> field12;
-    rex::be<i32> fDead;
-    rex::be<SNO> arnPowerKeyParam[4];
+    be<HirelingClass> eClass;
+    be<GBID> gbidName;
+    be<i32> field8;    // max 0x7F, bit count 7
+    be<i32> field12;
+    be<i32> fDead;
+    be<SNO> arnPowerKeyParam[4];
 };
 
 struct HirelingSavedData
 {
     HirelingInfo tHireling[4];
-    rex::be<HirelingClass> eActiveHireling;
-    rex::be<u32> dwAvailableHirelings;
+    be<HirelingClass> eActiveHireling;
+    be<u32> dwAvailableHirelings;
 };
 
 struct LearnedLore
 {
-    rex::be<i32> m_nLearnedCount;
-    rex::be<SNO> m_snoLoreLearned[256];
+    be<i32> m_nLearnedCount;
+    be<SNO> m_snoLoreLearned[256];
 };
 
 struct SavedConversations
 {
-    rex::be<i32> m_nSavedConvCount;
+    be<i32> m_nSavedConvCount;
     char m_arPlayedConv[32];
-    rex::be<SNO> m_snoSavedConv[256];
+    be<SNO> m_snoSavedConv[256];
 };
 
 struct ActiveSkillSavedData
 {
-    rex::be<SNO> snoSkill;
-    rex::be<RuneType> eRuneType;
+    be<SNO> snoSkill;
+    be<RuneType> eRuneType;
 };
 
 struct SavePointData
 {
-    rex::be<SNO> snoWorld;
-    rex::be<i32> nNum;
-    rex::be<i32> bCreatesPortal;
-    rex::be<ACDID> idACDReturnPortal;
+    be<SNO> snoWorld;
+    be<i32> nNum;
+    be<i32> bCreatesPortal;
+    be<ACDID> idACDReturnPortal;
 };
 
 struct PlayerSavedData
@@ -364,10 +363,10 @@ struct PlayerSavedData
     HotbarButtonData tHotbarBtnAssignments[6];
     HotbarButtonData tPotionBtn;
     char bSkillSlotEverAssigned;
-    rex::be<u32> uSecondsPlayed;
-    rex::be<u32> m_ActivatedWaypoints;
+    be<u32> uSecondsPlayed;
+    be<u32> m_ActivatedWaypoints;
     HirelingSavedData tHirelingSavedData;
-    rex::be<u32> uTimeLastLevel;
+    be<u32> uTimeLastLevel;
     LearnedLore tLearnedLore;
     SavedConversations tSavedConversations;     // skipped in the type descriptor
     ActiveSkillSavedData tActiveSkills[6];
@@ -377,216 +376,216 @@ struct PlayerSavedData
 
 struct PlayerQuestRewardHistoryEntry
 {
-    rex::be<SNO> snoQuest;
-    rex::be<i32> nStepUID;
+    be<SNO> snoQuest;
+    be<i32> nStepUID;
     char uDifficultyFlags;
 };
 
 struct PlayerQuestHistoryEntry
 {
-    rex::be<SNO> snoQuest;
-    rex::be<i32> nStepUID;
-    rex::be<DifficultyLevel> eDifficulty;
+    be<SNO> snoQuest;
+    be<i32> nStepUID;
+    be<DifficultyLevel> eDifficulty;
 };
 
 struct PlayerSavedQuest
 {
-    rex::be<SNO> snoQuest;
-    rex::be<DifficultyLevel> eDifficulty;
-    rex::be<i32> nCurrentStepUID;
-    rex::be<i32> arObjectiveState[20];
-    rex::be<i32> arFailureConditionState[20];
+    be<SNO> snoQuest;
+    be<DifficultyLevel> eDifficulty;
+    be<i32> nCurrentStepUID;
+    be<i32> arObjectiveState[20];
+    be<i32> arFailureConditionState[20];
 };
 
 struct HeroStateData
 {
-    rex::be<Act> eLastPlayedAct;
-    rex::be<Act> eHighestUnlockedAct;
-    rex::be<DifficultyLevel> eLastPlayedDifficulty;
-    rex::be<DifficultyLevel> eHighestUnlockedDifficulty;
-    rex::be<u32> uPlayerFlags;
+    be<Act> eLastPlayedAct;
+    be<Act> eHighestUnlockedAct;
+    be<DifficultyLevel> eLastPlayedDifficulty;
+    be<DifficultyLevel> eHighestUnlockedDifficulty;
+    be<u32> uPlayerFlags;
     PlayerSavedData tSavedData;
-    rex::be<i32> nNumQuestRewardEntries;
+    be<i32> nNumQuestRewardEntries;
     PlayerQuestRewardHistoryEntry tQuestRewardHistory[100];
     PlayerQuestHistoryEntry tQuestHistory[200];     // skipped in the type descriptor
     PlayerSavedQuest tSavedQuest[64];               // skipped in the type descriptor
-    rex::be<i32> uBossKillFlags[4];
+    be<i32> uBossKillFlags[4];
 };
 
 struct NewPlayerMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
+    be<i32> nPlayerIndex;
     OnlineService::HeroId tHeroId;
     OnlineService::GameAccountHandle tAccountId;
     char usHeroName[49];
-    rex::be<Team> eTeam;
-    rex::be<PlayerClass> eClass;
-    rex::be<SNO> snoActorPortrait;
-    rex::be<i32> nCurrentLevel;
-    rex::be<i32> nCurrentAltLevel;
+    be<Team> eTeam;
+    be<PlayerClass> eClass;
+    be<SNO> snoActorPortrait;
+    be<i32> nCurrentLevel;
+    be<i32> nCurrentAltLevel;
     HeroStateData tHeroStateData;
-    rex::be<i32> bJustJoined;
-    rex::be<GameConnectionID> idGameConnection;
-    rex::be<ACDNetworkName> ann;
+    be<i32> bJustJoined;
+    be<GameConnectionID> idGameConnection;
+    be<ACDNetworkName> ann;
     char usGamerTag[128];
-    rex::be<u64> uAcceptedLicenseBitsHero;
+    be<u64> uAcceptedLicenseBitsHero;
 };
 
 struct PlayerKickTimerMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> dwLastKickAttempt;
-    rex::be<u32> dwLastSuccessfulKick;
+    be<u32> dwLastKickAttempt;
+    be<u32> dwLastSuccessfulKick;
 };
 
 struct EnterWorldMessage
 {
     RequiredMessageHeader tHeader;
     Vector3D wpLocation;
-    rex::be<SWorldID> idSWorld;
-    rex::be<SNO> snoWorld;
-    rex::be<i32> nPlayerIndex;
+    be<SWorldID> idSWorld;
+    be<SNO> snoWorld;
+    be<i32> nPlayerIndex;
 };
 
 struct RevealSceneMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SWorldID> idSWorld;
+    be<SWorldID> idSWorld;
     SceneSpecification tSceneSpec;
-    rex::be<SSceneID> idSScene;
-    rex::be<SNO> snoScene;
+    be<SSceneID> idSScene;
+    be<SNO> snoScene;
     PRTransform transform;
-    rex::be<SSceneID> idSSceneParent;
-    rex::be<SNO> snoSceneGroup;
-    rex::be<u32> uLabelCount;
-    rex::be<GBID> arAppliedLabels[256];
+    be<SSceneID> idSSceneParent;
+    be<SNO> snoSceneGroup;
+    be<u32> uLabelCount;
+    be<GBID> arAppliedLabels[256];
 };
 
 struct DestroySceneMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SWorldID> idSWorld;
-    rex::be<SSceneID> idSScene;
+    be<SWorldID> idSWorld;
+    be<SSceneID> idSScene;
 };
 
 struct SwapSceneMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SWorldID> idSWorld;
-    rex::be<SSceneID> idSSceneOld;
-    rex::be<SSceneID> idSSceneNew;
+    be<SWorldID> idSWorld;
+    be<SSceneID> idSSceneOld;
+    be<SSceneID> idSSceneNew;
 };
 
 struct RevealWorldMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SWorldID> idSWorld;
-    rex::be<SNO> snoWorld;
-    rex::be<i32> nOriginX;
-    rex::be<i32> nOriginY;
-    rex::be<i32> nStitchSizeInFeetX;
-    rex::be<i32> nStitchSizeInFeetY;
-    rex::be<i32> nWorldSizeInFeetX;
-    rex::be<i32> nWorldSizeInFeetY;
+    be<SWorldID> idSWorld;
+    be<SNO> snoWorld;
+    be<i32> nOriginX;
+    be<i32> nOriginY;
+    be<i32> nStitchSizeInFeetX;
+    be<i32> nStitchSizeInFeetY;
+    be<i32> nWorldSizeInFeetX;
+    be<i32> nWorldSizeInFeetY;
 };
 
 struct RevealTeamMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<Team> eTeam;
-    rex::be<u32> dwTeamFlags;
-    rex::be<TeamColor> eTeamColoring;
+    be<Team> eTeam;
+    be<u32> dwTeamFlags;
+    be<TeamColor> eTeamColoring;
 };
 
 struct PlayerActorSetInitialMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<i32> nPlayerIndex;
+    be<ACDNetworkName> ann;
+    be<i32> nPlayerIndex;
 };
 
 struct HeroStateMessage
 {
     RequiredMessageHeader tHeader;
     HeroStateData tStateData;
-    rex::be<i32> nPlayerIndex;
+    be<i32> nPlayerIndex;
 };
 
 struct PlayerSavedDataMessage
 {
     RequiredMessageHeader tHeader;
     PlayerSavedData tSavedData;
-    rex::be<i32> nPlayerIndex;
+    be<i32> nPlayerIndex;
 };
 
 struct SavePointDataMessage
 {
     RequiredMessageHeader tHeader;
     SavePointData tData;
-    rex::be<i32> nPlayerIndex;
+    be<i32> nPlayerIndex;
 };
 
 struct WorldLocationMessageData
 {
-    rex::be<f32> flScale;
+    be<f32> flScale;
     PRTransform transform;
-    rex::be<SWorldID> idSWorld;
+    be<SWorldID> idSWorld;
 };
 
 struct InventoryLocationMessageData
 {
-    rex::be<ACDNetworkName> annContainer;
-    rex::be<InventorySlotType> eSlot;
+    be<ACDNetworkName> annContainer;
+    be<InventorySlotType> eSlot;
     IVector2D pt;
 };
 
 struct ACDEnterKnownMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<SNO> snoActor;
-    rex::be<u32> dwFlags;
-    rex::be<ActorLocationType> eLocationType;
+    be<ACDNetworkName> ann;
+    be<SNO> snoActor;
+    be<u32> dwFlags;
+    be<ActorLocationType> eLocationType;
     XOptional<WorldLocationMessageData> tWorldLocationData;
     XOptional<InventoryLocationMessageData> tInvLocationData;
     GBHandle hGB;
     SNOName tSNOName;
-    rex::be<i32> nRarity;
+    be<i32> nRarity;
     char nLookLinkIndex;
-    XOptional<rex::be<i32>> snoMarkerSet;
-    XOptional<rex::be<i32>> nMarkerIndex;
-    XOptional<rex::be<i32>> snoAmbientOcclusionOverrideTex;
-    XOptional<rex::be<u32>> dwTimeActorCreated;
+    XOptional<be<i32>> snoMarkerSet;
+    XOptional<be<i32>> nMarkerIndex;
+    XOptional<be<i32>> snoAmbientOcclusionOverrideTex;
+    XOptional<be<u32>> dwTimeActorCreated;
 };
 
 struct PlayerEnterKnownMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
-    rex::be<ACDNetworkName> ann;
+    be<i32> nPlayerIndex;
+    be<ACDNetworkName> ann;
 };
 
 struct ACDWorldPositionMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     WorldLocationMessageData tWorldLocationData;
 };
 
 struct ACDInventoryPositionMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     InventoryLocationMessageData tInvLocationData;
-    rex::be<ActorLocationType> tLocType;
+    be<ActorLocationType> tLocType;
 };
 
 struct ACDInventoryUpdateActorSNO
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<SNO> snoActor;
+    be<ACDNetworkName> ann;
+    be<SNO> snoActor;
 };
 
 enum TrickleInfoType : int
@@ -612,24 +611,24 @@ enum TrickleInfoType : int
 struct TrickleMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<SNO> snoActor;
+    be<ACDNetworkName> ann;
+    be<SNO> snoActor;
     WorldPlace tPlace;
-    XOptional<rex::be<u32>> nPlayerIndexOwner;
-    rex::be<SNO> snoLevelArea;
-    XOptional<rex::be<f32>> flHealthPercent;
-    rex::be<TrickleInfoType> eTrickleInfoType;
-    rex::be<u32> dwTrickleFlags;
-    XOptional<rex::be<i32>> dwHeadstoneCorpseReviveTime;
-    XOptional<rex::be<i32>> snoMinimapIcon;
-    XOptional<rex::be<u32>> hMinimapStringLabel;
-    XOptional<rex::be<u32>> hMinimapIconLabel;
-    XOptional<rex::be<u32>> snoStringList;
-    XOptional<rex::be<f32>> fMinDisplayRangeSq;
-    XOptional<rex::be<f32>> fMaxDisplayRangeSq;
-    XOptional<rex::be<i32>> field116;    // this is a bool that existed since at least 1.0.0.8370, so it's probably not bBrawling or bInUberFight
-    XOptional<rex::be<u32>> field124;
-    XOptional<rex::be<u32>> field132;
+    XOptional<be<u32>> nPlayerIndexOwner;
+    be<SNO> snoLevelArea;
+    XOptional<be<f32>> flHealthPercent;
+    be<TrickleInfoType> eTrickleInfoType;
+    be<u32> dwTrickleFlags;
+    XOptional<be<i32>> dwHeadstoneCorpseReviveTime;
+    XOptional<be<i32>> snoMinimapIcon;
+    XOptional<be<u32>> hMinimapStringLabel;
+    XOptional<be<u32>> hMinimapIconLabel;
+    XOptional<be<u32>> snoStringList;
+    XOptional<be<f32>> fMinDisplayRangeSq;
+    XOptional<be<f32>> fMaxDisplayRangeSq;
+    XOptional<be<i32>> field116;    // this is a bool that existed since at least 1.0.0.8370, so it's probably not bBrawling or bInUberFight
+    XOptional<be<u32>> field124;
+    XOptional<be<u32>> field132;
     // i32 nAction
     // u32 uEngagedWithRareTime
     // u32 uEngagedWithGoblinTime
@@ -643,30 +642,30 @@ struct TrickleMessage
 struct MapRevealSceneMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SSceneID> idSScene;
-    rex::be<SNO> snoScene;
+    be<SSceneID> idSScene;
+    be<SNO> snoScene;
     PRTransform transform;
-    rex::be<SWorldID> idSWorld;
-    rex::be<i32> bRevealed;
+    be<SWorldID> idSWorld;
+    be<i32> bRevealed;
 };
 
 struct SavePointInfoMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoLevelArea;
+    be<SNO> snoLevelArea;
 };
 
 struct HearthPortalInfoMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoLevelArea;
-    rex::be<ACDNetworkName> annPortal;
+    be<SNO> snoLevelArea;
+    be<ACDNetworkName> annPortal;
 };
 
 struct ReturnPointInfoMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoLevelArea;
+    be<SNO> snoLevelArea;
 };
 
 enum AffixMessageFlag : int
@@ -680,77 +679,77 @@ enum AffixMessageFlag : int
 struct AffixMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<AffixMessageFlag> eAffixArray;
-    rex::be<GBID> aAffixGBIDs[32];
-    rex::be<u32> dwAffixArrayCount;
+    be<ACDNetworkName> ann;
+    be<AffixMessageFlag> eAffixArray;
+    be<GBID> aAffixGBIDs[32];
+    be<u32> dwAffixArrayCount;
 };
 
 struct RareMonsterNamesMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<GBID> pgbidRareNames[2];
-    rex::be<GBID> pgbidMonsterAffixes[8];
+    be<ACDNetworkName> ann;
+    be<GBID> pgbidRareNames[2];
+    be<GBID> pgbidMonsterAffixes[8];
 };
 
 struct RareItemName
 {
-    rex::be<i32> fItemNameIsPrefix;
-    rex::be<SNO> snoAffixStringList;
-    rex::be<i32> nAffixStringListIndex;
-    rex::be<i32> nItemStringListIndex;
+    be<i32> fItemNameIsPrefix;
+    be<SNO> snoAffixStringList;
+    be<i32> nAffixStringListIndex;
+    be<i32> nItemStringListIndex;
 };
 
 struct RareItemNameMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     RareItemName tRareItemName;
 };
 
 struct ResolvedPortalDestination
 {
-    rex::be<SNO> snoWorld;
-    rex::be<u32> uEntranceGUID;
-    rex::be<SNO> snoDestLevelArea;
+    be<SNO> snoWorld;
+    be<u32> uEntranceGUID;
+    be<SNO> snoDestLevelArea;
 };
 
 struct PortalSpecifierMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     ResolvedPortalDestination tResolvedDest;
 };
 
 struct NetAttributeKeyValue
 {
-    XOptional<rex::be<i32>> nKeyParam;
-    rex::be<Attrib> eKeyAttrib;
-    rex::be<i32> nValue;
+    XOptional<be<i32>> nKeyParam;
+    be<Attrib> eKeyAttrib;
+    be<i32> nValue;
 };
 
 struct AttributeSetValueMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     NetAttributeKeyValue tKeyVal;
 };
 
 struct AttributesSetValuesMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<i32> nAttributeCount;
+    be<ACDNetworkName> ann;
+    be<i32> nAttributeCount;
     NetAttributeKeyValue atKeyVals[15];
 };
 
 struct VisualItem
 {
-    rex::be<GBID> gbidItem;
-    rex::be<DyeType> eDyeType;
-    rex::be<ItemEffectType> eItemEffectType;
-    rex::be<i32> nEffectLevel;
+    be<GBID> gbidItem;
+    be<DyeType> eDyeType;
+    be<ItemEffectType> eItemEffectType;
+    be<i32> nEffectLevel;
 };
 
 struct VisualEquipment
@@ -761,7 +760,7 @@ struct VisualEquipment
 struct VisualInventoryMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     VisualEquipment tEquipment;
 };
 
@@ -769,43 +768,43 @@ struct ProjectileStickMessage
 {
     RequiredMessageHeader tHeader;
     Vector3D wpSourceLoc;
-    rex::be<ACDNetworkName> annTarget;
-    rex::be<SNO> snoActorAttachment;
+    be<ACDNetworkName> annTarget;
+    be<SNO> snoActorAttachment;
 };
 
 struct AnimPreplayData
 {
-    rex::be<u32> dwAnimPrePlayDataFlags;
-    rex::be<u32> dwServerTimeAnimStarted;
-    rex::be<u32> dwSyncedSeed;
+    be<u32> dwAnimPrePlayDataFlags;
+    be<u32> dwServerTimeAnimStarted;
+    be<u32> dwSyncedSeed;
 };
 
 struct TargetMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<TargetType> eType;
-    rex::be<ACDNetworkName> annTarget;
+    be<TargetType> eType;
+    be<ACDNetworkName> annTarget;
     WorldPlace tPlace;
-    rex::be<SNO> snoPower;
-    rex::be<ACDNetworkName> annItemBeingUsed;
-    rex::be<i32> nComboLevel;
+    be<SNO> snoPower;
+    be<ACDNetworkName> annItemBeingUsed;
+    be<i32> nComboLevel;
     XOptional<AnimPreplayData> tAnimPreplayData;
-    XOptional<rex::be<u32>> dwFlags;
+    XOptional<be<u32>> dwFlags;
 };
 
 struct SecondaryAnimationPowerMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoPower;
+    be<SNO> snoPower;
     XOptional<AnimPreplayData> tAnimPreplayData;
 };
 
 struct LoopingAnimationPowerMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoPower;
-    rex::be<SNO> snoData0;
-    rex::be<i32> nData1;
+    be<SNO> snoPower;
+    be<SNO> snoData0;
+    be<i32> nData1;
 };
 
 enum TryChatDestination : int
@@ -823,8 +822,8 @@ enum TryChatDestination : int
 struct TryChatMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<TryChatDestination> eDestination;
-    rex::be<i32> nPlayerTarget;
+    be<TryChatDestination> eDestination;
+    be<i32> nPlayerTarget;
     char usMessage[1024];
 };
 
@@ -840,107 +839,107 @@ enum EChatColor
 struct ChatMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<EChatColor> eColor;
-    rex::be<i32> nPlayerIndex;
+    be<EChatColor> eColor;
+    be<i32> nPlayerIndex;
     char usMessage[1024];
 };
 
 struct InvLoc
 {
-    rex::be<ACDNetworkName> annOwner;
-    rex::be<InventorySlotType> eSlot;
-    rex::be<i32> nSlotX;
-    rex::be<i32> nSlotY;
+    be<ACDNetworkName> annOwner;
+    be<InventorySlotType> eSlot;
+    be<i32> nSlotX;
+    be<i32> nSlotY;
 };
 
 struct InventoryRequestMoveMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItem;
+    be<ACDNetworkName> annItem;
     InvLoc tLocation;
 };
 
 struct InventoryRequestQuickMoveMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItem;
-    rex::be<ACDNetworkName> annOwner;
-    rex::be<InventorySlotType> eSlot;
-    rex::be<i32> nSlotMinY;
-    rex::be<i32> nSlotMaxY;
+    be<ACDNetworkName> annItem;
+    be<ACDNetworkName> annOwner;
+    be<InventorySlotType> eSlot;
+    be<i32> nSlotMinY;
+    be<i32> nSlotMaxY;
 };
 
 struct InventoryRequestSocketMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annGem;
-    rex::be<ACDNetworkName> annItemToReceiveGem;
+    be<ACDNetworkName> annGem;
+    be<ACDNetworkName> annItemToReceiveGem;
 };
 
 struct InventorySplitStackMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItem;
-    rex::be<u64> uAmount;
+    be<ACDNetworkName> annItem;
+    be<u64> uAmount;
     InvLoc tLocation;
 };
 
 struct InventoryStackTransferMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItemSrc;
-    rex::be<ACDNetworkName> annItemDest;
-    rex::be<u64> uAmount;
+    be<ACDNetworkName> annItemSrc;
+    be<ACDNetworkName> annItemDest;
+    be<u64> uAmount;
 };
 
 struct GoldTransferMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annPlayer;
-    rex::be<u64> uAmount;
+    be<ACDNetworkName> annPlayer;
+    be<u64> uAmount;
 };
 
 struct InventoryRequestUseMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItemToUse;
-    rex::be<TargetType> eType;
-    rex::be<ACDNetworkName> annTarget;
+    be<ACDNetworkName> annItemToUse;
+    be<TargetType> eType;
+    be<ACDNetworkName> annTarget;
     WorldPlace tPlace;
 };
 
 struct HelperDetachMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annHelper;
+    be<ACDNetworkName> annHelper;
 };
 
 struct AssignSkillMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoPower;
-    rex::be<i32> nRuneType;
-    rex::be<i32> nSlot;
-    rex::be<i32> nPlayerIndex;
+    be<SNO> snoPower;
+    be<i32> nRuneType;
+    be<i32> nSlot;
+    be<i32> nPlayerIndex;
 };
 
 struct UnassignSkillMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nSlot;
+    be<i32> nSlot;
 };
 
 struct AssignTraitsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoPower[3];
+    be<SNO> snoPower[3];
 };
 
 struct HirelingRequestLearnSkillMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<SNO> snoSkill;
+    be<ACDNetworkName> ann;
+    be<SNO> snoSkill;
 };
 
 enum AnimReason : int
@@ -964,82 +963,82 @@ enum AnimReason : int
 
 struct PlayAnimationMessageSpec
 {
-    rex::be<u32> dwDuration;
-    rex::be<SNO> snoAnim;
-    rex::be<u32> dwAnimationTag;
-    rex::be<i32> nPermutationIndex;
-    rex::be<f32> flAnimSpeedScale;
+    be<u32> dwDuration;
+    be<SNO> snoAnim;
+    be<u32> dwAnimationTag;
+    be<i32> nPermutationIndex;
+    be<f32> flAnimSpeedScale;
 };
 
 struct PlayAnimationMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<AnimReason> eAnimReason;
-    rex::be<f32> flUnitAnimStartTime;
-    rex::be<i32> nUsedAnimArrayElements;
+    be<ACDNetworkName> ann;
+    be<AnimReason> eAnimReason;
+    be<f32> flUnitAnimStartTime;
+    be<i32> nUsedAnimArrayElements;
     PlayAnimationMessageSpec tAnim[3];
 };
 
 struct ACDTranslateNormalMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     XOptional<Vector3D> vDest;
-    XOptional<rex::be<Angle>> aDesiredYaw;
-    XOptional<rex::be<i32>> bSnapFacing;
-    XOptional<rex::be<f32>> flMovementSpeed;
-    XOptional<rex::be<u32>> uMoveFlags;
-    XOptional<rex::be<ActorAnimationTag>> eAnimTag;
-    XOptional<rex::be<u32>> uWalkInPlaceTicks;
-    XOptional<rex::be<SNO>> snoPowerPassability;
-    XOptional<rex::be<u32>> uAckValue;
-    XOptional<rex::be<u32>> eMoveType;
+    XOptional<be<Angle>> aDesiredYaw;
+    XOptional<be<i32>> bSnapFacing;
+    XOptional<be<f32>> flMovementSpeed;
+    XOptional<be<u32>> uMoveFlags;
+    XOptional<be<ActorAnimationTag>> eAnimTag;
+    XOptional<be<u32>> uWalkInPlaceTicks;
+    XOptional<be<SNO>> snoPowerPassability;
+    XOptional<be<u32>> uAckValue;
+    XOptional<be<u32>> eMoveType;
     //XOptional<int> nMaxTicksToWalk
 };
 
 struct ACDTranslateSnappedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     Vector3D vDest;
-    rex::be<Angle> aDesiredYaw;
-    rex::be<i32> bSnapFacing;
-    rex::be<u32> uMoveFlags;
-    XOptional<rex::be<u32>> uAckValue;
+    be<Angle> aDesiredYaw;
+    be<i32> bSnapFacing;
+    be<u32> uMoveFlags;
+    XOptional<be<u32>> uAckValue;
 };
 
 struct ACDTranslateFacingMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<Angle> aDesiredYaw;
-    rex::be<i32> bSnapFacing;
+    be<ACDNetworkName> ann;
+    be<Angle> aDesiredYaw;
+    be<i32> bSnapFacing;
 };
 
 struct ACDTranslateFixedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     Vector3D vVel;
-    rex::be<u32> uMoveFlags;
-    rex::be<ActorAnimationTag> eAnimTag;
-    rex::be<SNO> snoPowerPassability;
+    be<u32> uMoveFlags;
+    be<ActorAnimationTag> eAnimTag;
+    be<SNO> snoPowerPassability;
 };
 
 struct ACDTranslateArcMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     Vector3D vPos;
     Vector3D vVel;
-    rex::be<u32> uMoveFlags;
-    rex::be<ActorAnimationTag> eAnimTag;
-    rex::be<ActorAnimationTag> eLandingAnimTag;
-    rex::be<f32> flGravity;
-    rex::be<SNO> snoPowerPassability;
-    rex::be<f32> flUnitBounce;
-    rex::be<f32> flDesiredHeight;
+    be<u32> uMoveFlags;
+    be<ActorAnimationTag> eAnimTag;
+    be<ActorAnimationTag> eLandingAnimTag;
+    be<f32> flGravity;
+    be<SNO> snoPowerPassability;
+    be<f32> flUnitBounce;
+    be<f32> flDesiredHeight;
 };
 
 // TODO: clean up entries that didn't exist in 17339
@@ -1064,77 +1063,77 @@ enum DeterministicPathType
 struct ACDTranslateDetPathMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<DeterministicPathType> eDPath;
+    be<ACDNetworkName> ann;
+    be<DeterministicPathType> eDPath;
     RNG tSeed;
     Vector3D wvVelocity;
-    rex::be<Angle> aOriginalYaw;
+    be<Angle> aOriginalYaw;
     Vector3D vStartPos;
-    rex::be<u32> uMoveFlags;
-    rex::be<ActorAnimationTag> eAnimTag;
-    rex::be<SNO> snoPowerPassability;
-    rex::be<u32> nVar0;
-    rex::be<f32> flVar0;
-    rex::be<f32> flVar1;
-    rex::be<f32> flVar2;
-    rex::be<f32> flVar3;
-    rex::be<f32> flVar4;
+    be<u32> uMoveFlags;
+    be<ActorAnimationTag> eAnimTag;
+    be<SNO> snoPowerPassability;
+    be<u32> nVar0;
+    be<f32> flVar0;
+    be<f32> flVar1;
+    be<f32> flVar2;
+    be<f32> flVar3;
+    be<f32> flVar4;
 };
 
 struct DPathSinData
 {
-    rex::be<f32> flSinIncPerTick;
-    rex::be<f32> flSinIncAccel;
-    rex::be<f32> flLateralMaxDistance;
-    rex::be<f32> flOOLateralDistanceToScale;
-    rex::be<f32> flLateralStartDistance;
-    rex::be<f32> flSpeed;
+    be<f32> flSinIncPerTick;
+    be<f32> flSinIncAccel;
+    be<f32> flLateralMaxDistance;
+    be<f32> flOOLateralDistanceToScale;
+    be<f32> flLateralStartDistance;
+    be<f32> flSpeed;
 };
 
 struct ACDTranslateDetPathSinMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<DeterministicPathType> eDPath;
+    be<ACDNetworkName> ann;
+    be<DeterministicPathType> eDPath;
     RNG tSeed;
     Vector3D wvVelocity;
-    rex::be<Angle> aOriginalYaw;
+    be<Angle> aOriginalYaw;
     Vector3D vStartPos;
-    rex::be<u32> uMoveFlags;
-    rex::be<ActorAnimationTag> eAnimTag;
-    rex::be<SNO> snoPowerPassability;
-    rex::be<i32> nVar0;
-    rex::be<f32> flVar0;
+    be<u32> uMoveFlags;
+    be<ActorAnimationTag> eAnimTag;
+    be<SNO> snoPowerPassability;
+    be<i32> nVar0;
+    be<f32> flVar0;
     DPathSinData tSinData;
-    rex::be<f32> flSpeedMult;
+    be<f32> flSpeedMult;
 };
 
 struct ACDTranslateDetPathSpiralMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     Vector3D vStartPos;
     Vector3D vTargetPos;
-    rex::be<u32> uMoveFlags;
-    rex::be<ActorAnimationTag> eAnimTag;
-    rex::be<f32> flVar0;
+    be<u32> uMoveFlags;
+    be<ActorAnimationTag> eAnimTag;
+    be<f32> flVar0;
     DPathSinData tSinData;
-    rex::be<f32> flSpeedMult;
+    be<f32> flSpeedMult;
 };
 
 struct ACDTranslateSyncMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     Vector3D vPos;
-    XOptional<rex::be<i32>> bSnap;
-    XOptional<rex::be<u32>> uAckValue;
+    XOptional<be<i32>> bSnap;
+    XOptional<be<u32>> uAckValue;
 };
 
 struct ACDTranslateFixedUpdateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     Vector3D vPos;
     Vector3D vVel;
 };
@@ -1142,130 +1141,130 @@ struct ACDTranslateFixedUpdateMessage
 struct ACDClientTranslateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> uTickBase;
-    rex::be<u32> uTicksAhead;
+    be<u32> uTickBase;
+    be<u32> uTicksAhead;
     Vector3D vDest;
     Angle aDesiredYaw;
-    rex::be<f32> flMovementSpeed;
-    rex::be<u32> uMoveFlags;
-    rex::be<u32> eAnimTag;
-    XOptional<rex::be<SNO>> snoPower;
+    be<f32> flMovementSpeed;
+    be<u32> uMoveFlags;
+    be<u32> eAnimTag;
+    XOptional<be<SNO>> snoPower;
 };
 
 struct ACDTranslateAckMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> uAckValue;
+    be<u32> uAckValue;
 };
 
 struct PlayEffectMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<EffectType> eEffectType;
-    XOptional<rex::be<i32>> nEffectParameter;
+    be<ACDNetworkName> ann;
+    be<EffectType> eEffectType;
+    XOptional<be<i32>> nEffectParameter;
 };
 
 struct PlayHitEffectMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<ACDNetworkName> annAttacker;
-    rex::be<DamageType> eDamageType;
-    rex::be<i32> fCrit;
+    be<ACDNetworkName> ann;
+    be<ACDNetworkName> annAttacker;
+    be<DamageType> eDamageType;
+    be<i32> fCrit;
 };
 
 struct PlayHitEffectOverrideMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<ACDNetworkName> annAttacker;
-    rex::be<SNO> snoEffectGroup;
+    be<ACDNetworkName> ann;
+    be<ACDNetworkName> annAttacker;
+    be<SNO> snoEffectGroup;
 };
 
 struct PlayNonPositionalSoundMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoSound;
+    be<SNO> snoSound;
 };
 
 struct PlayErrorSoundMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ActorTag> dwSoundTag;
+    be<ActorTag> dwSoundTag;
 };
 
 struct PlayMusicMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoMusic;
+    be<SNO> snoMusic;
 };
 
 struct PlayCutsceneMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nIndex;
+    be<i32> nIndex;
 };
 
 struct ComplexEffectAddMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SComplexEffectID> idSComplexEffect;
-    rex::be<ComplexEffectType> eType;
-    rex::be<SNO> snoEffectGroup;
-    rex::be<ACDNetworkName> annSource;
-    rex::be<ACDNetworkName> annDest;
-    rex::be<u32> dwParam1;
-    rex::be<u32> dwParam2;
-    rex::be<u32> bIgnoreOwnerAlpha;
+    be<SComplexEffectID> idSComplexEffect;
+    be<ComplexEffectType> eType;
+    be<SNO> snoEffectGroup;
+    be<ACDNetworkName> annSource;
+    be<ACDNetworkName> annDest;
+    be<u32> dwParam1;
+    be<u32> dwParam2;
+    be<u32> bIgnoreOwnerAlpha;
 };
 
 struct FlippyMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annLauncher;
-    rex::be<SNO> snoFlippyParticle;
-    rex::be<SNO> snoActorLoot;
+    be<ACDNetworkName> annLauncher;
+    be<SNO> snoFlippyParticle;
+    be<SNO> snoActorLoot;
     Vector3D wpDest;
 };
 
 struct WaypointActivatedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annWaypoint;
-    rex::be<ACDNetworkName> annActivatingPlayer;
-    rex::be<SNO> snoLevelArea;
-    rex::be<i32> bAnnounce;
+    be<ACDNetworkName> annWaypoint;
+    be<ACDNetworkName> annActivatingPlayer;
+    be<SNO> snoLevelArea;
+    be<i32> bAnnounce;
 };
 
 struct AimTargetMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<TargetType> eType;
-    rex::be<ACDNetworkName> annTarget;
+    be<ACDNetworkName> ann;
+    be<TargetType> eType;
+    be<ACDNetworkName> annTarget;
     WorldPlace tPlace;
 };
 
 struct ACDChangeGBHandleMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     GBHandle hGB;
 };
 
 struct EndOfTickMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> dwTickEnding;
-    rex::be<u32> dwTickNext;
+    be<u32> dwTickEnding;
+    be<u32> dwTickNext;
 };
 
 struct TryWaypointMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annWaypoint;
-    rex::be<u32> nWaypoint;
+    be<ACDNetworkName> annWaypoint;
+    be<u32> nWaypoint;
 };
 
 enum NPCInteractionType
@@ -1286,10 +1285,10 @@ enum NPCInteractionType
 
 struct NPCInteraction
 {
-    rex::be<NPCInteractionType> eType;
-    rex::be<u32> dwData;
-    rex::be<u32> dwData2;
-    rex::be<u32> dwFlags;
+    be<NPCInteractionType> eType;
+    be<u32> dwData;
+    be<u32> dwData2;
+    be<u32> dwFlags;
 };
 
 enum NPCMenu
@@ -1300,46 +1299,46 @@ enum NPCMenu
 struct NPCInteractOptionsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annTalkingTo;
+    be<ACDNetworkName> annTalkingTo;
     NPCInteraction tNPCInteraction[20];
-    rex::be<i32> nNumInteractions;
-    rex::be<NPCMenu> ePreferredMenu;
+    be<i32> nNumInteractions;
+    be<NPCMenu> ePreferredMenu;
 };
 
 struct QuestUpdateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoQuest;
-    rex::be<SNO> snoLevelArea;
-    rex::be<i32> nStepUID;
-    rex::be<i32> bFailed;
-    rex::be<i32> bDisplayButton;
+    be<SNO> snoQuest;
+    be<SNO> snoLevelArea;
+    be<i32> nStepUID;
+    be<i32> bFailed;
+    be<i32> bDisplayButton;
 };
 
 struct QuestMeterMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoQuest;
-    rex::be<ACDNetworkName> annMeter;
-    rex::be<f32> flMeter;
+    be<SNO> snoQuest;
+    be<ACDNetworkName> annMeter;
+    be<f32> flMeter;
 };
 
 struct QuestCounterMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoQuest;
-    rex::be<SNO> snoLevelArea;
-    rex::be<i32> nStepUID;
-    rex::be<i32> nObjectiveIndex;
-    rex::be<i32> nValue;
-    rex::be<i32> bCompleted;
+    be<SNO> snoQuest;
+    be<SNO> snoLevelArea;
+    be<i32> nStepUID;
+    be<i32> nObjectiveIndex;
+    be<i32> nValue;
+    be<i32> bCompleted;
 };
 
 struct PlayerLevel
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
-    rex::be<i32> nNewLevel;
+    be<i32> nPlayerIndex;
+    be<i32> nNewLevel;
 };
 
 enum PickupResponse : int
@@ -1358,37 +1357,37 @@ enum PickupResponse : int
 struct ACDPickupFailedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> bIsCurrency;
-    rex::be<PickupResponse> ePickupResponse;
-    rex::be<ACDNetworkName> annPickee;
+    be<i32> bIsCurrency;
+    be<PickupResponse> ePickupResponse;
+    be<ACDNetworkName> annPickee;
 };
 
 struct PetMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nOwner;
-    rex::be<i32> nIndex;
-    rex::be<ACDNetworkName> annPet;
-    rex::be<i32> nType;
+    be<i32> nOwner;
+    be<i32> nIndex;
+    be<ACDNetworkName> annPet;
+    be<i32> nType;
 };
 
 struct PetDetachMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annPet;
-    rex::be<i32> bDisplayChatMessage;
+    be<ACDNetworkName> annPet;
+    be<i32> bDisplayChatMessage;
 };
 
 struct HirelingInfoUpdateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> eClass;
-    rex::be<i32> fDead;
-    rex::be<GBID> gbidName;
-    rex::be<i32> eValidClass;
-    rex::be<SNO> arnPowerKeyParam[5];
-    rex::be<ACDNetworkName> annItems[6];
-    rex::be<i32> nPlayerIndex;
+    be<i32> eClass;
+    be<i32> fDead;
+    be<GBID> gbidName;
+    be<i32> eValidClass;
+    be<SNO> arnPowerKeyParam[5];
+    be<ACDNetworkName> annItems[6];
+    be<i32> nPlayerIndex;
 };
 
 enum UIElement : int
@@ -1404,8 +1403,8 @@ enum UIElementAction : int
 struct UIElementMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<UIElement> eElement;
-    rex::be<UIElementAction> eAction;
+    be<UIElement> eElement;
+    be<UIElementAction> eAction;
 };
 
 enum eTradeMessageType
@@ -1426,26 +1425,26 @@ enum eTradeMessageType
 struct TradeMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> eMessageType;
-    rex::be<u32> dwData;
-    rex::be<u32> dwData2;
-    rex::be<u64> uData64;
-    rex::be<ACDNetworkName> ann;
-    rex::be<ACDNetworkName> arrItems[4];
+    be<i32> eMessageType;
+    be<u32> dwData;
+    be<u32> dwData2;
+    be<u64> uData64;
+    be<ACDNetworkName> ann;
+    be<ACDNetworkName> arrItems[4];
 };
 
 struct SetIdleAnimationMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<u32> dwAnimTag;
+    be<ACDNetworkName> ann;
+    be<u32> dwAnimTag;
 };
 
 struct ACDCollFlagsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<u32> uCollFlags;
+    be<ACDNetworkName> ann;
+    be<u32> uCollFlags;
 };
 
 enum GoldModifiedReason : int
@@ -1477,30 +1476,30 @@ enum GoldModifiedReason : int
 struct GoldModifiedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> bPlaySound;
-    rex::be<GoldModifiedReason> eReason;
+    be<i32> bPlaySound;
+    be<GoldModifiedReason> eReason;
 };
 
 struct ActTransitionMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<Act> eAct;
-    rex::be<i32> bOnJoin;
+    be<Act> eAct;
+    be<i32> bOnJoin;
 };
 
 struct InterstitialMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<PlayerClass> ePlayerClass;
-    rex::be<i32> fIsMale;
+    be<PlayerClass> ePlayerClass;
+    be<i32> fIsMale;
 };
 
 struct EffectGroupACDToACDMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoEffectGroup;
-    rex::be<ACDNetworkName> annFrom;
-    rex::be<ACDNetworkName> annTo;
+    be<SNO> snoEffectGroup;
+    be<ACDNetworkName> annFrom;
+    be<ACDNetworkName> annTo;
 };
 
 enum RopePosition : int
@@ -1530,22 +1529,22 @@ enum RopePosition : int
 struct RopeEffectMessageACDToACD
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoRope;
-    rex::be<ACDNetworkName> annFrom;
-    rex::be<RopePosition> ePositionFrom;
-    rex::be<ACDNetworkName> annTo;
-    rex::be<RopePosition> ePositionTo;
-    rex::be<i32> bIgnoreOwnerAlpha;
+    be<SNO> snoRope;
+    be<ACDNetworkName> annFrom;
+    be<RopePosition> ePositionFrom;
+    be<ACDNetworkName> annTo;
+    be<RopePosition> ePositionTo;
+    be<i32> bIgnoreOwnerAlpha;
 };
 
 struct RopeEffectMessageACDToPlace
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoRope;
-    rex::be<ACDNetworkName> annFrom;
-    rex::be<RopePosition> ePositionFrom;
+    be<SNO> snoRope;
+    be<ACDNetworkName> annFrom;
+    be<RopePosition> ePositionFrom;
     WorldPlace tPlaceTo;
-    rex::be<i32> bIgnoreOwnerAlpha;
+    be<i32> bIgnoreOwnerAlpha;
 };
 
 enum PVPGameResult : int
@@ -1559,21 +1558,21 @@ enum PVPGameResult : int
 
 struct GameSyncedData
 {
-    rex::be<u32> dwGameSyncedFlags;
-    rex::be<Act> eAct;
-    rex::be<Team> arPlayerAllyTeam[4];  // there is a 40 byte gap in the type descriptor here, team data fits the most
-    rex::be<Team> arMonsterTeam[4];
-    rex::be<Team> eSceneryTeam;
-    rex::be<Team> eNeutralTeam;
-    rex::be<i32> bPregame;
-    rex::be<u32> dwPregameEnd;
-    rex::be<u32> dwRoundStart;
-    rex::be<u32> dwRoundEnd;
-    rex::be<i32> bPVPGameOver;
-    rex::be<i32> bPVPAwardsAssigned;
-    rex::be<u32> nTeamWins[2];
-    rex::be<u32> nTeamScore[2];
-    rex::be<PVPGameResult> ePVPGameResult[2];
+    be<u32> dwGameSyncedFlags;
+    be<Act> eAct;
+    be<Team> arPlayerAllyTeam[4];  // there is a 40 byte gap in the type descriptor here, team data fits the most
+    be<Team> arMonsterTeam[4];
+    be<Team> eSceneryTeam;
+    be<Team> eNeutralTeam;
+    be<i32> bPregame;
+    be<u32> dwPregameEnd;
+    be<u32> dwRoundStart;
+    be<u32> dwRoundEnd;
+    be<i32> bPVPGameOver;
+    be<i32> bPVPAwardsAssigned;
+    be<u32> nTeamWins[2];
+    be<u32> nTeamScore[2];
+    be<PVPGameResult> ePVPGameResult[2];
     OnlineService::HeroId uPartyGuideHeroId;
 };
 
@@ -1586,8 +1585,8 @@ struct GameSyncedDataMessage
 struct ACDChangeActorMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<SNO> snoActor;
+    be<ACDNetworkName> ann;
+    be<SNO> snoActor;
 };
 
 enum PlayerWarpReason : int
@@ -1617,8 +1616,8 @@ enum PlayerWarpReason : int
 struct PlayerWarpedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<PlayerWarpReason> eWarpReason;
-    rex::be<f32> flWarpFadeInSeconds;
+    be<PlayerWarpReason> eWarpReason;
+    be<f32> flWarpFadeInSeconds;
 };
 
 enum MonsterRarity : int
@@ -1638,62 +1637,62 @@ enum MonsterRarity : int
 struct VictimMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerVictimIndex;
-    rex::be<i32> nKillerLevel;
-    rex::be<i32> nKillerPlayerIndex;
-    rex::be<MonsterRarity> eKillerMonsterRarity;
-    rex::be<SNO> snoKillerActor;
-    rex::be<Team> eKillerTeam;
-    rex::be<GBID> pKillerRareNameGBIDs[2];
-    rex::be<SNO> snoPowerDmgSource;
+    be<i32> nPlayerVictimIndex;
+    be<i32> nKillerLevel;
+    be<i32> nKillerPlayerIndex;
+    be<MonsterRarity> eKillerMonsterRarity;
+    be<SNO> snoKillerActor;
+    be<Team> eKillerTeam;
+    be<GBID> pKillerRareNameGBIDs[2];
+    be<SNO> snoPowerDmgSource;
 };
 
 struct EngagedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
-    rex::be<SNO> snoActorMonster;
-    rex::be<i32> eMonsterRarity;
-    rex::be<GBID> pRareNameGBIDs[2];
+    be<i32> nPlayerIndex;
+    be<SNO> snoActorMonster;
+    be<i32> eMonsterRarity;
+    be<GBID> pRareNameGBIDs[2];
 };
 
 struct KillCountMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
-    rex::be<i32> nPlayerKills;
-    rex::be<i32> nDeaths;
-    rex::be<i32> nAssists;
+    be<i32> nPlayerIndex;
+    be<i32> nPlayerKills;
+    be<i32> nDeaths;
+    be<i32> nAssists;
 };
 
 struct WorldStatusMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SWorldID> idSWorld;
-    rex::be<u32> dwWorldStatusBits;
+    be<SWorldID> idSWorld;
+    be<u32> dwWorldStatusBits;
 };
 
 struct WeatherOverrideMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoWeatherOverride;
-    rex::be<f32> flWeatherIntensityOverride;
-    rex::be<f32> flWeatherIntensityOverrideEnd; // dword in later versions
+    be<SNO> snoWeatherOverride;
+    be<f32> flWeatherIntensityOverride;
+    be<f32> flWeatherIntensityOverrideEnd; // dword in later versions
 };
 
 struct ACDShearMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<f32> flShear;
+    be<ACDNetworkName> ann;
+    be<f32> flShear;
 };
 
 struct ACDGroupMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<u32> uPrimaryGroup;
-    rex::be<u32> uSecondaryGroup;
+    be<ACDNetworkName> ann;
+    be<u32> uPrimaryGroup;
+    be<u32> uSecondaryGroup;
 };
 
 enum ConversationSpeaker : int
@@ -1721,93 +1720,93 @@ enum ActorGender : int
 
 struct PlayLineParams
 {
-    rex::be<SNO> snoConversation;
-    rex::be<i32> nSpeakingPlayerIndex;
-    rex::be<i32> bZoom;
-    rex::be<i32> bFirstLine;
-    rex::be<i32> bHostile;
-    rex::be<i32> bPlayerInitiated;
-    rex::be<u32> dwLineUID;
-    rex::be<ConversationSpeaker> eLineSpeaker;
-    rex::be<ActorGender> eLineGender;
-    rex::be<PlayerClass> eLineClass;
-    rex::be<ConversationSpeaker> eSpeakerTarget;
-    rex::be<SNO> snoSpeakerActor;
-    rex::be<ActorGender> ePlayerGender;
-    rex::be<PlayerClass> ePlayerClass;
-    rex::be<u32> dwLineFlags;
-    rex::be<u32> dwLineAnimTag;
-    rex::be<u32> dwLineDisplayTime;
-    rex::be<i32> nLineGUID;
-    rex::be<i32> nPriority;
+    be<SNO> snoConversation;
+    be<i32> nSpeakingPlayerIndex;
+    be<i32> bZoom;
+    be<i32> bFirstLine;
+    be<i32> bHostile;
+    be<i32> bPlayerInitiated;
+    be<u32> dwLineUID;
+    be<ConversationSpeaker> eLineSpeaker;
+    be<ActorGender> eLineGender;
+    be<PlayerClass> eLineClass;
+    be<ConversationSpeaker> eSpeakerTarget;
+    be<SNO> snoSpeakerActor;
+    be<ActorGender> ePlayerGender;
+    be<PlayerClass> ePlayerClass;
+    be<u32> dwLineFlags;
+    be<u32> dwLineAnimTag;
+    be<u32> dwLineDisplayTime;
+    be<i32> nLineGUID;
+    be<i32> nPriority;
 };
 
 struct PlayConvLineMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annSpeaker;
-    rex::be<ACDNetworkName> annParticipants[9];
+    be<ACDNetworkName> annSpeaker;
+    be<ACDNetworkName> annParticipants[9];
     PlayLineParams tParams;
-    rex::be<u32> dwTimeToDisplay;
+    be<u32> dwTimeToDisplay;
 };
 
 struct StopConvLineMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nConvLineGUID;
-    rex::be<i32> fStoppedByUser;
+    be<i32> nConvLineGUID;
+    be<i32> fStoppedByUser;
 };
 
 struct AdvanceConvMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoConv;
-    rex::be<i32> nLineUID;
+    be<SNO> snoConv;
+    be<i32> nLineUID;
 };
 
 struct UpdateConvAutoAdvanceMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoConv;
-    rex::be<i32> nLineUID;
-    rex::be<u32> dwNextAdvanceTime;
+    be<SNO> snoConv;
+    be<i32> nLineUID;
+    be<u32> dwNextAdvanceTime;
 };
 
 struct EndConversationMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoConversation;
-    rex::be<ACDNetworkName> annSpeaker;
+    be<SNO> snoConversation;
+    be<ACDNetworkName> annSpeaker;
 };
 
 struct HirelingSwapMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<HirelingClass> eNewClass;
+    be<HirelingClass> eNewClass;
 };
 
 struct DeathFadeTimeMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<i32> nTimeUntilFade;
-    rex::be<i32> nFadeTime;
-    rex::be<i32> bRecurseForAttachments;
+    be<ACDNetworkName> ann;
+    be<i32> nTimeUntilFade;
+    be<i32> nFadeTime;
+    be<i32> bRecurseForAttachments;
 };
 
 struct DisplayGameTextMessage
 {
     RequiredMessageHeader tHeader;
     char szMsg[1024];
-    XOptional<rex::be<i32>> nParam1;
-    XOptional<rex::be<i32>> nParam2;
+    XOptional<be<i32>> nParam1;
+    XOptional<be<i32>> nParam2;
 };
 
 struct ACDLookAtMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annSrc;
-    rex::be<ACDNetworkName> annTarget;
+    be<ACDNetworkName> annSrc;
+    be<ACDNetworkName> annTarget;
 };
 
 enum KillCounterType : int
@@ -1822,25 +1821,25 @@ enum KillCounterType : int
 struct KillCounterUpdateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<KillCounterType> eType;
-    rex::be<u32> uCount;
+    be<KillCounterType> eType;
+    be<u32> uCount;
     // float flXPMultiplier
-    rex::be<u32> uTotalTime;
-    rex::be<i32> bExpired;
+    be<u32> uTotalTime;
+    be<i32> bExpired;
 };
 
 struct LowHealthCombatMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<f32> flHealthPercent;
-    rex::be<u32> uXPRewarded;
+    be<f32> flHealthPercent;
+    be<u32> uXPRewarded;
 };
 
 struct SaviorMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annSavedPlayer;
-    rex::be<u32> uXPRewarded;
+    be<ACDNetworkName> annSavedPlayer;
+    be<u32> uXPRewarded;
 };
 
 enum FloatingNumberType : int
@@ -1890,44 +1889,44 @@ enum FloatingNumberType : int
 struct FloatingNumberMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annTarget;
-    rex::be<f32> flDamage;
-    rex::be<FloatingNumberType> eType;
+    be<ACDNetworkName> annTarget;
+    be<f32> flDamage;
+    be<FloatingNumberType> eType;
 };
 
 struct FloatingAmountMessage
 {
     RequiredMessageHeader tHeader;
     WorldPlace wpPlace;
-    rex::be<i32> nAmount;
-    XOptional<rex::be<i32>> nAmount2;
-    rex::be<FloatingNumberType> eType;
+    be<i32> nAmount;
+    XOptional<be<i32>> nAmount2;
+    be<FloatingNumberType> eType;
 };
 
 struct RemoveRagdollMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annTarget;
-    rex::be<SNO> snoMonster;
+    be<ACDNetworkName> annTarget;
+    be<SNO> snoMonster;
 };
 
 struct LoreMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoLore;
+    be<SNO> snoLore;
 };
 
 struct WorldDeletedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SWorldID> idSWorld;
+    be<SWorldID> idSWorld;
 };
 
 struct ActiveEvent
 {
-    rex::be<SNO> snoTimedEvent;
-    rex::be<u32> dwStartTime;
-    rex::be<u32> dwExpirationTime;
+    be<SNO> snoTimedEvent;
+    be<u32> dwStartTime;
+    be<u32> dwExpirationTime;
     // uint32 dwArtificiallyElapsedTime
 };
 
@@ -1940,16 +1939,16 @@ struct TimedEventStartedMessage
 struct ActTransitionStartedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> dwActTransitionTime;
-    //rex::be<i32> bRecreateGameWithParty;
-    rex::be<i32> nPlayerIndex;
+    be<u32> dwActTransitionTime;
+    //be<i32> bRecreateGameWithParty;
+    be<i32> nPlayerIndex;
 };
 
 struct PlayerQuestMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndex;
-    rex::be<SNO> snoQuest;
+    be<i32> nPlayerIndex;
+    be<SNO> snoQuest;
     // SNO snoLevelArea
 };
 
@@ -1966,51 +1965,51 @@ struct PlayerDeSyncSnapMessage
 {
     RequiredMessageHeader tHeader;
     WorldPlace placeSnap;
-    rex::be<DeSyncReason> eReason;
-    rex::be<SNO> snoPowerCurrent;
-    rex::be<i32> nPlayerIndex;
+    be<DeSyncReason> eReason;
+    be<SNO> snoPowerCurrent;
+    be<i32> nPlayerIndex;
 };
 
 struct SalvageResultsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<GBID> gbidOriginalItem;
-    rex::be<ItemQualityLevel> eIQLOriginalItem;
-    rex::be<u32> field16;
-    rex::be<GBID> gbidMaterials[10];
+    be<GBID> gbidOriginalItem;
+    be<ItemQualityLevel> eIQLOriginalItem;
+    be<u32> field16;
+    be<GBID> gbidMaterials[10];
 };
 
 struct MapMarkerInfoMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> m_nHashedName;
+    be<u32> m_nHashedName;
     WorldPlace m_Place;
-    rex::be<SNO> m_ImageInfo;
-    rex::be<u32> m_hImage;
-    rex::be<SNO> m_snoStringList;
-    rex::be<u32> m_hLabel;
-    rex::be<i32> m_bActive;
-    rex::be<i32> m_bCanBecomeArrow;
-    rex::be<i32> m_bRespectsFoW;
-    rex::be<i32> m_bIsPing;
-    rex::be<f32> m_fMaxDisplayRangeSq;
-    rex::be<f32> m_fMinDisplayRangeSq;
-    rex::be<f32> m_fDiscoveryRangeSq;
-    rex::be<u32> m_nPlayerUseFlags;
+    be<SNO> m_ImageInfo;
+    be<u32> m_hImage;
+    be<SNO> m_snoStringList;
+    be<u32> m_hLabel;
+    be<i32> m_bActive;
+    be<i32> m_bCanBecomeArrow;
+    be<i32> m_bRespectsFoW;
+    be<i32> m_bIsPing;
+    be<f32> m_fMaxDisplayRangeSq;
+    be<f32> m_fMinDisplayRangeSq;
+    be<f32> m_fDiscoveryRangeSq;
+    be<u32> m_nPlayerUseFlags;
 };
 
 struct DebugActorTooltipMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
+    be<ACDNetworkName> ann;
     char szTooltip[1024];
 };
 
 struct BossEncounterMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> nPlayerIndex;
-    rex::be<SNO> snoEncounter;
+    be<u32> nPlayerIndex;
+    be<SNO> snoEncounter;
 };
 
 struct EncounterInviteStateMessage
@@ -2024,39 +2023,39 @@ struct EncounterInviteStateMessage
 struct CameraFocusMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<i32> bSnap;
-    rex::be<f32> flDuration;
+    be<ACDNetworkName> ann;
+    be<i32> bSnap;
+    be<f32> flDuration;
 };
 
 struct CameraZoomMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<f32> flZoom;
-    rex::be<i32> bSnap;
-    rex::be<f32> flDuration;
+    be<f32> flZoom;
+    be<i32> bSnap;
+    be<f32> flDuration;
 };
 
 struct CameraYawMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<Angle> aAngle;
-    rex::be<i32> bSnap;
-    rex::be<f32> flDuration;
+    be<Angle> aAngle;
+    be<i32> bSnap;
+    be<f32> flDuration;
 };
 
 struct BossZoomMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<f32> flZoom;
-    rex::be<f32> flZoomSpeed;
+    be<f32> flZoom;
+    be<f32> flZoomSpeed;
 };
 
 struct EnchantItemMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItem;
-    rex::be<GBID> gbidAffix;
+    be<ACDNetworkName> annItem;
+    be<GBID> gbidAffix;
 };
 
 enum DebugDrawPrimType : int
@@ -2075,14 +2074,14 @@ enum DebugDrawPrimType : int
 struct DebugDrawPrimMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> uID;
-    rex::be<DebugDrawPrimType> eType;
-    rex::be<SWorldID> idSWorld;
+    be<u32> uID;
+    be<DebugDrawPrimType> eType;
+    be<SWorldID> idSWorld;
     Vector3D vPos0;
     Vector3D vPos1;
-    rex::be<f32> flLength;
-    rex::be<f32> flRadius;
-    rex::be<u32> uLifetimeInTicks;
+    be<f32> flLength;
+    be<f32> flRadius;
+    be<u32> uLifetimeInTicks;
     RGBAColor rgbaColor;
     char szText[128];
 };
@@ -2090,46 +2089,46 @@ struct DebugDrawPrimMessage
 struct CraftingResultsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> annItem;
-    rex::be<GBID> gbidItem;
-    rex::be<ItemQualityLevel> eIQL;
+    be<ACDNetworkName> annItem;
+    be<GBID> gbidItem;
+    be<ItemQualityLevel> eIQL;
 };
 
 struct CrafterLevelUpMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<CrafterType> eType;
-    rex::be<u32> dwAnimTag;
-    rex::be<u32> dwNewIdle;
-    //rex::be<i32> nLevel;
+    be<CrafterType> eType;
+    be<u32> dwAnimTag;
+    be<u32> dwNewIdle;
+    //be<i32> nLevel;
 };
 
 struct UnlockDifficultyMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> field8;
-    rex::be<u32> field12;
+    be<u32> field8;
+    be<u32> field12;
 };
 
 struct DifficultyAndHandicapMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<DifficultyLevel> eDifficulty;
-    rex::be<i32> nHandicapLevel;
+    be<DifficultyLevel> eDifficulty;
+    be<i32> nHandicapLevel;
 };
 
 struct GameTestingSamplingStartMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoWorld;
-    rex::be<SNO> snoScene;
+    be<SNO> snoWorld;
+    be<SNO> snoScene;
 };
 
 struct RequestBuffCancelMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoPower;
-    rex::be<i32> nBuffIndex;
+    be<SNO> snoPower;
+    be<i32> nBuffIndex;
 };
 
 struct OpenGameToPublicMessage
@@ -2147,76 +2146,76 @@ struct BroadcastTextMessage
 struct VoteKickMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerIndexToKick;
-    rex::be<i32> nPlayerIndexInitiating;
+    be<i32> nPlayerIndexToKick;
+    be<i32> nPlayerIndexInitiating;
     char usMessage[1024];
 };
 
 struct MailSendMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nToAccount;
+    be<i32> nToAccount;
 };
 
 struct MailReadMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u64> idMail;
+    be<u64> idMail;
 };
 
 struct MailRetrieveMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u64> idMail;
+    be<u64> idMail;
 };
 
 struct MailDeleteMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u64> idMail;
+    be<u64> idMail;
 };
 
 struct MailSentResponseMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u64> idMail;
-    rex::be<i32> idErr;
+    be<u64> idMail;
+    be<i32> idErr;
 };
 
 struct MailReadResponseMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u64> idMail;
-    rex::be<i32> idErr;
+    be<u64> idMail;
+    be<i32> idErr;
 };
 
 struct MailRetrieveResponseMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u64> idMail;
-    rex::be<i32> idErr;
+    be<u64> idMail;
+    be<i32> idErr;
 };
 
 struct MailDeleteResponseMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u64> idMail;
-    rex::be<i32> idErr;
+    be<u64> idMail;
+    be<i32> idErr;
 };
 
 struct PVPTokenRedemptionMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> nItems;
-    rex::be<ACDNetworkName> arrItems[4];
-    rex::be<GBID> arrGBIDs[4];
-    rex::be<u32> nStackSize[4];
+    be<u32> nItems;
+    be<ACDNetworkName> arrItems[4];
+    be<GBID> arrGBIDs[4];
+    be<u32> nStackSize[4];
 };
 
 struct PlayerSetCameraObserverMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<SNO> snoObserver;
+    be<SNO> snoObserver;
     XOptional<WorldPlace> wpToOrbit;
 };
 
@@ -2234,32 +2233,32 @@ struct PlayerSetCameraDefaultsMessage
 struct PlayerConsoleSetCameraDefaultsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> bForce;
+    be<i32> bForce;
 };
 
 struct PlayerSavedQuestUpdateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<DifficultyLevel> eLastPlayedDifficulty;
-    rex::be<Act> eLastPlayedAct;
-    rex::be<SNO> snoLastPlayedQuest;
-    rex::be<i32> nLastPlayedStepUID;
-    //rex::be<i32> nHandicapLevel;
+    be<DifficultyLevel> eLastPlayedDifficulty;
+    be<Act> eLastPlayedAct;
+    be<SNO> snoLastPlayedQuest;
+    be<i32> nLastPlayedStepUID;
+    //be<i32> nHandicapLevel;
     PlayerSavedQuest tSavedQuest[64];
-    rex::be<u32> dwNumQuests;
+    be<u32> dwNumQuests;
 };
 
 struct PlayerQuestHistoryUpdateMessage
 {
     RequiredMessageHeader tHeader;
     PlayerQuestHistoryEntry tQuestHistory[200];
-    rex::be<u32> dwNumEntries;
+    be<u32> dwNumEntries;
 };
 
 struct PlayerQuestRewardHistoryUpdateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nNumQuestRewardEntries;
+    be<i32> nNumQuestRewardEntries;
     PlayerQuestRewardHistoryEntry tQuestRewardHistory[100];
 };
 
@@ -2271,50 +2270,50 @@ struct PlayerSavedConversationsUpdateMessage
 
 struct ConsoleCriteriaUpdate
 {
-    rex::be<u32> field0;
-    rex::be<u32> field4;
+    be<u32> field0;
+    be<u32> field4;
 };
 
 struct ConsoleAchievementCriteriaUpdateMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nNumUpdates;
+    be<i32> nNumUpdates;
     ConsoleCriteriaUpdate tUpdates[64];
 };
 
 struct ConsoleAchievementAwardedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<u32> field8;
-    rex::be<u64> field16;
-    rex::be<u32> field24;
+    be<u32> field8;
+    be<u64> field16;
+    be<u32> field24;
 };
 
 struct DuelResultMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<i32> nPlayerVictimIndex;
-    rex::be<i32> nPlayerKillerIndex;
-    rex::be<SNO> snoPowerDmgSource;
+    be<i32> nPlayerVictimIndex;
+    be<i32> nPlayerKillerIndex;
+    be<SNO> snoPowerDmgSource;
 };
 
 struct ItemJunkFlagChangedMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<i32> bJunkFlag;
+    be<ACDNetworkName> ann;
+    be<i32> bJunkFlag;
 };
 
 struct SpendParagonPointsMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<GBID> gbidParagonBonus;
-    rex::be<i32> nPoints;
+    be<GBID> gbidParagonBonus;
+    be<i32> nPoints;
 };
 
 struct PlayerClearClientWalkPowerMessage
 {
     RequiredMessageHeader tHeader;
-    rex::be<ACDNetworkName> ann;
-    rex::be<SNO> snoPower;
+    be<ACDNetworkName> ann;
+    be<SNO> snoPower;
 };

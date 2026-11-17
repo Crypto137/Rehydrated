@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rex/system/xtypes.h>
+#include "core/memory.h"
 
 enum AttributeCompressorType
 {
@@ -14,35 +14,35 @@ enum AttributeCompressorType
 
 struct AttributeCompressor
 {
-    rex::TypedGuestPointer<u32> __vftable;
-    rex::be<AttributeCompressorType> m_eType;
-    rex::TypedGuestPointer<AttributeCompressor> m_ptNextCompressor;
+    be_ptr<u32> __vftable;
+    be<AttributeCompressorType> m_eType;
+    be_ptr<AttributeCompressor> m_ptNextCompressor;
 };
 
 struct AttributeCompressorUncompressed : AttributeCompressor
 {
-    rex::be<u32> m_dwBits;
+    be<u32> m_dwBits;
 };
 
 struct AttributeCompressorBoundedInt : AttributeCompressor
 {
-    rex::be<i32> m_nMin;
-    rex::be<i32> m_nMax;
-    rex::be<u32> m_dwBits;
+    be<i32> m_nMin;
+    be<i32> m_nMax;
+    be<u32> m_dwBits;
 };
 
 struct AttributeCompressorLinearFloat : AttributeCompressor
 {
-    rex::be<f32> m_fMin;
-    rex::be<f32> m_fMax;
-    rex::be<u32> m_dwBits;
-    rex::be<f32> m_fMultiplier;
-    rex::be<f32> m_fOOMultiplier;
+    be<f32> m_fMin;
+    be<f32> m_fMax;
+    be<u32> m_dwBits;
+    be<f32> m_fMultiplier;
+    be<f32> m_fOOMultiplier;
 };
 
 struct AttributeCompressorFloat16 : AttributeCompressor
 {
-    rex::be<u32> m_dwBits;
+    be<u32> m_dwBits;
 };
 
 struct AttributeCompressorFloatVariable : AttributeCompressor

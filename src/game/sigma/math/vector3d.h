@@ -1,12 +1,12 @@
 #pragma once
 
-#include <rex/types.h>
+#include "core/memory.h"
 
 struct Vector3D
 {
-	rex::be<f32> x;
-	rex::be<f32> y;
-	rex::be<f32> z;
+	be<f32> x;
+	be<f32> y;
+	be<f32> z;
 };
 
 typedef Vector3D VelocityVector3D;

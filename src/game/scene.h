@@ -1,19 +1,18 @@
 #pragma once
 
-#include <rex/types.h>
-
+#include "core/memory.h"
 #include "game/sigma/math/aabb.h"
 #include "game/sigma/math/ivector2d.h"
 
 struct SceneCachedValues
 {
-    rex::be<u32> dwCachedValuesValid;
-    rex::be<i32> nNavmeshSizeX;
-    rex::be<i32> nNavmeshSizeY;
+    be<u32> dwCachedValuesValid;
+    be<i32> nNavmeshSizeX;
+    be<i32> nNavmeshSizeY;
     AABB aabbBounds;
     AABB aabbMarkerSetBounds;
-    rex::be<i32> arNumNodesForDistByLevelArea[4];
-    rex::be<u32> dwFlags;
+    be<i32> arNumNodesForDistByLevelArea[4];
+    be<u32> dwFlags;
 };
 
 enum DRLGTileType : int
@@ -47,37 +46,37 @@ enum DRLGTileFamily : int
 
 struct SceneDRLGCreationInfo
 {
-    rex::be<u32> field0;
-    rex::be<u32> field4;
-    rex::be<u32> field8;
-    rex::be<u32> field12;
-    rex::be<u32> field16;
-    rex::be<u32> field20;
-    rex::be<u32> field24;
+    be<u32> field0;
+    be<u32> field4;
+    be<u32> field8;
+    be<u32> field12;
+    be<u32> field16;
+    be<u32> field20;
+    be<u32> field24;
 };
 
 struct SceneSpecification
 {
-    rex::be<i32> dHeight;
+    be<i32> dHeight;
     IVector2D pointGridLocation;
-    rex::be<SNO> arSnoLevelAreas[4];
-    rex::be<SNO> snoPrevWorld;
-    rex::be<u32> uPrevEntranceGUID;
-    rex::be<SNO> snoPrevLevelArea;
-    rex::be<SNO> snoNextWorld;
-    rex::be<u32> uNextEntranceGUID;
-    rex::be<SNO> snoNextLevelArea;
-    rex::be<SNO> snoMusic;
-    rex::be<SNO> snoAmbient;
-    rex::be<SNO> snoReverb;
-    rex::be<SNO> snoWeather;
-    rex::be<SNO> snoPresetWorld;
-    rex::be<i32> nDRLGIndex;
-    rex::be<i32> nSceneChunk;
-    rex::be<u32> dwOnPathBits;
+    be<SNO> arSnoLevelAreas[4];
+    be<SNO> snoPrevWorld;
+    be<u32> uPrevEntranceGUID;
+    be<SNO> snoPrevLevelArea;
+    be<SNO> snoNextWorld;
+    be<u32> uNextEntranceGUID;
+    be<SNO> snoNextLevelArea;
+    be<SNO> snoMusic;
+    be<SNO> snoAmbient;
+    be<SNO> snoReverb;
+    be<SNO> snoWeather;
+    be<SNO> snoPresetWorld;
+    be<i32> nDRLGIndex;
+    be<i32> nSceneChunk;
+    be<u32> dwOnPathBits;
     DRLGTileType nTileType;
     DRLGTileFamily nTileFamily;
     SceneDRLGCreationInfo tDRLGCreationInfo;
-    rex::be<u32> uClusterID;
+    be<u32> uClusterID;
     SceneCachedValues tCachedValues;
 };

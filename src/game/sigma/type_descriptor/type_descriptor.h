@@ -1,29 +1,28 @@
 #pragma once
 
-#include <rex/system/xtypes.h>
-
+#include "core/memory.h"
 #include "game/sigma/type_descriptor/type_descriptor_field.h"
 
 struct XTypeDescriptor
 {
-    rex::TypedGuestPointer<u32> __vftable;
-    rex::TypedGuestPointer<const char> szClassName;
-    rex::be<i32> nVersion;
-    rex::TypedGuestPointer<TypeDescriptorField> arFields;
-    rex::be<u32> nFieldCount;
-    rex::TypedGuestPointer<void> pfuncDOMVersion;
-    rex::be<u32> dwFlags;
+    be_ptr<u32> __vftable;
+    be_ptr<const char> szClassName;
+    be<i32> nVersion;
+    be_ptr<TypeDescriptorField> arFields;
+    be<u32> nFieldCount;
+    be_ptr<void> pfuncDOMVersion;
+    be<u32> dwFlags;
 };
 
 struct ComplexTypeDescriptor : XTypeDescriptor
 {
     static constexpr u32 pRegistrationHead = 0x830D6B24;
 
-    rex::TypedGuestPointer<void> pfuncToVariant;
-    rex::TypedGuestPointer<void> pfuncFromVariant;
-    rex::TypedGuestPointer<void> pfuncVariantsEqual;
-    rex::TypedGuestPointer<void> pfuncLoadFromDefaultData;
-    rex::TypedGuestPointer<ComplexTypeDescriptor> pNextRegisteredDescriptor;
+    be_ptr<void> pfuncToVariant;
+    be_ptr<void> pfuncFromVariant;
+    be_ptr<void> pfuncVariantsEqual;
+    be_ptr<void> pfuncLoadFromDefaultData;
+    be_ptr<ComplexTypeDescriptor> pNextRegisteredDescriptor;
 };
 
 enum PrimitiveTypeDescriptor : u32

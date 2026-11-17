@@ -28,7 +28,7 @@ REXCVAR_DEFINE_BOOL(dump_attrib_defs, false, "Hydra/Static Data", "Dumps attribu
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
 template <typename T>
-using GuestPtr = rex::TypedGuestPointer<T>;
+using GuestPtr = be_ptr<T>;
 
 template <typename T>
 using GuestPtrSet = std::set<GuestPtr<T>>;
@@ -102,7 +102,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
 
     REXLOG_INFO("Discovering type descriptors...");
 
-    GuestPtr<ComplexTypeDescriptor> typeDescPtr = *Memory::GetHostPtr<rex::TypedGuestPointer<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
+    GuestPtr<ComplexTypeDescriptor> typeDescPtr = *Memory::GetHostPtr<be_ptr<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
     while (typeDescPtr)
     {
         GuestPtr<XTypeDescriptor> castTypeDescPtr{};
@@ -176,10 +176,10 @@ namespace {
 
 struct GameMessageInfo
 {
-    rex::be<u32> eMessageType;
-    rex::be<u32> pTypeDescriptor;
-    rex::be<u32> dwSize;
-    rex::be<u32> pszMessageLabel;
+    be<u32> eMessageType;
+    be<u32> pTypeDescriptor;
+    be<u32> dwSize;
+    be<u32> pszMessageLabel;
 };
 
 }
@@ -212,9 +212,9 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
 
         GameMessageInfo gameMessageInfo;
         gameMessageInfo.eMessageType = i;
-        gameMessageInfo.pTypeDescriptor = *Memory::GetHostPtr<rex::be<u32>>(pTypeDescriptorPtr);
-        gameMessageInfo.dwSize = *Memory::GetHostPtr<rex::be<u32>>(dwSizePtr);
-        gameMessageInfo.pszMessageLabel = *Memory::GetHostPtr<rex::be<u32>>(pszMessageLabelPtr);
+        gameMessageInfo.pTypeDescriptor = *Memory::GetHostPtr<be<u32>>(pTypeDescriptorPtr);
+        gameMessageInfo.dwSize = *Memory::GetHostPtr<be<u32>>(dwSizePtr);
+        gameMessageInfo.pszMessageLabel = *Memory::GetHostPtr<be<u32>>(pszMessageLabelPtr);
         gameMessages.push_back(gameMessageInfo);
     }
 

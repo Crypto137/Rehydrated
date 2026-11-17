@@ -1,7 +1,6 @@
 #pragma once
 
-#include <rex/types.h>
-
+#include "core/memory.h"
 #include "game/types.h"
 #include "game/world_place.h"
 
@@ -17,8 +16,8 @@ enum TargetType : int
 
 struct Target
 {
-    rex::be<TargetType> eType;
-    rex::be<ACDID> idACDTarget;
+    be<TargetType> eType;
+    be<ACDID> idACDTarget;
     WorldPlace tPlace;
-    rex::be<i32> bForcedActorTarget;
+    be<i32> bForcedActorTarget;
 };

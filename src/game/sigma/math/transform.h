@@ -1,7 +1,6 @@
 #pragma once
 
-#include <rex/types.h>
-
+#include "core/memory.h"
 #include "game/sigma/math/quaternion.h"
 #include "game/sigma/math/vector3d.h"
 
@@ -17,5 +16,5 @@ struct PRSTransform
 {
     Quaternion q;
     Vector3D wp;
-    rex::be<f32> flScale;
+    be<f32> flScale;
 };

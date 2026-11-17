@@ -1,7 +1,6 @@
 #pragma once
 
-#include <rex/types.h>
-
+#include "core/memory.h"
 #include "game/target.h"
 #include "game/types.h"
 #include "game/sigma/math/ivector2d.h"
@@ -260,31 +259,31 @@ struct BufferedCharData
 
 struct BufferedKeyData
 {
-    rex::be<u32> wPlatformKey;
-    rex::be<Key> eKey;
-    rex::be<i32> bExactMatch;
+    be<u32> wPlatformKey;
+    be<Key> eKey;
+    be<i32> bExactMatch;
 };
 
 struct BufferedMouseData
 {
     IVector2D p;
-    rex::be<i32> nDeltaMouseWheel;
-    rex::be<MouseButton> eMouseButton;
+    be<i32> nDeltaMouseWheel;
+    be<MouseButton> eMouseButton;
 };
 
 struct BufferedControllerData
 {
-    rex::be<i32> nControllerIndex;
-    rex::be<InputButton> eInputButton;
+    be<i32> nControllerIndex;
+    be<InputButton> eInputButton;
     Vector2D vLeftStick;
     Vector2D vRightStick;
-    rex::be<i32> nRightTriggerPos;
-    rex::be<i32> nLeftTriggerPos;
+    be<i32> nRightTriggerPos;
+    be<i32> nLeftTriggerPos;
 };
 
 struct BufferedInput
 {
-    rex::be<InputMsg> eInputMsg;
+    be<InputMsg> eInputMsg;
     BufferedCharData tBufCharData;
     BufferedKeyData tBufKeyData;
     BufferedMouseData tBufMouseData;
@@ -293,10 +292,10 @@ struct BufferedInput
 
 struct ResolvedClick
 {
-    rex::be<RActorID> idRActor;
-    rex::be<SNO> snoOriginalPower;
-    rex::be<SNO> snoPower;
-    rex::be<i32> bPlayItemSound;
-    rex::be<ACDID> idACDItemToUse;
+    be<RActorID> idRActor;
+    be<SNO> snoOriginalPower;
+    be<SNO> snoPower;
+    be<i32> bPlayItemSound;
+    be<ACDID> idACDItemToUse;
     Target tTarget;
 };

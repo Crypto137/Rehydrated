@@ -1,7 +1,6 @@
 #pragma once
 
-#include <rex/system/xtypes.h>
-
+#include "core/memory.h"
 #include "game/attributes/attrib.h"
 #include "game/attributes/fast_attribute.h"
 
@@ -73,14 +72,14 @@ enum AttributeSyncFlags
 
 struct AttribDef
 {
-    rex::be<Attrib> eAttrib;
-    rex::be<FastAttribValue> tDefaultValue;
-    rex::be<AttributeParameterType> eParameterType;
-    rex::be<AttributeOperator> eAttributeOperator;
-    rex::be<AttributeDataType> eAttributeDataType;
-    rex::TypedGuestPointer<const char> pszFormulaItem;
-    rex::TypedGuestPointer<const char> pszFormulaCharacter;
-    rex::TypedGuestPointer<const char> pszName;
-    rex::TypedGuestPointer<AttributeCompressor> ptCompressor;
+    be<Attrib> eAttrib;
+    be<FastAttribValue> tDefaultValue;
+    be<AttributeParameterType> eParameterType;
+    be<AttributeOperator> eAttributeOperator;
+    be<AttributeDataType> eAttributeDataType;
+    be_ptr<const char> pszFormulaItem;
+    be_ptr<const char> pszFormulaCharacter;
+    be_ptr<const char> pszName;
+    be_ptr<AttributeCompressor> ptCompressor;
     char uSyncFlags;
 };

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <rex/types.h>
+#include "core/memory.h"
 
 struct IVector2D
 {
-    rex::be<i32> x;
-    rex::be<i32> y;
+    be<i32> x;
+    be<i32> y;
 };

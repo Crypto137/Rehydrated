@@ -1,13 +1,12 @@
 #pragma once
 
-#include <rex/system/xtypes.h>
-
+#include "core/memory.h"
 #include "game/types.h"
 
 struct PacketBufferHeader
 {
-    rex::be<u32> dwPoolHandle;
-    rex::be<DataID> idSocket;
+    be<u32> dwPoolHandle;
+    be<DataID> idSocket;
 };
 
 struct PacketBuffer
@@ -19,17 +18,17 @@ struct PacketBuffer
 // TODO: use templates to recreate the original XPooledList implementation
 struct TPacketBufferListNode
 {
-    rex::TypedGuestPointer<PacketBuffer> m_tData;
-    rex::TypedGuestPointer<TPacketBufferListNode> m_pPrev;
-    rex::TypedGuestPointer<TPacketBufferListNode> m_pNext;
+    be_ptr<PacketBuffer> m_tData;
+    be_ptr<TPacketBufferListNode> m_pPrev;
+    be_ptr<TPacketBufferListNode> m_pNext;
 };
 
 struct TPacketBufferList
 {
-    rex::TypedGuestPointer<TPacketBufferListNode> m_pHead;
-    rex::TypedGuestPointer<TPacketBufferListNode> m_pTail;
-    rex::be<i32> m_nCount;
-    rex::TypedGuestPointer<void> m_ptNodeAllocator;
+    be_ptr<TPacketBufferListNode> m_pHead;
+    be_ptr<TPacketBufferListNode> m_pTail;
+    be<i32> m_nCount;
+    be_ptr<void> m_ptNodeAllocator;
 };
 
 typedef i32 GameConnectionID;
@@ -37,15 +36,15 @@ typedef i32 ServerSocketID;
 
 struct GameConnection
 {
-    rex::be<GameConnectionID> id;
-    rex::be<ServerSocketID> idServerSocket;
-    rex::be<i32> nPlayerIndex[4];
+    be<GameConnectionID> id;
+    be<ServerSocketID> idServerSocket;
+    be<i32> nPlayerIndex[4];
     char uPlayerCount;
     TPacketBufferList tOutgoingPacketBufferList;
-    rex::be<u32> dword2C;   // m_ConstructorCalled for TPacketBufferList?
-    rex::be<u32> bInGame;
-    rex::be<i32> bDisposing;
-    rex::be<i32> bTerminateConnectionWhenOutgoingQueueEmpty;
-    rex::be<i32> bNeedHeartBeat;
-    rex::be<u32> dword40;   // dwLastHeartBeatTime?
+    be<u32> dword2C;   // m_ConstructorCalled for TPacketBufferList?
+    be<u32> bInGame;
+    be<i32> bDisposing;
+    be<i32> bTerminateConnectionWhenOutgoingQueueEmpty;
+    be<i32> bNeedHeartBeat;
+    be<u32> dword40;   // dwLastHeartBeatTime?
 };
