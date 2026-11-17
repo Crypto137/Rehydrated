@@ -22,7 +22,7 @@ namespace
 std::string AttributeToString(const NetAttributeKeyValue& tKeyVal)
 {
     AttribDef* cgarAttribDefs = Memory::GetHostPtr<AttribDef>(0x82F9DA88);
-    const char* pszName = Memory::GetHostPtr<const char>(cgarAttribDefs[tKeyVal.eKeyAttrib].pszName);
+    const char* pszName = cgarAttribDefs[tKeyVal.eKeyAttrib].pszName.GetHost();
 
     if (tKeyVal.nKeyParam.m_bExists && tKeyVal.nKeyParam.m_tValue)
     {
@@ -291,16 +291,16 @@ void GameMessageDumper::OnServerSendOutgoingMessages(const GameConnection* ptGam
 
     REXLOG_INFO("OUTGOING PACKET (nMessageCount={})", nBufferCount);
 
-    TPacketBufferListNode* listNode = Memory::GetHostPtr<TPacketBufferListNode>(ptGameConnection->tOutgoingPacketBufferList.m_pHead);
+    TPacketBufferListNode* listNode = ptGameConnection->tOutgoingPacketBufferList.m_pHead.GetHost();
     int i = 0;
     while (listNode)
     {
-        PacketBuffer* tPacketBuffer = Memory::GetHostPtr<PacketBuffer>(listNode->m_tData);
+        PacketBuffer* tPacketBuffer = listNode->m_tData.GetHost();
         RequiredMessageHeader* pMessage = reinterpret_cast<RequiredMessageHeader*>(&tPacketBuffer->byteData[0]);
 
         REXLOG_INFO("  [{}] {}", i++, PrintGameMessage(pMessage));
 
-        listNode = Memory::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
+        listNode = listNode->m_pNext.GetHost();
     }
 }
 

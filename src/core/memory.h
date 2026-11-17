@@ -46,6 +46,6 @@ struct be_ptr
 
     T* GetHost() const
     {
-        return Memory::GetHostPtr(value);
+        return Memory::GetHostPtr<T>(value);
     }
 };

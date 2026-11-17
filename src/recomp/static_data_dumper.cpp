@@ -28,18 +28,15 @@ REXCVAR_DEFINE_BOOL(dump_attrib_defs, false, "Hydra/Static Data", "Dumps attribu
     .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
 template <typename T>
-using GuestPtr = be_ptr<T>;
-
-template <typename T>
-using GuestPtrSet = std::set<GuestPtr<T>>;
+using GuestPtrSet = std::set<be_ptr<T>>;
 
 namespace
 {
 
-void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XTypeDescriptor>& primitiveDescriptors,
+void DiscoverTypeDescriptors(be_ptr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XTypeDescriptor>& primitiveDescriptors,
     GuestPtrSet<ComplexTypeDescriptor>& complexDescriptors, GuestPtrSet<const char>& strings)
 {
-    XTypeDescriptor* typeDesc = Memory::GetHostPtr<XTypeDescriptor>(typeDescPtr);
+    XTypeDescriptor* typeDesc = typeDescPtr.GetHost();
     if (!typeDesc)
         return;
 
@@ -53,14 +50,14 @@ void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<
         return;
     }
 
-    GuestPtr<ComplexTypeDescriptor> complexTypeDescPtr{};
+    be_ptr<ComplexTypeDescriptor> complexTypeDescPtr{};
     complexTypeDescPtr.value = typeDescPtr.value;
     auto inserted = complexDescriptors.insert(complexTypeDescPtr);
     if (!inserted.second)   // already inserted, this protects against infinite loops in recursive types (e.g. ConversationTreeNode)
         return;
 
     ComplexTypeDescriptor* complexTypeDesc = static_cast<ComplexTypeDescriptor*>(typeDesc);
-    TypeDescriptorField* arFields = Memory::GetHostPtr<TypeDescriptorField>(complexTypeDesc->arFields);
+    TypeDescriptorField* arFields = complexTypeDesc->arFields.GetHost();
     for (int i = 0; i < fieldCount; ++i)
     {
         TypeDescriptorField* field = &arFields[i];
@@ -102,19 +99,15 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
 
     REXLOG_INFO("Discovering type descriptors...");
 
-    GuestPtr<ComplexTypeDescriptor> typeDescPtr = *Memory::GetHostPtr<be_ptr<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
+    be_ptr<ComplexTypeDescriptor> typeDescPtr = *Memory::GetHostPtr<be_ptr<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
     while (typeDescPtr)
     {
-        GuestPtr<XTypeDescriptor> castTypeDescPtr{};
+        be_ptr<XTypeDescriptor> castTypeDescPtr{};
         castTypeDescPtr.value = typeDescPtr.value;
 
         DiscoverTypeDescriptors(castTypeDescPtr, primitiveDescriptors, complexDescriptors, strings);
 
-        ComplexTypeDescriptor* typeDesc = Memory::GetHostPtr<ComplexTypeDescriptor>(typeDescPtr);
-        if (!typeDesc)
-            break;
-
-        typeDescPtr = typeDesc->pNextRegisteredDescriptor;
+        typeDescPtr = typeDescPtr.GetHost()->pNextRegisteredDescriptor;
     }
 
     REXLOG_INFO("Writing type descriptors to {}...", fileName);
@@ -127,7 +120,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     {
         WriteToStream(file, &primitiveDescPtr.value);
 
-        XTypeDescriptor* primitiveDesc = Memory::GetHostPtr<XTypeDescriptor>(primitiveDescPtr);
+        XTypeDescriptor* primitiveDesc = primitiveDescPtr.GetHost();
         if (!primitiveDesc)
             continue;
 
@@ -140,13 +133,13 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     {
         WriteToStream(file, &complexDescPtr.value);
 
-        ComplexTypeDescriptor* complexDesc = Memory::GetHostPtr<ComplexTypeDescriptor>(complexDescPtr);
+        ComplexTypeDescriptor* complexDesc = complexDescPtr.GetHost();
         if (!complexDesc)
             continue;
 
         WriteToStream(file, complexDesc);
 
-        TypeDescriptorField* arFields = Memory::GetHostPtr<TypeDescriptorField>(complexDesc->arFields);
+        TypeDescriptorField* arFields = complexDesc->arFields.GetHost();
         if (arFields)
         {
             u32 nFieldCount = complexDesc->nFieldCount;
@@ -160,7 +153,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     {
         WriteToStream(file, &strPtr.value);
 
-        char* str = Memory::GetHostPtr<char>(strPtr);
+        const char* str = strPtr.GetHost();
         if (!str)
             continue;
 
@@ -266,7 +259,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
     {
         WriteToStream(file, &compressorPtr.value);
 
-        AttributeCompressor* compressor = Memory::GetHostPtr<AttributeCompressor>(compressorPtr);
+        AttributeCompressor* compressor = compressorPtr.GetHost();
         if (!compressor)
             continue;
 
@@ -304,7 +297,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
     {
         WriteToStream(file, &strPtr.value);
 
-        const char* str = Memory::GetHostPtr<const char>(strPtr);
+        const char* str = strPtr.GetHost();
         if (!str)
             continue;
 
