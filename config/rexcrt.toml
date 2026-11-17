@@ -1,4 +1,4 @@
-[rexcrt]
+[shim]
 memcpy = 0x82AAA700
 memset = 0x82AAAC30
 strchr = 0x82AAC690

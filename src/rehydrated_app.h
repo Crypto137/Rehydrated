@@ -1,29 +1,15 @@
-// rehydrated - ReXGlue Recompiled Project
-//
-// Customize your app by overriding virtual hooks from rex::ReXApp.
-
 #pragma once
 
-#include <rex/rex_app.h>
+#include <rex/app/title_app.h>
 
-class RehydratedApp : public rex::ReXApp {
+#include "generated/default/rehydrated_init.h"
+
+class RehydratedApp : public rex::app::TitleApp
+{
 public:
-    using rex::ReXApp::ReXApp;
-
-    static std::unique_ptr<rex::ui::WindowedApp> Create(rex::ui::WindowedAppContext& ctx);
+	RehydratedApp() : TitleApp("rehydrated", kPPCImageConfig) {}
 
 protected:
-
-    // Override virtual hooks for customization:
-    // void OnPostInitLogging() override {}
-    void OnPreSetup(rex::RuntimeConfig& config) override;
-    // void OnLoadXexImage(std::string& xex_image) override {}
-    // void OnPostLoadXexImage() override {}
-    void OnPostSetup() override;
-    void OnCreateDialogs(rex::ui::ImGuiDrawer* drawer) override;
-    // std::unique_ptr<rex::ui::ImGuiDialog> CreateAchievementsOverlay() override;
-    // std::unique_ptr<rex::ui::AchievementNotificationDialog>
-    // CreateAchievementNotificationDialog() override;
-    // void OnShutdown() override {}
-    void OnConfigurePaths(rex::PathConfig& paths) override;
+	rex::Result<void> OnConfigure(rex::SettingsRegistry& settings) override;
+	rex::Result<void> OnInit() override;
 };

@@ -1,6 +1,8 @@
-#include "recomp/hooks.h"
+// rehydrated - ReXGlue Recompiled Project
 
-#include <rex/logging.h>
+#include "generated/default/rehydrated_funcs.h"
+
+#include <rex/logging/logger.h>
 
 #include "core/memory.h"
 #include "game/game.h"
@@ -29,15 +31,15 @@ void HydraHook_SGameInitializeGame(PPCRegister& r3)
     const GameParams* tParams = Memory::GetHostPtr<GameParams>(r3.u32);
 
     REXLOG_INFO("SGameInitializeGame():\n  bValid={}\n  snoInitialWorld={}\n  snoInitialQuest={}\n  nInitialQuestStepUID={}\n  snoInitialHero={}\n  bResumeFromSave={}\n  dwSeed={}\n  eGameType={}\n  dwCreationFlags=0x{:08X}\n  szServerAddress={}\n  szReplayFileName={}\n  szGameName={}",
-        tParams->bValid.get(),
-        static_cast<u32>(tParams->snoInitialWorld.get()),
-        static_cast<u32>(tParams->snoInitialQuest.get()),
-        tParams->nInitialQuestStepUID.get(),
-        static_cast<u32>(tParams->snoInitialHero.get()),
-        tParams->bResumeFromSave.get(),
-        tParams->dwSeed.get(),
-        tParams->eGameType.get(),
-        tParams->dwCreationFlags.get(),
+        tParams->bValid.Get(),
+        static_cast<u32>(tParams->snoInitialWorld.Get()),
+        static_cast<u32>(tParams->snoInitialQuest.Get()),
+        tParams->nInitialQuestStepUID.Get(),
+        static_cast<u32>(tParams->snoInitialHero.Get()),
+        tParams->bResumeFromSave.Get(),
+        tParams->dwSeed.Get(),
+        tParams->eGameType.Get(),
+        tParams->dwCreationFlags.Get(),
         tParams->szServerAddress,
         tParams->szReplayFileName,
         tParams->szGameName);
@@ -60,7 +62,8 @@ void HydraHook_InputPlatformKeyConvert(PPCRegister& r3)
 
 bool HydraHook_InputUpdate()
 {
-    return InputManager::Instance().OnGuestInputUpdate();
+    //return InputManager::Instance().OnGuestInputUpdate();
+    return false;
 }
 
 void HydraHook_CPlayerUtilGetTarget(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCRegister& r6, PPCRegister& r7, PPCRegister& r8)

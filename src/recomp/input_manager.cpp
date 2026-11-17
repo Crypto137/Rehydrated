@@ -1,5 +1,6 @@
 #include "recomp/input_manager.h"
 
+/*
 #include <rex/cvar.h>
 #include <rex/logging.h>
 
@@ -133,3 +134,4 @@ void InputManager::QueueInput(const BufferedInput& input)
     std::unique_lock<std::mutex> lock(m_inputMutex);
     m_pendingInput->push_back(input);
 }
+*/

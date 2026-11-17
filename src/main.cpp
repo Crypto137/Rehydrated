@@ -1,7 +1,7 @@
 // rehydrated - ReXGlue Recompiled Project
 
-#include "generated/default/rehydrated_init.h"
+#include <rex/app/title_app.h>
 
 #include "rehydrated_app.h"
 
-REX_DEFINE_APP(rehydrated, RehydratedApp::Create)
+REX_TITLE_APP(RehydratedApp)

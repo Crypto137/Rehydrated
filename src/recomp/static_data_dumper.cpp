@@ -5,9 +5,8 @@
 #include <set>
 #include <vector>
 
-#include <rex/cvar.h>
-#include <rex/logging.h>
-#include <rex/ppc.h>
+#include <rex/logging/logger.h>
+#include <rex/ppc/hook.h>
 
 #include "core/io.h"
 #include "core/memory.h"
@@ -18,14 +17,11 @@
 
 using namespace IO;
 
-REXCVAR_DEFINE_BOOL(dump_type_descriptors, false, "Hydra/Static Data", "Dumps type descriptors on startup")
-    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+//REXCVAR_DEFINE_BOOL(dump_type_descriptors, false, "Hydra/Static Data", "Dumps type descriptors on startup").lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
-REXCVAR_DEFINE_BOOL(dump_game_messages, false, "Hydra/Static Data", "Dumps game message metadata on startup")
-    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+//REXCVAR_DEFINE_BOOL(dump_game_messages, false, "Hydra/Static Data", "Dumps game message metadata on startup").lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
-REXCVAR_DEFINE_BOOL(dump_attrib_defs, false, "Hydra/Static Data", "Dumps attribute definitions on startup")
-    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+//REXCVAR_DEFINE_BOOL(dump_attrib_defs, false, "Hydra/Static Data", "Dumps attribute definitions on startup").lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
 template <typename T>
 using GuestPtrSet = std::set<be_ptr<T>>;
@@ -76,16 +72,16 @@ void DiscoverTypeDescriptors(be_ptr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XT
 
 void StaticDataDumper::OnNetworkInitializeForAppFinished()
 {
-    if (REXCVAR_GET(dump_type_descriptors))
+    //if (REXCVAR_GET(dump_type_descriptors))
         StaticDataDumper::DumpTypeDescriptors("_TypeDescriptors.bin");
 
-    if (REXCVAR_GET(dump_game_messages))
+    //if (REXCVAR_GET(dump_game_messages))
         StaticDataDumper::DumpGameMessages("_GameMessages.bin");
 }
 
 void StaticDataDumper::OnFastAttribInitializeForAppFinished()
 {
-    if (REXCVAR_GET(dump_attrib_defs))
+    //if (REXCVAR_GET(dump_attrib_defs))
         StaticDataDumper::DumpAttribDefs("_AttribDefs.bin");
 }
 
@@ -181,22 +177,15 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
 {
     REXLOG_INFO("Dumping game messages...");
 
-    auto* memory = REX_KERNEL_MEMORY();
-    if (!memory)
-        return;
-    auto* base = memory->virtual_membase();
-
-    rex::CallFrame frame(*rex::runtime::ThreadState::Get()->context());
-
     std::vector<GameMessageInfo> gameMessages{};
     gameMessages.reserve(MSG_NUM_MESSAGES);
 
     for (int i = MSG_INVALID + 1; i <= MSG_NUM_MESSAGES; ++i)
     {
         StackFrame frame;
-        u32 pTypeDescriptorPtr = frame.Push(0);
-        u32 dwSizePtr = frame.Push(0);
-        u32 pszMessageLabelPtr = frame.Push(0);
+        u32 pTypeDescriptorPtr = frame.Push(0).GetGuestAddress();
+        u32 dwSizePtr = frame.Push(0).GetGuestAddress();
+        u32 pszMessageLabelPtr = frame.Push(0).GetGuestAddress();
 
         u32 result = Guest_GetGameMessageTypeAndSize(i, pTypeDescriptorPtr, dwSizePtr, pszMessageLabelPtr);
         if (!result)

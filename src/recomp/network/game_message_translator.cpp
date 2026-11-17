@@ -550,7 +550,7 @@ void TranslateAttribConsoleToPC(NetAttributeKeyValue& tKeyVal)
     {
         const AttribDef& tAttribDef = Memory::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
         if (tAttribDef.eParameterType == APT_SKILL)
-            tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoConsoleToPC(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.get()));
+            tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoConsoleToPC(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.Get()));
     }
 }
 
@@ -564,7 +564,7 @@ void TranslateAttribPCToConsole(NetAttributeKeyValue& tKeyVal)
     {
         const AttribDef& tAttribDef = Memory::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
         if (tAttribDef.eParameterType == APT_SKILL)
-            tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoPCToConsole(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.get()));
+            tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoPCToConsole(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.Get()));
     }
 }
 
@@ -678,7 +678,7 @@ void GameMessageTranslator::TranslateMessageConsoleToPC(void* pMessage)
             trickleMessage->snoLevelArea = ConvertSnoConsoleToPC(LEVELAREA_SNO, trickleMessage->snoLevelArea);
             if (trickleMessage->snoStringList.m_bExists)
             {
-                SNO snoStringList = static_cast<SNO>(trickleMessage->snoStringList.m_tValue.get());
+                SNO snoStringList = static_cast<SNO>(trickleMessage->snoStringList.m_tValue.Get());
                 trickleMessage->snoStringList.m_tValue = ConvertSnoConsoleToPC(STRINGLIST_SNO, snoStringList);
             }
             break;

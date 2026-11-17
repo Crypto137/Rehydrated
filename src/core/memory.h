@@ -1,8 +1,7 @@
 #pragma once
 
-#include <rex/hook.h>
-#include <rex/ppc.h>
-#include <rex/system/kernel_state.h>
+#include <rex/kernel/thread_state.h>
+#include <rex/ppc/stack.h>
 
 #include "core/types.h"
 
@@ -11,26 +10,17 @@ namespace Memory {
 template <typename T>
 inline T* GetHostPtr(u32 va)
 {
-    auto* memory = REX_KERNEL_MEMORY();
-    if (!memory || !va)
+    if (!va)
         return nullptr;
 
-    return memory->template TranslateVirtual<T*>(va);
-}
-
-inline u32 GetGuestPtr(const void* ptr)
-{
-    auto* memory = REX_KERNEL_MEMORY();
-    if (!memory || !ptr)
-        return 0;
-
-    return memory->HostToGuestVirtual(ptr);
+    auto* thread_state = rex::kernel::ThreadState::Get();
+    return rex::memory::GuestPtr<T*>(thread_state->GetAddressSpace()->GetVirtualMembase(), va);
 }
 
 }  // namespace Memory
 
 template <typename T>
-using be = rex::be<T>;
+using be = rex::BE<T>;
 
 template <typename T>
 struct be_ptr
@@ -52,28 +42,4 @@ struct be_ptr
     }
 };
 
-// Imitate the RexGlue 0.11.0 API to make migration later easier
-class StackFrame
-{
-public:
-    StackFrame() :
-        frame(*rex::runtime::ThreadState::Get()->context()),
-        guard(frame.ctx)
-    {
-    }
-
-    template <typename T>
-    u32 Push(const T& value)
-    {
-        auto* memory = REX_KERNEL_MEMORY();
-        if (!memory)
-            return 0;
-        auto* base = memory->virtual_membase();
-
-        return rex::ppc::stack_push(frame.ctx, base, &value, sizeof(value));
-    }
-
-private:
-    rex::CallFrame frame;
-    rex::ppc::stack_guard guard;
-};
+using StackFrame = rex::ppc::StackFrame;

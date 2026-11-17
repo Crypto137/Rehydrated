@@ -2,9 +2,8 @@
 
 #include <cstring>
 
-#include <rex/cvar.h>
-#include <rex/logging.h>
-#include <rex/ppc.h>
+#include <rex/logging/logger.h>
+#include <rex/ppc/hook.h>
 
 #include "core/memory.h"
 #include "core/network/tcp_session.h"
@@ -15,11 +14,9 @@
 #include "recomp/network/game_message_translator.h"
 #include "recomp/network/xencoder.h"
 
-REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC server mode")
-    .lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
+//REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC server mode").lifecycle(rex::cvar::Lifecycle::kRequiresRestart);
 
-REXCVAR_DEFINE_BOOL(server_log_incoming_messages_pc, false, "Hydra/Server", "Logs client -> server messages received from PC clients")
-    .lifecycle(rex::cvar::Lifecycle::kHotReload);
+//REXCVAR_DEFINE_BOOL(server_log_incoming_messages_pc, false, "Hydra/Server", "Logs client -> server messages received from PC clients").lifecycle(rex::cvar::Lifecycle::kHotReload);
 
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
@@ -68,7 +65,8 @@ std::unique_ptr<char[]> PacketBufferAlloc(u32 dwSize)
 }
 
 PCProxy::PCProxy() :
-    m_isEnabled(REXCVAR_GET(server_pc_proxy_enabled)),
+    //m_isEnabled(REXCVAR_GET(server_pc_proxy_enabled)),
+    m_isEnabled(true),
     m_isReadingUpdate(false),
     m_tcpServer(this),
     m_guestSocketId(0)
@@ -317,8 +315,8 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
             break;
         }
 
-        if (REXCVAR_GET(server_log_incoming_messages_pc))
-            REXLOG_INFO("INCOMING MESSAGE (PC): {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
+        //if (REXCVAR_GET(server_log_incoming_messages_pc))
+        //    REXLOG_INFO("INCOMING MESSAGE (PC): {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
 
         if (eType != CMSG_JOIN_BNET_GAME)
         {

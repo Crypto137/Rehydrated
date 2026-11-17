@@ -3,7 +3,7 @@
 #include <bit>
 #include <cstring>
 
-#include <rex/logging.h>
+#include <rex/logging/logger.h>
 
 #include "core/memory.h"
 #include "game/attributes/attrib_defs.h"
@@ -129,7 +129,7 @@ bool AttributeCompressor_Encode(XEncoder& tEncoder, NetAttributeKeyValue& tKeyVa
             return AttributeCompressor_EncodeFloatVariable(static_cast<AttributeCompressorFloatVariable*>(ptCompressor), tEncoder, tKeyValue);
 
         default:
-            REXLOG_WARN("AttributeCompressor_Encode(): Unknown compressor type {}", static_cast<int>(ptCompressor->m_eType.get()));
+            REXLOG_WARN("AttributeCompressor_Encode(): Unknown compressor type {}", static_cast<int>(ptCompressor->m_eType.Get()));
             return false;
     }
 }
@@ -816,7 +816,7 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, cons
 
         default:
             const char* szClassName = ptTypeDesc->szClassName.GetHost();
-            REXLOG_WARN("EncodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
+            REXLOG_WARN("EncodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.Get());
             return false;
     }
 
@@ -875,7 +875,7 @@ XDecoder::Result DecodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefi
 
         default:
             const char* szClassName = ptTypeDesc->szClassName.GetHost();
-            REXLOG_WARN("DecodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
+            REXLOG_WARN("DecodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.Get());
             return XDecoder::RESULT_CORRUPTED;
     }
 }
@@ -908,7 +908,7 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDes
             subfield.nBitCount = nBitCountOverride;
 
         XTypeDescriptor* ptSubfieldType = subfield.ptDataType.GetHost();
-        bool encoded = Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tEncoder);
+        bool encoded = Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.Get(), subfield, tEncoder);
 
         if (nBitCountOverride != -1)
             subfield.nBitCount = nBitCountOriginal;
@@ -940,7 +940,7 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDes
             dynamicField.nDataOffset = 2436;
             dynamicField.nBitCount = 32;
             ptSubfieldType = dynamicField.ptDataType.GetHost();
-            if (!Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + dynamicField.nDataOffset.get(), dynamicField, tEncoder))
+            if (!Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + dynamicField.nDataOffset.Get(), dynamicField, tEncoder))
             {
                 tEncoder.SetUsed(usedBefore);
                 return false;
@@ -971,7 +971,7 @@ XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, c
             continue;
 
         XTypeDescriptor* ptSubfieldType = subfield.ptDataType.GetHost();
-        XDecoder::Result result = Decode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tDecoder);
+        XDecoder::Result result = Decode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.Get(), subfield, tDecoder);
         if (result)
             return result;
     }
