@@ -5,8 +5,7 @@
 
 #include <rex/logging.h>
 
-#include "core/memory_utils.h"
-#include "game/types.h"
+#include "core/memory.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/attributes/attribute_compressor.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
@@ -109,8 +108,8 @@ bool AttributeCompressor_Encode(XEncoder& tEncoder, NetAttributeKeyValue& tKeyVa
         eAttrib = ATTRIBUTE_INVULNERABLE;
     // HACK end
 
-    AttribDef& tAttribDef = MemoryUtils::GetHostPtr<AttribDef>(cgarAttribDefs)[eAttrib];
-    AttributeCompressor* ptCompressor = MemoryUtils::GetHostPtr<AttributeCompressor>(tAttribDef.ptCompressor);
+    AttribDef& tAttribDef = Memory::GetHostPtr<AttribDef>(cgarAttribDefs)[eAttrib];
+    AttributeCompressor* ptCompressor = Memory::GetHostPtr<AttributeCompressor>(tAttribDef.ptCompressor);
 
     switch (ptCompressor->m_eType)
     {
@@ -150,11 +149,11 @@ XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, c
 size_t XTypeDescriptor_SizeOf(u32 ptTypeDescGuest)
 {
     // complex types
-    XTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(ptTypeDescGuest);
+    XTypeDescriptor* ptTypeDesc = Memory::GetHostPtr<XTypeDescriptor>(ptTypeDescGuest);
     i32 nFieldCount = ptTypeDesc->nFieldCount;
     if (nFieldCount > 0)
     {
-        TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(ptTypeDesc->arFields);
+        TypeDescriptorField* arFields = Memory::GetHostPtr<TypeDescriptorField>(ptTypeDesc->arFields);
         return arFields[nFieldCount - 1].nDataOffset;
     }
 
@@ -601,7 +600,7 @@ bool OptionalEncode(void* lpDefinition, const TypeDescriptorField& field, XEncod
 
     if (hasValue)
     {
-        XTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
+        XTypeDescriptor* ptTypeDesc = Memory::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
 
         // The original doesn't use dynamic fields for this particular case,
         // but we use fields for dynamic dispatch, so we need a dynamic field here.
@@ -632,7 +631,7 @@ XDecoder::Result OptionalDecode(void* lpDefinition, const TypeDescriptorField& f
 
     if (hasValue)
     {
-        XTypeDescriptor* ptTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
+        XTypeDescriptor* ptTypeDesc = Memory::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
 
         // The original doesn't use dynamic fields for this particular case,
         // but we use fields for dynamic dispatch, so we need a dynamic field here.
@@ -667,7 +666,7 @@ bool FixedArrayEncode(void* lpDefinition, const TypeDescriptorField& field, XEnc
         tEncoder.Put(nCount, nArraySizeBitCount);
     }
 
-    XTypeDescriptor* ptAuxTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
+    XTypeDescriptor* ptAuxTypeDesc = Memory::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
     size_t offset = 0;
 
     // the original code allocates a dynamic field here, but doesn't use it and pass the original field instead
@@ -714,7 +713,7 @@ XDecoder::Result FixedArrayDecode(void* lpDefinition, const TypeDescriptorField&
         *static_cast<u32*>(ptUsedElements) = rex::byte_swap(dwCount);    // LE -> BE
     }
 
-    XTypeDescriptor* ptAuxTypeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
+    XTypeDescriptor* ptAuxTypeDesc = Memory::GetHostPtr<XTypeDescriptor>(field.ptAuxDataType);
     size_t offset = 0;
 
     // the original code allocates a dynamic field here, but doesn't use it and pass the original field instead
@@ -816,7 +815,7 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, cons
             return CharArrayEncode(lpDefinition, field, tEncoder);
 
         default:
-            const char* szClassName = MemoryUtils::GetHostPtr<const char>(ptTypeDesc->szClassName);
+            const char* szClassName = Memory::GetHostPtr<const char>(ptTypeDesc->szClassName);
             REXLOG_WARN("EncodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
             return false;
     }
@@ -875,7 +874,7 @@ XDecoder::Result DecodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefi
             return CharArrayDecode(lpDefinition, field, tDecoder);
 
         default:
-            const char* szClassName = MemoryUtils::GetHostPtr<const char>(ptTypeDesc->szClassName);
+            const char* szClassName = Memory::GetHostPtr<const char>(ptTypeDesc->szClassName);
             REXLOG_WARN("DecodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
             return XDecoder::RESULT_CORRUPTED;
     }
@@ -890,7 +889,7 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDes
 
     size_t usedBefore = tEncoder.GetUsed();
 
-    TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(ptTypeDesc->arFields);
+    TypeDescriptorField* arFields = Memory::GetHostPtr<TypeDescriptorField>(ptTypeDesc->arFields);
 
     for (int i = 0; i < nFieldCount; ++i)
     {
@@ -908,7 +907,7 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDes
         if (nBitCountOverride != -1)
             subfield.nBitCount = nBitCountOverride;
 
-        XTypeDescriptor* ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
+        XTypeDescriptor* ptSubfieldType = Memory::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
         bool encoded = Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tEncoder);
 
         if (nBitCountOverride != -1)
@@ -940,7 +939,7 @@ bool Encode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, const TypeDes
             dynamicField.ptAuxDataType = DT_NULL;
             dynamicField.nDataOffset = 2436;
             dynamicField.nBitCount = 32;
-            ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(dynamicField.ptDataType);
+            ptSubfieldType = Memory::GetHostPtr<XTypeDescriptor>(dynamicField.ptDataType);
             if (!Encode(ptSubfieldType, static_cast<u8*>(lpDefinition) + dynamicField.nDataOffset.get(), dynamicField, tEncoder))
             {
                 tEncoder.SetUsed(usedBefore);
@@ -960,7 +959,7 @@ XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, c
     if (!nFieldCount)
         return DecodePrimitive(ptTypeDesc, lpDefinition, field, tDecoder);
 
-    TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(ptTypeDesc->arFields);
+    TypeDescriptorField* arFields = Memory::GetHostPtr<TypeDescriptorField>(ptTypeDesc->arFields);
 
     for (int i = 0; i < nFieldCount; ++i)
     {
@@ -971,7 +970,7 @@ XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, c
         if (!GameMessageTranslator::IsFieldPCCompatible(field.ptDataType, subfield))
             continue;
 
-        XTypeDescriptor* ptSubfieldType = MemoryUtils::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
+        XTypeDescriptor* ptSubfieldType = Memory::GetHostPtr<XTypeDescriptor>(subfield.ptDataType);
         XDecoder::Result result = Decode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tDecoder);
         if (result)
             return result;
@@ -993,7 +992,7 @@ bool GameMessageEncoder::EncodeMessage(void* pMessage, XEncoder& tEncoder)
 
     size_t usedBefore = tEncoder.GetUsed();
 
-    XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<XTypeDescriptor>(pTypeDescriptor);
+    XTypeDescriptor* ptTypeDescHost = Memory::GetHostPtr<XTypeDescriptor>(pTypeDescriptor);
 
     TypeDescriptorField dynamicField = {};  // TODO?: full constructor for dynamic fields
     dynamicField.ptDataType = pTypeDescriptor;
@@ -1059,7 +1058,7 @@ XDecoder::Result GameMessageEncoder::DecodeMessage(GameMessageType eMessageType,
         std::memset(pDecodeToBuffer, 0, dwSize);    // clear to zero out fields that may not get filled by decoding
     }
 
-    const XTypeDescriptor* ptTypeDescHost = MemoryUtils::GetHostPtr<const XTypeDescriptor>(pTypeDescriptor);
+    const XTypeDescriptor* ptTypeDescHost = Memory::GetHostPtr<const XTypeDescriptor>(pTypeDescriptor);
 
     TypeDescriptorField dynamicField = {};
     dynamicField.ptDataType = pTypeDescriptor;

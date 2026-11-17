@@ -5,7 +5,7 @@
 #include <rex/cvar.h>
 #include <rex/logging.h>
 
-#include "core/memory_utils.h"
+#include "core/memory.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
@@ -21,8 +21,8 @@ namespace
 
 std::string AttributeToString(const NetAttributeKeyValue& tKeyVal)
 {
-    AttribDef* cgarAttribDefs = MemoryUtils::GetHostPtr<AttribDef>(0x82F9DA88);
-    const char* pszName = MemoryUtils::GetHostPtr<const char>(cgarAttribDefs[tKeyVal.eKeyAttrib].pszName);
+    AttribDef* cgarAttribDefs = Memory::GetHostPtr<AttribDef>(0x82F9DA88);
+    const char* pszName = Memory::GetHostPtr<const char>(cgarAttribDefs[tKeyVal.eKeyAttrib].pszName);
 
     if (tKeyVal.nKeyParam.m_bExists && tKeyVal.nKeyParam.m_tValue)
     {
@@ -291,16 +291,16 @@ void GameMessageDumper::OnServerSendOutgoingMessages(const GameConnection* ptGam
 
     REXLOG_INFO("OUTGOING PACKET (nMessageCount={})", nBufferCount);
 
-    TPacketBufferListNode* listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(ptGameConnection->tOutgoingPacketBufferList.m_pHead);
+    TPacketBufferListNode* listNode = Memory::GetHostPtr<TPacketBufferListNode>(ptGameConnection->tOutgoingPacketBufferList.m_pHead);
     int i = 0;
     while (listNode)
     {
-        PacketBuffer* tPacketBuffer = MemoryUtils::GetHostPtr<PacketBuffer>(listNode->m_tData);
+        PacketBuffer* tPacketBuffer = Memory::GetHostPtr<PacketBuffer>(listNode->m_tData);
         RequiredMessageHeader* pMessage = reinterpret_cast<RequiredMessageHeader*>(&tPacketBuffer->byteData[0]);
 
         REXLOG_INFO("  [{}] {}", i++, PrintGameMessage(pMessage));
 
-        listNode = MemoryUtils::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
+        listNode = Memory::GetHostPtr<TPacketBufferListNode>(listNode->m_pNext);
     }
 }
 

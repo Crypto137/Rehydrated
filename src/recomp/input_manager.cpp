@@ -4,8 +4,6 @@
 #include <rex/logging.h>
 #include <rex/ppc.h>
 
-#include "core/memory_utils.h"
-
 REXCVAR_DEFINE_BOOL(enable_mnk_input, false, "Hydra/Gameplay", "(EXPERIMENTAL) Enables mouse and keyboard input")
     .lifecycle(rex::cvar::Lifecycle::kHotReload);
 

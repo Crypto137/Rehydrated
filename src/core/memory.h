@@ -2,7 +2,7 @@
 
 #include <rex/system/kernel_state.h>
 
-namespace MemoryUtils {
+namespace Memory {
 
 template <typename T>
 inline T* GetHostPtr(u32 va)
@@ -23,4 +23,4 @@ inline u32 GetGuestPtr(const void* ptr)
     return memory->HostToGuestVirtual(ptr);
 }
 
-}  // namespace MemoryUtils
+}  // namespace Memory

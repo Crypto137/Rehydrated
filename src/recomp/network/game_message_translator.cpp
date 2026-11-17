@@ -1,6 +1,6 @@
 #include "recomp/network/game_message_translator.h"
 
-#include "core/memory_utils.h"
+#include "core/memory.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/sigma/type_descriptor/type_descriptor.h"
 #include "recomp/network/gbid_mappings.h"
@@ -548,7 +548,7 @@ void TranslateAttribConsoleToPC(NetAttributeKeyValue& tKeyVal)
 
     if (tKeyVal.nKeyParam.m_bExists)
     {
-        const AttribDef& tAttribDef = MemoryUtils::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
+        const AttribDef& tAttribDef = Memory::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
         if (tAttribDef.eParameterType == APT_SKILL)
             tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoConsoleToPC(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.get()));
     }
@@ -562,7 +562,7 @@ void TranslateAttribPCToConsole(NetAttributeKeyValue& tKeyVal)
 
     if (tKeyVal.nKeyParam.m_bExists)
     {
-        const AttribDef& tAttribDef = MemoryUtils::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
+        const AttribDef& tAttribDef = Memory::GetHostPtr<const AttribDef>(cgarAttribDefs)[eConsoleAttrib];
         if (tAttribDef.eParameterType == APT_SKILL)
             tKeyVal.nKeyParam.m_tValue = GameMessageTranslator::ConvertSnoPCToConsole(POWER_SNO, static_cast<SNO>(tKeyVal.nKeyParam.m_tValue.get()));
     }

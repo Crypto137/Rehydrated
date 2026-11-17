@@ -1,17 +1,15 @@
 #include "recomp/network/pc_proxy.h"
 
 #include <cstring>
-#include <string>
 
 #include <rex/cvar.h>
 #include <rex/logging.h>
 #include <rex/ppc.h>
 
-#include "core/memory_utils.h"
+#include "core/memory.h"
 #include "core/network/tcp_session.h"
 #include "game/network/game_connection.h"
 #include "game/network/game_message.h"
-#include "game/sigma/type_descriptor/type_descriptor.h"
 #include "recomp/network/game_message_dumper.h"
 #include "recomp/network/game_message_encoder.h"
 #include "recomp/network/game_message_translator.h"
@@ -141,7 +139,7 @@ void PCProxy::OnPostXServerReadUpdate()
     m_isReadingUpdate = true;
 
     u32 ptDecodeBufferGuest = Guest_NetworkGetDecodeBuffer();
-    char* ptDecodeBuffer = MemoryUtils::GetHostPtr<char>(ptDecodeBufferGuest);
+    char* ptDecodeBuffer = Memory::GetHostPtr<char>(ptDecodeBufferGuest);
 
     {
         std::unique_lock<std::mutex> lock(m_incomingMessageMutex);
@@ -174,14 +172,14 @@ bool PCProxy::OnServerPutMessageOnOutgoingQueue(u32 idGameConnection, u32 pMessa
         return false;
     
     u32 ptGameConnectionGuest = Guest_GameConnectionTryToGet(idGameConnection);
-    GameConnection* ptGameConnection = MemoryUtils::GetHostPtr<GameConnection>(ptGameConnectionGuest);
+    GameConnection* ptGameConnection = Memory::GetHostPtr<GameConnection>(ptGameConnectionGuest);
     if (!ptGameConnection)
         return false;
 
     if (ptGameConnection->idServerSocket != m_guestSocketId)
         return false;
 
-    RequiredMessageHeader* ptHeader = MemoryUtils::GetHostPtr<RequiredMessageHeader>(pMessage);
+    RequiredMessageHeader* ptHeader = Memory::GetHostPtr<RequiredMessageHeader>(pMessage);
 
     if (GameMessageTranslator::IsMessagePCCompatible(ptHeader))
     {

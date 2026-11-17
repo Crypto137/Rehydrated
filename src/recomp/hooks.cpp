@@ -1,12 +1,9 @@
 #include "recomp/hooks.h"
 
-#include <vector>
-
 #include <rex/logging.h>
 
-#include "core/memory_utils.h"
+#include "core/memory.h"
 #include "game/game.h"
-#include "game/target.h"
 #include "game/types.h"
 #include "recomp/gameplay_options.h"
 #include "recomp/input_manager.h"
@@ -29,7 +26,7 @@ void HydraHook_ItemIsLargeSlotItem(PPCRegister& r3)
 
 void HydraHook_SGameInitializeGame(PPCRegister& r3)
 {
-    const GameParams* tParams = MemoryUtils::GetHostPtr<GameParams>(r3.u32);
+    const GameParams* tParams = Memory::GetHostPtr<GameParams>(r3.u32);
 
     REXLOG_INFO("SGameInitializeGame():\n  bValid={}\n  snoInitialWorld={}\n  snoInitialQuest={}\n  nInitialQuestStepUID={}\n  snoInitialHero={}\n  bResumeFromSave={}\n  dwSeed={}\n  eGameType={}\n  dwCreationFlags=0x{:08X}\n  szServerAddress={}\n  szReplayFileName={}\n  szGameName={}",
         tParams->bValid.get(),
@@ -87,14 +84,14 @@ bool HydraHook_Console_Online_PartyCanStartGame(PPCRegister& r3)
 
 void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3)
 {
-    RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r3.u32);
+    RequiredMessageHeader* pMessage = Memory::GetHostPtr<RequiredMessageHeader>(r3.u32);
 
     // not using this for anything right now
 }
 
 void HydraHook_ClientMessageReceiveGameMessage(PPCRegister& r3)
 {
-    RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r3.u32);
+    RequiredMessageHeader* pMessage = Memory::GetHostPtr<RequiredMessageHeader>(r3.u32);
 
     // not using this for anything right now
 }
@@ -106,7 +103,7 @@ void HydraHook_PostXServerReadUpdate()
 
 void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3)
 {
-    GameConnection* ptGameConnection = MemoryUtils::GetHostPtr<GameConnection>(r3.u32);
+    GameConnection* ptGameConnection = Memory::GetHostPtr<GameConnection>(r3.u32);
 
     GameMessageDumper::OnServerSendOutgoingMessages(ptGameConnection);
 
@@ -149,7 +146,7 @@ void HydraHook_XServerReadUpdate_OnJoined(PPCRegister& r3)
 void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)
 {
     int idServerSocket = r3.s32;
-    RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r4.u32);
+    RequiredMessageHeader* pMessage = Memory::GetHostPtr<RequiredMessageHeader>(r4.u32);
 
     GameMessageDumper::OnServerMessageReceiveOutsideGame(idServerSocket, pMessage);
 }
@@ -157,7 +154,7 @@ void HydraHook_ServerMessageReceiveOutsideGame(PPCRegister& r3, PPCRegister& r4)
 void HydraHook_ServerMessageReceive(PPCRegister& r3, PPCRegister& r4)
 {
     int nPlayerIndex = static_cast<int>(r3.s32);
-    RequiredMessageHeader* pMessage = MemoryUtils::GetHostPtr<RequiredMessageHeader>(r4.u32);
+    RequiredMessageHeader* pMessage = Memory::GetHostPtr<RequiredMessageHeader>(r4.u32);
 
     // not using this for anything right now
 }

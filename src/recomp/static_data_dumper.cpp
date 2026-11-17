@@ -10,7 +10,7 @@
 #include <rex/ppc.h>
 
 #include "core/io.h"
-#include "core/memory_utils.h"
+#include "core/memory.h"
 #include "game/attributes/attribute_compressor.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/network/game_message_type.h"
@@ -39,7 +39,7 @@ namespace
 void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<XTypeDescriptor>& primitiveDescriptors,
     GuestPtrSet<ComplexTypeDescriptor>& complexDescriptors, GuestPtrSet<const char>& strings)
 {
-    XTypeDescriptor* typeDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(typeDescPtr);
+    XTypeDescriptor* typeDesc = Memory::GetHostPtr<XTypeDescriptor>(typeDescPtr);
     if (!typeDesc)
         return;
 
@@ -60,7 +60,7 @@ void DiscoverTypeDescriptors(GuestPtr<XTypeDescriptor> typeDescPtr, GuestPtrSet<
         return;
 
     ComplexTypeDescriptor* complexTypeDesc = static_cast<ComplexTypeDescriptor*>(typeDesc);
-    TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(complexTypeDesc->arFields);
+    TypeDescriptorField* arFields = Memory::GetHostPtr<TypeDescriptorField>(complexTypeDesc->arFields);
     for (int i = 0; i < fieldCount; ++i)
     {
         TypeDescriptorField* field = &arFields[i];
@@ -102,7 +102,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
 
     REXLOG_INFO("Discovering type descriptors...");
 
-    GuestPtr<ComplexTypeDescriptor> typeDescPtr = *MemoryUtils::GetHostPtr<rex::TypedGuestPointer<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
+    GuestPtr<ComplexTypeDescriptor> typeDescPtr = *Memory::GetHostPtr<rex::TypedGuestPointer<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
     while (typeDescPtr)
     {
         GuestPtr<XTypeDescriptor> castTypeDescPtr{};
@@ -110,7 +110,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
 
         DiscoverTypeDescriptors(castTypeDescPtr, primitiveDescriptors, complexDescriptors, strings);
 
-        ComplexTypeDescriptor* typeDesc = MemoryUtils::GetHostPtr<ComplexTypeDescriptor>(typeDescPtr);
+        ComplexTypeDescriptor* typeDesc = Memory::GetHostPtr<ComplexTypeDescriptor>(typeDescPtr);
         if (!typeDesc)
             break;
 
@@ -127,7 +127,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     {
         WriteToStream(file, &primitiveDescPtr.value);
 
-        XTypeDescriptor* primitiveDesc = MemoryUtils::GetHostPtr<XTypeDescriptor>(primitiveDescPtr);
+        XTypeDescriptor* primitiveDesc = Memory::GetHostPtr<XTypeDescriptor>(primitiveDescPtr);
         if (!primitiveDesc)
             continue;
 
@@ -140,13 +140,13 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     {
         WriteToStream(file, &complexDescPtr.value);
 
-        ComplexTypeDescriptor* complexDesc = MemoryUtils::GetHostPtr<ComplexTypeDescriptor>(complexDescPtr);
+        ComplexTypeDescriptor* complexDesc = Memory::GetHostPtr<ComplexTypeDescriptor>(complexDescPtr);
         if (!complexDesc)
             continue;
 
         WriteToStream(file, complexDesc);
 
-        TypeDescriptorField* arFields = MemoryUtils::GetHostPtr<TypeDescriptorField>(complexDesc->arFields);
+        TypeDescriptorField* arFields = Memory::GetHostPtr<TypeDescriptorField>(complexDesc->arFields);
         if (arFields)
         {
             u32 nFieldCount = complexDesc->nFieldCount;
@@ -160,7 +160,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
     {
         WriteToStream(file, &strPtr.value);
 
-        char* str = MemoryUtils::GetHostPtr<char>(strPtr);
+        char* str = Memory::GetHostPtr<char>(strPtr);
         if (!str)
             continue;
 
@@ -212,9 +212,9 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
 
         GameMessageInfo gameMessageInfo;
         gameMessageInfo.eMessageType = i;
-        gameMessageInfo.pTypeDescriptor = *MemoryUtils::GetHostPtr<rex::be<u32>>(pTypeDescriptorPtr);
-        gameMessageInfo.dwSize = *MemoryUtils::GetHostPtr<rex::be<u32>>(dwSizePtr);
-        gameMessageInfo.pszMessageLabel = *MemoryUtils::GetHostPtr<rex::be<u32>>(pszMessageLabelPtr);
+        gameMessageInfo.pTypeDescriptor = *Memory::GetHostPtr<rex::be<u32>>(pTypeDescriptorPtr);
+        gameMessageInfo.dwSize = *Memory::GetHostPtr<rex::be<u32>>(dwSizePtr);
+        gameMessageInfo.pszMessageLabel = *Memory::GetHostPtr<rex::be<u32>>(pszMessageLabelPtr);
         gameMessages.push_back(gameMessageInfo);
     }
 
@@ -236,7 +236,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
     GuestPtrSet<const char> strings{};
     GuestPtrSet<AttributeCompressor> compressors{};
 
-    AttribDef* attribDefs = MemoryUtils::GetHostPtr<AttribDef>(cgarAttribDefs);
+    AttribDef* attribDefs = Memory::GetHostPtr<AttribDef>(cgarAttribDefs);
     for (int i = ATTRIBUTE_AXEBADDATA; i < NUM_ATTRIBUTES; ++i)
     {
         if (attribDefs[i].pszFormulaItem)
@@ -266,7 +266,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
     {
         WriteToStream(file, &compressorPtr.value);
 
-        AttributeCompressor* compressor = MemoryUtils::GetHostPtr<AttributeCompressor>(compressorPtr);
+        AttributeCompressor* compressor = Memory::GetHostPtr<AttributeCompressor>(compressorPtr);
         if (!compressor)
             continue;
 
@@ -304,7 +304,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
     {
         WriteToStream(file, &strPtr.value);
 
-        const char* str = MemoryUtils::GetHostPtr<const char>(strPtr);
+        const char* str = Memory::GetHostPtr<const char>(strPtr);
         if (!str)
             continue;
 
