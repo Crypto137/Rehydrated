@@ -193,11 +193,10 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
 
     for (int i = MSG_INVALID + 1; i <= MSG_NUM_MESSAGES; ++i)
     {
-        rex::ppc::stack_guard guard(frame.ctx);
-
-        u32 pTypeDescriptorPtr = rex::ppc::stack_push(frame.ctx, base, 0);
-        u32 dwSizePtr = rex::ppc::stack_push(frame.ctx, base, 0);
-        u32 pszMessageLabelPtr = rex::ppc::stack_push(frame.ctx, base, 0);
+        StackFrame frame;
+        u32 pTypeDescriptorPtr = frame.Push(0);
+        u32 dwSizePtr = frame.Push(0);
+        u32 pszMessageLabelPtr = frame.Push(0);
 
         u32 result = Guest_GetGameMessageTypeAndSize(i, pTypeDescriptorPtr, dwSizePtr, pszMessageLabelPtr);
         if (!result)

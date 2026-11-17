@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rex/hook.h>
+#include <rex/ppc.h>
 #include <rex/system/kernel_state.h>
 
 #include "core/types.h"
@@ -48,4 +50,30 @@ struct be_ptr
     {
         return Memory::GetHostPtr<T>(value);
     }
+};
+
+// Imitate the RexGlue 0.11.0 API to make migration later easier
+class StackFrame
+{
+public:
+    StackFrame() :
+        frame(*rex::runtime::ThreadState::Get()->context()),
+        guard(frame.ctx)
+    {
+    }
+
+    template <typename T>
+    u32 Push(const T& value)
+    {
+        auto* memory = REX_KERNEL_MEMORY();
+        if (!memory)
+            return 0;
+        auto* base = memory->virtual_membase();
+
+        return rex::ppc::stack_push(frame.ctx, base, &value, sizeof(value));
+    }
+
+private:
+    rex::CallFrame frame;
+    rex::ppc::stack_guard guard;
 };

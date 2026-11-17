@@ -2,7 +2,8 @@
 
 #include <rex/cvar.h>
 #include <rex/logging.h>
-#include <rex/ppc.h>
+
+#include "core/memory.h"
 
 REXCVAR_DEFINE_BOOL(enable_mnk_input, false, "Hydra/Gameplay", "(EXPERIMENTAL) Enables mouse and keyboard input")
     .lifecycle(rex::cvar::Lifecycle::kHotReload);
@@ -14,16 +15,10 @@ REX_IMPORT(__imp__InputBufferInput, Guest_InputBufferInput, void(u32, u32));
 
 void InputBufferInput(const BufferedInput& tInput, int bForce)
 {
-    auto* memory = REX_KERNEL_MEMORY();
-    if (!memory)
-        return;
-    auto* base = memory->virtual_membase();
+    StackFrame frame;
+    u32 ptInput = frame.Push(tInput);
 
-    rex::CallFrame frame(*rex::runtime::ThreadState::Get()->context());
-    rex::ppc::stack_guard guard(frame.ctx);
-    u32 tInputPtr = rex::ppc::stack_push(frame.ctx, base, &tInput, sizeof(tInput));
-
-    Guest_InputBufferInput(tInputPtr, bForce);
+    Guest_InputBufferInput(ptInput, bForce);
 }
 
 }
