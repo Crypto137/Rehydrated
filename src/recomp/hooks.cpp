@@ -101,6 +101,20 @@ void HydraHook_PostXServerReadUpdate()
     PCProxy::Instance().OnPostXServerReadUpdate();
 }
 
+void HydraHook_D3_GameMessage_TutorialState_set_seen_tutorials(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5)
+{
+    // SMSG_TUTORIAL_STATE is a GenericBlobMessage containing a protobuf with a bitfield buffer.
+    // The PC client just copies the buffer without checking its size, resulting in memory corruption
+    // if the buffer overflows its target in the Player struct. The buffer is larger in the Xbox version,
+    // (192 bits on 360 vs 128 bits on PC), so sending the message as is results in memory corruption
+    // that eventually causes the PC client to crash (usually when exiting to main menu).
+
+    // We work around this problem by capping the buffer size at 16 bytes (128 bits).
+    u32& len = r5.u32;
+    if (PCProxy::Instance().IsEnabled() && len > 16)
+        len = 16;
+}
+
 void HydraHook_ServerSendOutgoingMessagesForGameConnection(PPCRegister& r3)
 {
     GameConnection* ptGameConnection = Memory::GetHostPtr<GameConnection>(r3.u32);

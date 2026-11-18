@@ -28,6 +28,13 @@ name = "HydraHook_PostXServerReadUpdate"
 registers = []
 after_instruction = false
 
+# This is needed to fix blob size for SMSG_TUTORIAL_STATE. See the hook implementation for more details.
+[[midasm_hook]]
+address = 0x82932C80
+name = "HydraHook_D3_GameMessage_TutorialState_set_seen_tutorials"
+registers = ["r3", "r4", "r5"]
+after_instruction = false
+
 # ServerSendOutgoingMessagesForGameConnection encodes messages stored in
 # tOutgoingPacketBufferList of a GameConnection and calls XServerSendBuffer
 # to flush them to the bound socket. GameConnection ptr is the r3 argument.

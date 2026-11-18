@@ -42,6 +42,8 @@ public:
 
     size_t OnDataReceived(TcpSession* session, const char* buf, size_t len) override;
 
+    inline bool IsEnabled() const { return m_isEnabled; }
+
 private:
     PCProxy();
     ~PCProxy() = default;
