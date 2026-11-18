@@ -44,6 +44,7 @@
 0x8233F8B0 = { name = "RActorTryToGet" }
 0x8233FCB0 = { name = "InputPlatformKeyConvert" }
 0x82340490 = { name = "InputUpdate" }
+0x82341730 = { name = "Console__Online__HasOutstandingInvite" }
 0x82341878 = { name = "Console__Online__PartyIsHost" }
 0x823418A0 = { name = "Console__Online__PartyCanStartGame" }
 0x82341950 = { name = "Console__Online__PartyIsInParty" }
@@ -178,7 +179,10 @@
 0x8238B1F0 = { name = "LocalPlayerClamping__Init" }
 0x8238C7A0 = { name = "Console__Screens__IsScreenTransitioning" }
 0x8238DA50 = { name = "Console__Notifications__ShowLeaveGameDialog" }
+0x8238DBF0 = { name = "Console__ScreenSet__ScreenSet" }
+0x8238E720 = { name = "sInitMainMenuScreenSet" }
 0x8238F7D0 = { name = "Console__Screens__OpenToScreen" }
+0x8238F910 = { name = "Console__Screens__Update" }
 0x8238FC20 = { name = "Console__Screens__InitializeForGame" }
 0x8238FD70 = { name = "Console__Screens__DisposeForGame" }
 0x8238FEC8 = { name = "Console__Screens__CloseScreenSet" }
@@ -273,6 +277,7 @@
 0x823BF3B8 = { name = "UI_DeleteControl" }
 0x823BF8E0 = { name = "UI_CloseAllTabs" }
 0x823C0288 = { name = "UI_Input" }
+0x823C07D8 = { name = "UI_Update" }
 0x823C1A18 = { name = "UI_InitializeForGame" }
 0x823C3680 = { name = "UI_DisposeForGame" }
 0x823C9D10 = { name = "UIStartScreen__Console__StartScreenInitializeForGame" }
@@ -380,6 +385,8 @@
 0x8246BEA8 = { name = "AppearanceGroupDef___MemFree" }
 0x8246BEE8 = { name = "AppearanceGroupDef__MemFree" }
 0x8246BF40 = { name = "AppearanceGroupDef__GetSNOPackDestination" }
+0x82471760 = { name = "FrontendDemoHeroAnimationManager__Update" }
+0x82471BF8 = { name = "FrontendBackgroundHeroManager__Update" }
 0x824775D8 = { name = "sDraw" }
 0x824777E0 = { name = "Console__UISaveIcon__Update" }
 0x8247CCF0 = { name = "Console__GamerProfile__GetPrimaryProfileUserIndex" }
@@ -403,6 +410,7 @@
 0x824CC908 = { name = "UIConversation__ConsoleCancel" }
 0x824CCA40 = { name = "UIConversation__Advance" }
 0x824CCAE8 = { name = "UIConversation__ConsoleAdvance" }
+0x824CE0D8 = { name = "UIConversation__Update" }
 0x824CF2E8 = { name = "ConsoleModalNotificationManager__ConsoleModalNotification_Select" }
 0x824CF468 = { name = "ConsoleModalNotificationManager__ConsoleModalNotification_OnClick_CancelButton" }
 0x824CF5D8 = { name = "ConsoleModalNotificationManager__ConsoleModalNotification_OnClick_OkButton" }
@@ -413,6 +421,7 @@
 0x824D2558 = { name = "UIHallOfFallenHeroes__Console__OnDpadRight" }
 0x824D2630 = { name = "UIHallOfFallenHeroes__Console__OnLeftStick" }
 0x824D2E48 = { name = "UIHallOfFallenHeroes__Console__OnAccept" }
+0x824D42D0 = { name = "FrontendScreenTransitionManager__RegisterScreenDialogs" }
 0x824E24F8 = { name = "UINPC__Console__OnTalk" }
 0x824E2540 = { name = "UINPC__Console__OnTalkCancel" }
 0x824E2578 = { name = "UINPC__Console__OnHire" }
@@ -554,6 +563,7 @@
 0x8255AE08 = { name = "sSetRActorTooltip" }
 0x8255E818 = { name = "sSetRActorTooltip2" }
 0x8255EF10 = { name = "UIGame__UpdateRActorTooltips" }
+0x82561E30 = { name = "UIGame__Update" }
 0x82562E48 = { name = "WeatherGroupDef__GetMaxCount" }
 0x82562EA8 = { name = "WeatherGroupDef__WeatherGroupDef" }
 0x82563020 = { name = "WeatherGroupDef__GetDefaultData" }
@@ -563,6 +573,7 @@
 0x825631C8 = { name = "WeatherGroupDef__MemFree" }
 0x82563220 = { name = "WeatherGroupDef__GetSNOPackDestination" }
 0x8256B578 = { name = "RActorAnimationGetWalkAnimTag" }
+0x8256C348 = { name = "RActorPlayAnimation" }
 0x82570F88 = { name = "CPlayerUtilSpawnClickEffect" }
 0x825717F0 = { name = "CPlayerUtilGetTarget" }
 0x825722A8 = { name = "CPlayerUtilPlayerSpecifiedDontMove" }
@@ -608,6 +619,8 @@
 0x825BBF78 = { name = "UIQuestComplete__ConsoleClose" }
 0x825BC120 = { name = "UIFollowerSwap__OnButtonOK" }
 0x825BC160 = { name = "UIFollowerSwap__OnButtonCancel" }
+0x825BF968 = { name = "ObjHUD__Update" }
+0x825C0348 = { name = "UIQuests__Update" }
 0x825D0F50 = { name = "UISafeZoneSettings__OnButton1" }
 0x825D0FD8 = { name = "UISafeZoneSettings__OnButton2" }
 0x825D1228 = { name = "UISafeZoneSettings__OnLeftStick" }
@@ -969,6 +982,7 @@
 0x826D8AE0 = { name = "GameTesting__SetTestType" }
 0x826DA990 = { name = "PlayerList__dtor_PlayerList" }
 0x826DA9E8 = { name = "CmdLineGetParams" }
+0x826DB780 = { name = "GameCommonData__GameModeGet" }
 0x826DB840 = { name = "ActSNOFromActEnum" }
 0x826DBB48 = { name = "GameGetServerTime" }
 0x826DBB80 = { name = "GameGetCurrentAct" }
