@@ -82,6 +82,11 @@ bool HydraHook_Console_Online_PartyCanStartGame(PPCRegister& r3)
     return true;
 }
 
+void HydraHook_UIMainMenu_Console_OnUpdate()
+{
+    PCProxy::Instance().OnMainMenuUpdate();
+}
+
 void HydraHook_ClientMessageReceiveAllMessage(PPCRegister& r3)
 {
     RequiredMessageHeader* pMessage = Memory::GetHostPtr<RequiredMessageHeader>(r3.u32);

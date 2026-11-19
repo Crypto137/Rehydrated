@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <list>
 #include <memory>
 #include <mutex>
@@ -28,6 +29,8 @@ public:
 
     bool PartyCanStartGame();
 
+    void OnMainMenuUpdate();
+
     void OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection);
 
     void OnPostXServerReadUpdate();
@@ -53,6 +56,7 @@ private:
 
     bool m_isEnabled;
     bool m_isReadingUpdate;
+    std::atomic<bool> m_joinRequested;
     TcpServer m_tcpServer;
     u32 m_guestSocketId;
     std::list<std::unique_ptr<char[]>> m_outgoingMessages;

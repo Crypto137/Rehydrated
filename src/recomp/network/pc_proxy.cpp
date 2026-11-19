@@ -21,6 +21,7 @@ REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC 
 REXCVAR_DEFINE_BOOL(server_log_incoming_messages_pc, false, "Hydra/Server", "Logs client -> server messages received from PC clients")
     .lifecycle(rex::cvar::Lifecycle::kHotReload);
 
+REX_IMPORT(__imp__UIMainMenu__Console__OnStartOrContinue, Guest_MainMenuStartOrContinue, void(u32));
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
 REX_IMPORT(__imp__GameConnectionTryToGet, Guest_GameConnectionTryToGet, u32(u32));
@@ -87,13 +88,19 @@ void PCProxy::Initialize()
 
 bool PCProxy::PartyCanStartGame()
 {
-    if (m_isEnabled)
-    {
-        if (!m_tcpServer.HasActiveSessions())
-            return false;
-    }
+    if (!m_isEnabled)
+        return true;
 
-    return true;
+    return m_joinRequested;
+}
+
+void PCProxy::OnMainMenuUpdate()
+{
+    if (!m_isEnabled)
+        return;
+
+    if (PartyCanStartGame())
+        Guest_MainMenuStartOrContinue(1);
 }
 
 void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection)
@@ -221,6 +228,8 @@ void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
         std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
         if (session)
             session->Disconnect();
+
+        m_joinRequested = false;
     }
 }
 
@@ -320,12 +329,20 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
         if (REXCVAR_GET(server_log_incoming_messages_pc))
             REXLOG_INFO("INCOMING MESSAGE (PC): {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
 
-        if (eType != CMSG_JOIN_BNET_GAME)
+        switch (eType)
         {
-            RequiredMessageHeader* ptHeader = reinterpret_cast<RequiredMessageHeader*>(ptDecodeBuffer);
-            std::unique_ptr<char[]> ptPacketBuffer = PacketBufferAlloc(ptHeader->dwSize);
-            std::memcpy(ptPacketBuffer.get(), ptHeader, ptHeader->dwSize);
-            m_incomingMessages.push_back(std::move(ptPacketBuffer));
+            case CMSG_JOIN_BNET_GAME:
+            case CMSG_JOIN_LAN_GAME:
+            case CMSG_JOIN_CONSOLE_GAME:
+                m_joinRequested = true;
+                break;
+
+            default:
+                RequiredMessageHeader* ptHeader = reinterpret_cast<RequiredMessageHeader*>(ptDecodeBuffer);
+                std::unique_ptr<char[]> ptPacketBuffer = PacketBufferAlloc(ptHeader->dwSize);
+                std::memcpy(ptPacketBuffer.get(), ptHeader, ptHeader->dwSize);
+                m_incomingMessages.push_back(std::move(ptPacketBuffer));
+                break;
         }
     }
 }
