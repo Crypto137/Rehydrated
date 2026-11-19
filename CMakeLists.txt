@@ -14,13 +14,13 @@ include(generated/rexglue.cmake)
 
 # Sources
 set(REHYDRATED_SOURCES
+    src/hooks.cpp
     src/main.cpp
     src/rehydrated_app.cpp
     src/core/network/tcp_server.cpp
     src/core/network/tcp_session.cpp
     src/game/network/game_message_type.cpp
     src/recomp/gameplay_options.cpp
-    src/recomp/hooks.cpp
     src/recomp/input_manager.cpp
     src/recomp/static_data_dumper.cpp
     src/recomp/network/game_message_dumper.cpp

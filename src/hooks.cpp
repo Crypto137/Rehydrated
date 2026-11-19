@@ -1,6 +1,5 @@
-#include "recomp/hooks.h"
-
 #include <rex/logging.h>
+#include <rex/ppc.h>
 
 #include "core/memory.h"
 #include "game/game.h"
