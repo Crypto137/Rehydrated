@@ -6,13 +6,6 @@ registers = ["r3"]
 after_instruction = false
 return_on_false = true
 
-# Hooks UIMainMenu::Console::OnUpdate() before it returns.
-[[midasm_hook]]
-address = 0x824FB79C
-name = "HydraHook_UIMainMenu_Console_OnUpdate"
-registers = []
-after_instruction = false
-
 # ClientMessageReceiveAllMessage handles server messages as soon as they arrive to the client.
 # Most messages are queued to be processed on the game thread later in ClientMessageReceiveGameMessage.
 [[midasm_hook]]

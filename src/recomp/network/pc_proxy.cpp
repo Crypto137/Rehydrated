@@ -21,6 +21,7 @@ REXCVAR_DEFINE_BOOL(server_pc_proxy_enabled, false, "Hydra/Server", "Enables PC 
 REXCVAR_DEFINE_BOOL(server_log_incoming_messages_pc, false, "Hydra/Server", "Logs client -> server messages received from PC clients")
     .lifecycle(rex::cvar::Lifecycle::kHotReload);
 
+REX_IMPORT(__imp__UIStartScreen__Console__OnStart, Guest_StartScreenSignIn, void(u32, u32));
 REX_IMPORT(__imp__UIMainMenu__Console__OnStartOrContinue, Guest_MainMenuStartOrContinue, void(u32));
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
@@ -94,6 +95,17 @@ bool PCProxy::PartyCanStartGame()
     return m_joinRequested;
 }
 
+bool PCProxy::OnStartScreenUpdate()
+{
+    if (!m_isEnabled)
+        return false;
+
+    // ugly hackery time: do the start button callback.
+    // we should replace this with proper auto sign-in in OnPerformStartupFlow()
+    Guest_StartScreenSignIn(0, 0);
+    return true;
+}
+
 void PCProxy::OnMainMenuUpdate()
 {
     if (!m_isEnabled)
@@ -101,6 +113,16 @@ void PCProxy::OnMainMenuUpdate()
 
     if (PartyCanStartGame())
         Guest_MainMenuStartOrContinue(1);
+}
+
+void PCProxy::OnPerformStartupFlow()
+{
+    if (!m_isEnabled)
+        return;
+
+    // Skip startup flow (e.g. autosave notification) when we are running in PC proxy mode.
+    be<u32>& bStartupFlowComplete = *Memory::GetHostPtr<be<u32>>(0x82F97414);
+    bStartupFlowComplete = 1;
 }
 
 void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection)

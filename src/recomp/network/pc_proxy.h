@@ -27,9 +27,13 @@ public:
 
     void Initialize();
 
-    bool PartyCanStartGame();
+    bool OnStartScreenUpdate();
 
     void OnMainMenuUpdate();
+
+    void OnPerformStartupFlow();
+
+    bool PartyCanStartGame();
 
     void OnServerSendOutgoingMessagesForGameConnection(const GameConnection* ptGameConnection);
 

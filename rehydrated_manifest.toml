@@ -15,5 +15,6 @@ includes = [
 	"config/hooks/game.toml",
 	"config/hooks/input.toml",
 	"config/hooks/network.toml",
-	"config/hooks/subsystem.toml"
+	"config/hooks/subsystem.toml",
+	"config/hooks/ui.toml"
 ]
