@@ -3,6 +3,7 @@
 
 #include "core/memory.h"
 #include "game/game.h"
+#include "game/input.h"
 #include "game/types.h"
 #include "recomp/gameplay_options.h"
 #include "recomp/input_manager.h"
@@ -185,6 +186,42 @@ void HydraHook_PostFastAttribInitializeForApp()
 }
 
 // UI
+
+REX_IMPORT(__imp__UIConsoleDesignerMenu__InitializeForGame, Guest_UIConsoleDesignerMenu__InitializeForGame, void());
+REX_IMPORT(__imp__UIConsoleDesignerMenu__ToggleOpen, Guest_UIConsoleDesignerMenu__ToggleOpen, void(u32));
+REX_IMPORT(__imp__InputGetControllerFrameState, Guest_InputGetControllerFrameState, u32(u32));
+REX_IMPORT(__imp__ControllerFrameState__IsButtonDown, Guest_ControllerFrameState__IsButtonDown, u32(u32, u32));
+
+void HydraHook_UI_InitializeForGame_RestoreDesignerMenu()
+{
+    Guest_UIConsoleDesignerMenu__InitializeForGame();
+}
+
+bool HydraHook_UI_Input_RestoreDesignerMenu(PPCRegister& r1)
+{
+    const BufferedInput& tInput = *Memory::GetHostPtr<BufferedInput>(r1.u32 + 0x80);
+    u32 ptFrameState = 0;
+    
+    switch (tInput.eInputMsg)
+    {
+        case INPUTMSG_CONTROLLERBUTTONDOWN:
+        case INPUTMSG_CONTROLLERBUTTONREPEAT:
+            ptFrameState = Guest_InputGetControllerFrameState(0);
+            if ((tInput.tBufControllerData.eInputButton == BUTTON_LEFT_STICK_BUTTON && Guest_ControllerFrameState__IsButtonDown(ptFrameState, BUTTON_RIGHT_STICK_BUTTON)) ||
+                (tInput.tBufControllerData.eInputButton == BUTTON_RIGHT_STICK_BUTTON && Guest_ControllerFrameState__IsButtonDown(ptFrameState, BUTTON_LEFT_STICK_BUTTON)))
+            {
+                Guest_UIConsoleDesignerMenu__ToggleOpen(0);
+                return true;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+
+    return false;
+}
 
 bool HydraHook_UIStartScreen_Console_OnUpdate()
 {

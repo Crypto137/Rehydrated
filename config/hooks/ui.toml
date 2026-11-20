@@ -1,3 +1,18 @@
+# Hooks UI_InitializeForGame() before UI_StoryboardsInitializeForGame() is called.
+[[midasm_hook]]
+address = 0x823C1AB4
+name = "HydraHook_UI_InitializeForGame_RestoreDesignerMenu"
+registers = []
+after_instruction = false
+
+# Hooks UI_Input() after the eInputMsg switch in the InputIsController() path.
+[[midasm_hook]]
+address = 0x823C04A8
+name = "HydraHook_UI_Input_RestoreDesignerMenu"
+registers = ["r1"]
+after_instruction = false
+jump_address_on_true = 0x823C0674
+
 # Hooks UIStartScreen::Console::OnUpdate when it is called.
 [[midasm_hook]]
 address = 0x823C9C18
