@@ -28,6 +28,12 @@ name = "HydraHook_UIMainMenu_Console_OnUpdate"
 registers = []
 after_instruction = false
 
+[[midasm_hook]]
+address = 0x8254B4B0
+name = "HydraHook_UIConsoleDesignerMenu__ProcessCompoundCommands"
+registers = ["r3", "r4"]
+after_instruction = false
+
 # Hooks UIStartupFlow::Console::PerformStartupFlow when it is called.
 [[midasm_hook]]
 address = 0x825B9A58

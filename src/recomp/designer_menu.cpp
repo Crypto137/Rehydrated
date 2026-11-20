@@ -1,5 +1,6 @@
 #include "recomp/designer_menu.h"
 
+#include <rex/logging.h>
 #include <rex/hook.h>
 
 #include "game/input.h"
@@ -37,4 +38,9 @@ bool DesignerMenu::TryToggle(const BufferedInput& tInput)
     }
 
     return false;
+}
+
+void DesignerMenu::ProcessCompoundCommands(const char* uszCommands, int nControllerIndex)
+{
+    REXLOG_INFO("ProcessCompoundCommands(): [{}] {}", nControllerIndex, uszCommands);
 }

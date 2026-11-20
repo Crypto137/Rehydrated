@@ -667,6 +667,7 @@
 0x8254A670 = { name = "UICinematics__Console__OnAcceptPressed" }
 0x8254A7C0 = { name = "UICinematics__Console__OnCancelPressed" }
 0x8254AAC0 = { name = "UICinematics__Console__OnCutsceneListChanged" }
+0x8254B4B0 = { name = "UIConsoleDesignerMenu__ProcessCompoundCommands" }
 0x8254B700 = { name = "UIConsoleDesignerMenu__MainMenuListDataSource__Initialize" }
 0x8254BE40 = { name = "UIConsoleDesignerMenu__ToggleOpen" }
 0x8254BEC0 = { name = "sCloseDesignerMenu" }

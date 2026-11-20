@@ -209,6 +209,14 @@ void HydraHook_UIMainMenu_Console_OnUpdate()
     PCProxy::Instance().OnMainMenuUpdate();
 }
 
+void HydraHook_UIConsoleDesignerMenu__ProcessCompoundCommands(PPCRegister& r3, PPCRegister& r4)
+{
+    const char* uszCommands = Memory::GetHostPtr<const char>(r3.u32);
+    int nControllerIndex = r4.s32;
+
+    DesignerMenu::ProcessCompoundCommands(uszCommands, nControllerIndex);
+}
+
 void HydraHook_UIStartupFlow_Console_PerformStartupFlow()
 {
     PCProxy::Instance().OnPerformStartupFlow();

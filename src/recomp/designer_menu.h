@@ -9,4 +9,6 @@ void InitializeForGame();
 
 bool TryToggle(const BufferedInput& tInput);
 
+void ProcessCompoundCommands(const char* uszCommands, int nControllerIndex);
+
 }
