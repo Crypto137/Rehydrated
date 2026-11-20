@@ -20,6 +20,7 @@ set(REHYDRATED_SOURCES
     src/core/network/tcp_server.cpp
     src/core/network/tcp_session.cpp
     src/game/network/game_message_type.cpp
+    src/recomp/designer_menu.cpp
     src/recomp/gameplay_options.cpp
     src/recomp/input_manager.cpp
     src/recomp/static_data_dumper.cpp

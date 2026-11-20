@@ -50,7 +50,7 @@
 0x8233FCA0 = { name = "InputPlatformAppHasCapture" }
 0x8233FCB0 = { name = "InputPlatformKeyConvert" }
 0x8233FD00 = { name = "InputPlatformIsCursorInWindow" }
-0x8233FE88 = { name = "InputGetControllerFrameState" }
+0x8233FE88 = { name = "InputGetControllerState" }
 0x82340490 = { name = "InputUpdate" }
 0x82341730 = { name = "Console__Online__HasOutstandingInvite" }
 0x82341878 = { name = "Console__Online__PartyIsHost" }
@@ -508,6 +508,7 @@
 0x824D42D0 = { name = "FrontendScreenTransitionManager__RegisterScreenDialogs" }
 0x824D5BE8 = { name = "Console__ControllerActionManager__ClearAction" }
 0x824D5C08 = { name = "Console__ControllerActionManager__ClearAllActions" }
+0x824D5C50 = { name = "Console__ControllerActionManager__GetActionForInput" }
 0x824D5DD8 = { name = "Console__ControllerActionManager__SetAction" }
 0x824E13D0 = { name = "UILorePlayer__Close" }
 0x824E18C8 = { name = "UILorePlayer__Open" }
@@ -739,6 +740,8 @@
 0x8257D150 = { name = "UIUtils__Console__EatButton" }
 0x8257D240 = { name = "UIUtils__Console__ScrollContentInScrollBox" }
 0x8257D570 = { name = "UIUtils__Console__YieldFocusHandler" }
+0x82580510 = { name = "UIFastEquip__Console__IsActiveForController" }
+0x82580678 = { name = "UIFastEquip__Console__OnLStick" }
 0x82582480 = { name = "UIUIIDInit" }
 0x82584328 = { name = "UIItemTag__HandleMessage" }
 0x82587020 = { name = "UITutorialManager__InitializeForGame" }
@@ -1532,9 +1535,11 @@
 0x82760570 = { name = "PlayerGetNextAll" }
 0x82760580 = { name = "PlayerCalculatePlayerCountOnConnection" }
 0x82760608 = { name = "PlayerGetNumPlayers" }
-0x827612E8 = { name = "ControllerFrameState__IsButtonDown" }
+0x82761150 = { name = "Console__ControllerUtils__GetRawLStickPosition" }
+0x827612E8 = { name = "Console__ControllerUtils__IsButtonDown" }
 0x827616D0 = { name = "PlayersGetCount" }
 0x82761800 = { name = "PlayerGetHireling" }
+0x82761A38 = { name = "Console__ControllerUtils__LStickIsInDeadZone" }
 0x82761E88 = { name = "ConsoleTargetComponent__ClearLockedTarget" }
 0x827622B8 = { name = "PlayerGetHotbarBtnAssignment" }
 0x82762A00 = { name = "PlayerIsInWorld" }
