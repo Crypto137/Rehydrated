@@ -969,9 +969,20 @@ XDecoder::Result Decode(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, c
 
         if (!GameMessageTranslator::IsFieldPCCompatible(field.ptDataType, subfield))
             continue;
+        
+        // Bit count overrides for some fields (mostly player index)
+        i32 nBitCountOriginal = subfield.nBitCount;
+        i32 nBitCountOverride = GameMessageTranslator::GetFieldBitCountOverride(field.ptDataType, subfield);
+
+        if (nBitCountOverride != -1)
+            subfield.nBitCount = nBitCountOverride;
 
         XTypeDescriptor* ptSubfieldType = subfield.ptDataType.GetHost();
         XDecoder::Result result = Decode(ptSubfieldType, static_cast<u8*>(lpDefinition) + subfield.nDataOffset.get(), subfield, tDecoder);
+
+        if (nBitCountOverride != -1)
+            subfield.nBitCount = nBitCountOriginal;
+
         if (result)
             return result;
     }
