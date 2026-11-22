@@ -39,7 +39,7 @@ else()
     add_executable(rehydrated ${REHYDRATED_SOURCES})
 endif()
 
-rexglue_setup_target(rehydrated)
+rexglue_setup_target(rehydrated GPU_PLUGINS xenos)
 
 target_include_directories(rehydrated SYSTEM PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rexglue-sdk/thirdparty/imgui"
