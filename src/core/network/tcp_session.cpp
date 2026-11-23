@@ -1,7 +1,8 @@
 #include "core/network/tcp_session.h"
 
 #include <cstring>
-#include <iostream>
+
+#include "core/logging.h"
 
 TcpSession::TcpSession(SOCKET socket, ITcpSessionConsumer* consumer) :
     m_socket(socket),
@@ -95,7 +96,7 @@ void TcpSession::ReceiveLoop()
         int remaining = sizeof(m_recvBuffer) - m_recvPosition;
         if (remaining == 0)
         {
-            std::cout << "Receive buffer overflow" << std::endl;
+            LOG_WARN("Receive buffer overflow");
             BeginDisconnect();
             return;
         }
@@ -114,7 +115,7 @@ void TcpSession::ReceiveLoop()
         }
         else if (result == 0)
         {
-            std::cout << "Connection lost" << std::endl;
+            LOG_INFO("Connection lost");
             BeginDisconnect();
             return;
         }
@@ -122,7 +123,7 @@ void TcpSession::ReceiveLoop()
         {
             int wsaLastError = WSAGetLastError();
             if (wsaLastError != WSAEINTR)
-                std::cout << "Socket error when receiving (" << wsaLastError << ")" << std::endl;
+                LOG_WARN("Socket error when receiving ({})", wsaLastError);
 
             BeginDisconnect();
             return;
@@ -157,7 +158,7 @@ void TcpSession::SendLoop()
             {
                 int wsaLastError = WSAGetLastError();
                 if (wsaLastError != WSAEINTR)
-                    std::cout << "Socket error when sending (" << wsaLastError << ")" << std::endl;
+                    LOG_WARN("Socket error when sending ({})", wsaLastError);
 
                 BeginDisconnect();
                 return;
@@ -166,6 +167,6 @@ void TcpSession::SendLoop()
         }
 
         m_sendPendingBytes = 0;
-        std::cout << "sent " << totalSent << " bytes" << std::endl;
+        //LOG_INFO("sent {} bytes", totalSent);
     }
 }

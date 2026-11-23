@@ -1,11 +1,12 @@
 #include "core/network/tcp_server.h"
 
 #include <cstring>
-#include <iostream>
+#include <string>
 #include <vector>
 
 #include <WS2tcpip.h>
 
+#include "core/logging.h"
 #include "core/network/tcp_session.h"
 
 TcpServer::TcpServer(ITcpSessionConsumer* sessionConsumer) :
@@ -34,7 +35,7 @@ bool TcpServer::Start(const std::string& host, const std::string& port)
     result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result)
     {
-        std::cout << "WSAStartup failed (" << result << ")" << std::endl;
+        LOG_ERROR("WSAStartup failed ({})", result);
         return false;
     }
 
@@ -48,21 +49,21 @@ bool TcpServer::Start(const std::string& host, const std::string& port)
     result = getaddrinfo(host.c_str(), port.c_str(), &hints, &resolvedAddrInfo);
     if (result)
     {
-        std::cout << "getaddrinfo failed (" << result << ")" << std::endl;
+        LOG_ERROR("getaddrinfo failed ({})", result);
         goto cleanup;
     }
 
     m_listenSocket = socket(resolvedAddrInfo->ai_family, resolvedAddrInfo->ai_socktype, resolvedAddrInfo->ai_protocol);
     if (m_listenSocket == INVALID_SOCKET)
     {
-        std::cout << "Socket creation failed (" << WSAGetLastError() << ")" << std::endl;
+        LOG_ERROR("Listener socket creation failed ({})", WSAGetLastError());
         goto cleanup;
     }
 
-    result = bind(m_listenSocket, resolvedAddrInfo->ai_addr, resolvedAddrInfo->ai_addrlen);
+    result = bind(m_listenSocket.load(), resolvedAddrInfo->ai_addr, resolvedAddrInfo->ai_addrlen);
     if (result == SOCKET_ERROR)
     {
-        std::cout << "Socket failed to bind on " << host << ":" << port << "(" << WSAGetLastError() << ")" << std::endl;
+        LOG_ERROR("Socket failed to bind on {}:{} ({})", host, port, WSAGetLastError());
         goto cleanup;
     }
 
@@ -72,7 +73,7 @@ bool TcpServer::Start(const std::string& host, const std::string& port)
     result = listen(m_listenSocket, SOMAXCONN);
     if (result == SOCKET_ERROR)
     {
-        std::cout << "listen failed (" << WSAGetLastError() << ")" << std::endl;
+        LOG_ERROR("listen failed ({WSAGetLastError()})");
         goto cleanup;
     }
 
@@ -80,7 +81,7 @@ bool TcpServer::Start(const std::string& host, const std::string& port)
     m_cleanupThread = std::thread(&TcpServer::CleanUpSessions, this);
     m_acceptThread = std::thread(&TcpServer::AcceptConnections, this);
 
-    std::cout << "TcpServer listening on " << host << ":" << port << "..." << std::endl;
+    LOG_INFO("TcpServer listening on {}:{}...", host, port);
     return true;
 
 cleanup:
@@ -125,7 +126,7 @@ bool TcpServer::Stop()
 
     WSACleanup();
 
-    std::cout << "TcpServer stopped" << std::endl;
+    LOG_INFO("TcpServer stopped");
     return true;
 }
 
@@ -149,13 +150,13 @@ std::shared_ptr<TcpSession> TcpServer::GetFirstSession()
 
 void TcpServer::AcceptConnections()
 {
-    std::cout << "Accepting connections..." << std::endl;
+    LOG_INFO("Accepting connections...");
 
     while (m_isRunning)
     {
         if (m_listenSocket == INVALID_SOCKET)
         {
-            std::cout << "m_listenSocket is invalid while m_isRunning is true, which should not be happening" << std::endl;
+            LOG_ERROR("m_listenSocket is invalid while m_isRunning is true, which should not be happening");
             break;
         }
 
@@ -166,7 +167,7 @@ void TcpServer::AcceptConnections()
             if (wsaLastError == WSAEINTR)
                 break;
 
-            std::cout << "Failed to accept client (" << wsaLastError << ")" << std::endl;
+            LOG_WARN("Failed to accept client ({})", wsaLastError);
             continue;
         }
 
@@ -174,7 +175,7 @@ void TcpServer::AcceptConnections()
         int result = setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char*>(&bNoDelay), sizeof(bNoDelay));
         if (result == SOCKET_ERROR)
         {
-            std::cout << "Failed to set TCP_NODELAY on socket (" << WSAGetLastError() << ")" << std::endl;
+            LOG_ERROR("Failed to set TCP_NODELAY on socket ({})", WSAGetLastError());
             closesocket(socket);
             continue;
         }
@@ -183,15 +184,15 @@ void TcpServer::AcceptConnections()
         if (!session)
         {
             closesocket(socket);
-            std::cout << "Failed to create session" << std::endl;
+            LOG_WARN("Failed to create session");
             continue;
         }
 
-        std::cout << "Client connected" << std::endl;
+        LOG_INFO("Client connected");
         session->Run();
     }
 
-    std::cout << "No longer accepting connections" << std::endl;
+    LOG_INFO("No longer accepting connections");
 }
 
 TcpSession* TcpServer::AddSession(SOCKET socket)
@@ -200,7 +201,7 @@ TcpSession* TcpServer::AddSession(SOCKET socket)
 
     if (!m_sessionConsumer)
     {
-        std::cout << "No session consumer to create session" << std::endl;
+        LOG_WARN("No session consumer to create session");
         return nullptr;
     }
 
@@ -247,7 +248,7 @@ void TcpServer::CleanUpSessions()
         for (auto& it : disconnectedIds)
         {
             RemoveSession(it);
-            std::cout << "Cleaned up disconnected session " << it << std::endl;
+            LOG_INFO("Cleaned up disconnected session {}", static_cast<int>(it));
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
