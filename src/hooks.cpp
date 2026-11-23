@@ -1,6 +1,6 @@
-#include <rex/logging.h>
 #include <rex/ppc.h>
 
+#include "core/logging.h"
 #include "core/memory.h"
 #include "game/game.h"
 #include "game/input.h"
@@ -29,7 +29,7 @@ void HydraHook_SGameInitializeGame(PPCRegister& r3)
 {
     const GameParams* tParams = Memory::GetHostPtr<GameParams>(r3.u32);
 
-    REXLOG_INFO("SGameInitializeGame():\n  bValid={}\n  snoInitialWorld={}\n  snoInitialQuest={}\n  nInitialQuestStepUID={}\n  snoInitialHero={}\n  bResumeFromSave={}\n  dwSeed={}\n  eGameType={}\n  dwCreationFlags=0x{:08X}\n  szServerAddress={}\n  szReplayFileName={}\n  szGameName={}",
+    LOG_INFO("SGameInitializeGame():\n  bValid={}\n  snoInitialWorld={}\n  snoInitialQuest={}\n  nInitialQuestStepUID={}\n  snoInitialHero={}\n  bResumeFromSave={}\n  dwSeed={}\n  eGameType={}\n  dwCreationFlags=0x{:08X}\n  szServerAddress={}\n  szReplayFileName={}\n  szGameName={}",
         tParams->bValid.get(),
         static_cast<u32>(tParams->snoInitialWorld.get()),
         static_cast<u32>(tParams->snoInitialQuest.get()),

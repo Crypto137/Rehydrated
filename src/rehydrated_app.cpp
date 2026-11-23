@@ -4,8 +4,8 @@
 #include <string>
 
 #include <rex/cvar.h>
-#include <rex/logging.h>
 
+#include "core/logging.h"
 #include "recomp/input_manager.h"
 #include "recomp/network/pc_proxy.h"
 
@@ -20,7 +20,7 @@ void RehydratedApp::OnPreSetup(rex::RuntimeConfig& config)
 {
     if (config.gpu_plugin.empty())
     {
-        REXLOG_INFO("No GPU plugin set, defaulting to xenos");
+        LOG_INFO("No GPU plugin set, defaulting to xenos");
         config.gpu_plugin = "xenos";
     }
 }

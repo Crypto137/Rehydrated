@@ -6,10 +6,10 @@
 #include <vector>
 
 #include <rex/cvar.h>
-#include <rex/logging.h>
 #include <rex/ppc.h>
 
 #include "core/io.h"
+#include "core/logging.h"
 #include "core/memory.h"
 #include "game/attributes/attribute_compressor.h"
 #include "game/attributes/attrib_defs.h"
@@ -91,13 +91,13 @@ void StaticDataDumper::OnFastAttribInitializeForAppFinished()
 
 void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
 {
-    REXLOG_INFO("Dumping type descriptors...");
+    LOG_INFO("Dumping type descriptors...");
 
     GuestPtrSet<XTypeDescriptor> primitiveDescriptors{};
     GuestPtrSet<ComplexTypeDescriptor> complexDescriptors{};
     GuestPtrSet<const char> strings{};
 
-    REXLOG_INFO("Discovering type descriptors...");
+    LOG_INFO("Discovering type descriptors...");
 
     be_ptr<ComplexTypeDescriptor> typeDescPtr = *Memory::GetHostPtr<be_ptr<ComplexTypeDescriptor>>(ComplexTypeDescriptor::pRegistrationHead);
     while (typeDescPtr)
@@ -110,7 +110,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
         typeDescPtr = typeDescPtr.GetHost()->pNextRegisteredDescriptor;
     }
 
-    REXLOG_INFO("Writing type descriptors to {}...", fileName);
+    LOG_INFO("Writing type descriptors to {}...", fileName);
 
     std::ofstream file(fileName, std::ios::binary);
 
@@ -160,7 +160,7 @@ void StaticDataDumper::DumpTypeDescriptors(const char* fileName)
         WriteToStream(file, str, std::strlen(str) + 1);
     }
 
-    REXLOG_INFO("Finished dumping type descriptors");
+    LOG_INFO("Finished dumping type descriptors");
 }
 
 REX_IMPORT(__imp__GetGameMessageTypeAndSize, Guest_GetGameMessageTypeAndSize, u32(u32, u32, u32, u32));
@@ -179,7 +179,7 @@ struct GameMessageInfo
 
 void StaticDataDumper::DumpGameMessages(const char* fileName)
 {
-    REXLOG_INFO("Dumping game messages...");
+    LOG_INFO("Dumping game messages...");
 
     auto* memory = REX_KERNEL_MEMORY();
     if (!memory)
@@ -210,7 +210,7 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
         gameMessages.push_back(gameMessageInfo);
     }
 
-    REXLOG_INFO("Writing game messages to {}...", fileName);
+    LOG_INFO("Writing game messages to {}...", fileName);
 
     std::ofstream file(fileName, std::ios::binary);
 
@@ -218,12 +218,12 @@ void StaticDataDumper::DumpGameMessages(const char* fileName)
     WriteToStream(file, &count);
     WriteToStream(file, &gameMessages.front(), count);
 
-    REXLOG_INFO("Finished dumping game messages");
+    LOG_INFO("Finished dumping game messages");
 }
 
 void StaticDataDumper::DumpAttribDefs(const char* fileName)
 {
-    REXLOG_INFO("Dumping attribute definitions...");
+    LOG_INFO("Dumping attribute definitions...");
 
     GuestPtrSet<const char> strings{};
     GuestPtrSet<AttributeCompressor> compressors{};
@@ -244,7 +244,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
             compressors.insert(attribDefs[i].ptCompressor);
     }
 
-    REXLOG_INFO("Writing attribute definitions to {}...", fileName);
+    LOG_INFO("Writing attribute definitions to {}...", fileName);
 
     std::ofstream file(fileName, std::ios::binary);
 
@@ -285,7 +285,7 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
                 break;
 
             default:
-                REXLOG_WARN("Unknown attribute compressor type 0x{:08X}", static_cast<u32>(compressor->m_eType));
+                LOG_WARN("Unknown attribute compressor type 0x{:08X}", static_cast<u32>(compressor->m_eType));
                 return;
         }
     }
@@ -303,5 +303,5 @@ void StaticDataDumper::DumpAttribDefs(const char* fileName)
         WriteToStream(file, str, std::strlen(str) + 1);
     }
 
-    REXLOG_INFO("Finished dumping attribute definitions");
+    LOG_INFO("Finished dumping attribute definitions");
 }

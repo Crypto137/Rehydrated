@@ -1,8 +1,8 @@
 #include "recomp/designer_menu.h"
 
-#include <rex/logging.h>
 #include <rex/hook.h>
 
+#include "core/logging.h"
 #include "game/input.h"
 
 REX_IMPORT(__imp__UIConsoleDesignerMenu__InitializeForGame, Guest_UIConsoleDesignerMenu__InitializeForGame, void());
@@ -42,5 +42,5 @@ bool DesignerMenu::TryToggle(const BufferedInput& tInput)
 
 void DesignerMenu::ProcessCompoundCommands(const char* uszCommands, int nControllerIndex)
 {
-    REXLOG_INFO("ProcessCompoundCommands(): [{}] {}", nControllerIndex, uszCommands);
+    LOG_INFO("ProcessCompoundCommands(): [{}] {}", nControllerIndex, uszCommands);
 }

@@ -1,8 +1,8 @@
 #include "recomp/input_manager.h"
 
 #include <rex/cvar.h>
-#include <rex/logging.h>
 
+#include "core/logging.h"
 #include "core/memory.h"
 
 REXCVAR_DEFINE_BOOL(enable_mnk_input, false, "Hydra/Gameplay", "(EXPERIMENTAL) Enables mouse and keyboard input")
@@ -33,7 +33,7 @@ void InputManager::Initialize(rex::ui::Window* window)
 {
     window->AddInputListener(this, 32);
     window->AddListener(this);
-    REXLOG_INFO("Input initialized");
+    LOG_INFO("Input initialized");
 }
 
 bool InputManager::OnGuestInputUpdate()

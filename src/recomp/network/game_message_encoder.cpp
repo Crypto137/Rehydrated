@@ -3,8 +3,7 @@
 #include <bit>
 #include <cstring>
 
-#include <rex/logging.h>
-
+#include "core/logging.h"
 #include "core/memory.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/attributes/attribute_compressor.h"
@@ -53,7 +52,7 @@ bool AttributeCompressor_EncodeLinearFloat(AttributeCompressorLinearFloat* ptCom
 {
     // This compressor type doesn't appear to be used by any attributes
     // in any publicly available version of the game.
-    REXLOG_WARN("AttributeCompressor_EncodeLinearFloat() called");
+    LOG_WARN("AttributeCompressor_EncodeLinearFloat() called");
     return false;
 }
 
@@ -129,7 +128,7 @@ bool AttributeCompressor_Encode(XEncoder& tEncoder, NetAttributeKeyValue& tKeyVa
             return AttributeCompressor_EncodeFloatVariable(static_cast<AttributeCompressorFloatVariable*>(ptCompressor), tEncoder, tKeyValue);
 
         default:
-            REXLOG_WARN("AttributeCompressor_Encode(): Unknown compressor type {}", static_cast<int>(ptCompressor->m_eType.get()));
+            LOG_WARN("AttributeCompressor_Encode(): Unknown compressor type {}", static_cast<int>(ptCompressor->m_eType.get()));
             return false;
     }
 }
@@ -257,7 +256,7 @@ XDecoder::Result GenericFloatDecode(void* lpDefinition, const TypeDescriptorFiel
         f32 flMaxValue = field.vMaxFieldValue.value;
         if (value < flMinValue || value > flMaxValue)
         {
-            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            LOG_WARN("Decoded field is outside of MinMax bounds!");
             return XDecoder::RESULT_CORRUPTED;
         }
     }
@@ -309,7 +308,7 @@ XDecoder::Result GenericIntDecode(void* lpDefinition, const TypeDescriptorField&
 
         if (value < nMinValue || value > nMaxValue)
         {
-            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            LOG_WARN("Decoded field is outside of MinMax bounds!");
             return XDecoder::RESULT_CORRUPTED;
         }
     }
@@ -361,7 +360,7 @@ XDecoder::Result Int64Decode(void* lpDefinition, const TypeDescriptorField& fiel
 
         if (value < nMinValue || value > nMaxValue)
         {
-            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            LOG_WARN("Decoded field is outside of MinMax bounds!");
             return XDecoder::RESULT_CORRUPTED;
         }
     }
@@ -413,7 +412,7 @@ XDecoder::Result WordDecode(void* lpDefinition, const TypeDescriptorField& field
 
         if (value < nMinValue || value > nMaxValue)
         {
-            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            LOG_WARN("Decoded field is outside of MinMax bounds!");
             return XDecoder::RESULT_CORRUPTED;
         }
     }
@@ -465,7 +464,7 @@ XDecoder::Result ByteDecode(void* lpDefinition, const TypeDescriptorField& field
 
         if (value < nMinValue || value > nMaxValue)
         {
-            REXLOG_WARN("Decoded field is outside of MinMax bounds!");
+            LOG_WARN("Decoded field is outside of MinMax bounds!");
             return XDecoder::RESULT_CORRUPTED;
         }
     }
@@ -816,7 +815,7 @@ bool EncodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefinition, cons
 
         default:
             const char* szClassName = ptTypeDesc->szClassName.GetHost();
-            REXLOG_WARN("EncodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
+            LOG_WARN("EncodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
             return false;
     }
 
@@ -875,7 +874,7 @@ XDecoder::Result DecodePrimitive(const XTypeDescriptor* ptTypeDesc, void* lpDefi
 
         default:
             const char* szClassName = ptTypeDesc->szClassName.GetHost();
-            REXLOG_WARN("DecodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
+            LOG_WARN("DecodePrimitive(): Unhandled primitive type {} (0x{:08X})", szClassName, field.ptDataType.value.get());
             return XDecoder::RESULT_CORRUPTED;
     }
 }

@@ -3,9 +3,9 @@
 #include <cstring>
 
 #include <rex/cvar.h>
-#include <rex/logging.h>
 #include <rex/ppc.h>
 
+#include "core/logging.h"
 #include "core/memory.h"
 #include "core/network/tcp_session.h"
 #include "game/network/game_connection.h"
@@ -84,7 +84,7 @@ void PCProxy::Initialize()
 
     m_tcpServer.Start("0.0.0.0", "6112");
 
-    REXLOG_INFO("PC proxy initialized and started");
+    LOG_INFO("PC proxy initialized and started");
 }
 
 bool PCProxy::PartyCanStartGame()
@@ -234,7 +234,7 @@ void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
     if (!m_isEnabled)
         return;
 
-    REXLOG_INFO("OnServerSocketDisconnect(): idServerSocket=0x{:08X}, eReason={}", idServerSocket, eReason);
+    LOG_INFO("OnServerSocketDisconnect(): idServerSocket=0x{:08X}, eReason={}", idServerSocket, eReason);
 
     if (m_guestSocketId == idServerSocket)
     {
@@ -260,11 +260,11 @@ void PCProxy::OnConnectionAccepted(u32 idServerSocket)
     if (!m_isEnabled)
         return;
 
-    REXLOG_INFO("OnConnectionAccepted(): idServerSocket=0x{:08X}", idServerSocket);
+    LOG_INFO("OnConnectionAccepted(): idServerSocket=0x{:08X}", idServerSocket);
 
     if (m_guestSocketId)
     {
-        REXLOG_WARN("OnConnectionAccepted(): Already bound to guest socket 0x{:08X}", m_guestSocketId);
+        LOG_WARN("OnConnectionAccepted(): Already bound to guest socket 0x{:08X}", m_guestSocketId);
         return;
     }
 
@@ -327,7 +327,7 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
         GameMessageType eType = GameMessageTranslator::ConvertMessageTypePCToConsole(static_cast<GameMessageType>(dwType));
         if (eType == MSG_INVALID)
         {
-            REXLOG_WARN("Received invalid message id {}", dwType);
+            LOG_WARN("Received invalid message id {}", dwType);
             break;
         }
 
@@ -340,16 +340,16 @@ void PCProxy::ReceiveMessages(const char* buf, size_t len)
         if (result)
         {
             if (result == XDecoder::RESULT_TRUNCATED)
-                REXLOG_WARN("Received truncated message (id={})", static_cast<int>(eType));
+                LOG_WARN("Received truncated message (id={})", static_cast<int>(eType));
             else if (result == XDecoder::RESULT_CORRUPTED)
-                REXLOG_WARN("Received corrupted message (id={})", static_cast<int>(eType));
+                LOG_WARN("Received corrupted message (id={})", static_cast<int>(eType));
             else
-                REXLOG_WARN("Received bad message (id={}, result={})", static_cast<int>(eType), static_cast<int>(result));
+                LOG_WARN("Received bad message (id={}, result={})", static_cast<int>(eType), static_cast<int>(result));
             break;
         }
 
         if (REXCVAR_GET(server_log_incoming_messages_pc))
-            REXLOG_INFO("INCOMING MESSAGE (PC): {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
+            LOG_INFO("INCOMING MESSAGE (PC): {}", GameMessageDumper::PrintGameMessage(ptDecodeBuffer));
 
         switch (eType)
         {

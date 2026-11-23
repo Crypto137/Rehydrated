@@ -3,8 +3,8 @@
 #include <format>
 
 #include <rex/cvar.h>
-#include <rex/logging.h>
 
+#include "core/logging.h"
 #include "core/memory.h"
 #include "game/attributes/attrib_defs.h"
 #include "game/network/game_connection.h"
@@ -289,7 +289,7 @@ void GameMessageDumper::OnServerSendOutgoingMessages(const GameConnection* ptGam
     if (!nBufferCount)
         return;
 
-    REXLOG_INFO("OUTGOING PACKET (nMessageCount={})", nBufferCount);
+    LOG_INFO("OUTGOING PACKET (nMessageCount={})", nBufferCount);
 
     TPacketBufferListNode* listNode = ptGameConnection->tOutgoingPacketBufferList.m_pHead.GetHost();
     int i = 0;
@@ -298,7 +298,7 @@ void GameMessageDumper::OnServerSendOutgoingMessages(const GameConnection* ptGam
         PacketBuffer* tPacketBuffer = listNode->m_tData.GetHost();
         RequiredMessageHeader* pMessage = reinterpret_cast<RequiredMessageHeader*>(&tPacketBuffer->byteData[0]);
 
-        REXLOG_INFO("  [{}] {}", i++, PrintGameMessage(pMessage));
+        LOG_INFO("  [{}] {}", i++, PrintGameMessage(pMessage));
 
         listNode = listNode->m_pNext.GetHost();
     }
@@ -311,5 +311,5 @@ void GameMessageDumper::OnServerMessageReceiveOutsideGame(int idServerSocket, co
     if (!REXCVAR_GET(server_log_incoming_messages))
         return;
 
-    REXLOG_INFO("INCOMING MESSAGE: [0x{:08X}] {}", idServerSocket, PrintGameMessage(pMessage));
+    LOG_INFO("INCOMING MESSAGE: [0x{:08X}] {}", idServerSocket, PrintGameMessage(pMessage));
 }
