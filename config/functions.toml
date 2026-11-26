@@ -66,7 +66,9 @@
 0x823419C0 = { name = "Console__Online__PartyIsGamePaused" }
 0x823429B8 = { name = "Console__Online__PartyGetGameParams" }
 0x82342B70 = { name = "Console__Online__Party__GetNextLocalPlayerIndex" }
+0x82342EE0 = { name = "Console__Online__Party__SendToHost" }
 0x82343EF8 = { name = "Console__Online__PartyGetMembers" }
+0x82345290 = { name = "Console__Online__Party__Send" }
 0x82345780 = { name = "Console__Online__sSynchronizePlayerHeroes" }
 0x82345B60 = { name = "Console__Online__PartyGetPlayerAccountAndHero" }
 0x82346D30 = { name = "Console__Online__GameCleanupGameConnections" }
@@ -78,6 +80,7 @@
 0x82348AF8 = { name = "Console__Online__PartyServerEndingGame" }
 0x82348B80 = { name = "Console__Online__PartyEndGame" }
 0x82348F48 = { name = "Console__Online__Party__Party" }
+0x82349348 = { name = "Console__Online__Party__Cleanup" }
 0x8234A558 = { name = "Console__Online__Idle" }
 0x8234B440 = { name = "Console__Online__Party__Leave" }
 0x8234BBF0 = { name = "Console__Online__PartyLeave" }
@@ -93,6 +96,10 @@
 0x82353238 = { name = "Console__Online__PartyLeaveAndRemake" }
 0x823548E8 = { name = "Console__Online__sNetworkThread" }
 0x823555F8 = { name = "Console__Online__InitializeForApp" }
+0x82359508 = { name = "Console__Online__PartyPlayer__PartyPlayer" }
+0x82359EA0 = { name = "Console__Online__PartyPlayer__GetAccount" }
+0x82359EF0 = { name = "Console__Online__PartyPlayer__GetHero" }
+0x8235F2A8 = { name = "Console__Online__PartyPlayer__dtor_PartyPlayer" }
 0x8236BC50 = { name = "InputRegisterListener" }
 0x8236BD08 = { name = "InputUnregisterListener" }
 0x8236BE20 = { name = "InputGetCurrentState" }
@@ -206,6 +213,7 @@
 0x82386D40 = { name = "D3__Hero__SavedDefinition__mutable_digest" }
 0x82386E08 = { name = "D3__Hero__SavedDefinition__mutable_saved_attributes" }
 0x823877A8 = { name = "D3__Account__SavedDefinition__mutable_digest" }
+0x82387AB0 = { name = "D3__Console__Profile__mutable_account_profile" }
 0x82387B60 = { name = "CHero__InitializeForGame" }
 0x823886A8 = { name = "CHero__Validate" }
 0x823889A8 = { name = "CHero__Synchronize" }
@@ -536,6 +544,7 @@
 0x8247CCF8 = { name = "Console__GamerProfile__ClearPrimaryProfileUserIndex" }
 0x8247CE80 = { name = "Console__GamerProfile__LoadAccountDevOnly" }
 0x8247CEF0 = { name = "Console__GamerProfile__GetAccount" }
+0x8247CF08 = { name = "Console__GamerProfile__GetProfile" }
 0x8247CFE8 = { name = "Console__GamerProfile__IsHeroLoaded" }
 0x8247D008 = { name = "Console__GamerProfile__GetHero" }
 0x8247D4E0 = { name = "Console__GamerProfile__SavePrefs" }
@@ -548,6 +557,7 @@
 0x82487A30 = { name = "Console__Online__Matchmaker__Get" }
 0x82493D80 = { name = "Console__UIOnlineActions__IsLocalJoinInProgress" }
 0x82493D98 = { name = "Console__UIOnlineActions__GetGameStartErrorMessage" }
+0x82494478 = { name = "Console__UIOnlineActions__SetGameParamsForHero" }
 0x82494618 = { name = "Console__UIOnlineActions__ValidateGameCanStart" }
 0x82494E08 = { name = "Console__UIOnlineActions__OnLocalPlayerAdded" }
 0x82496650 = { name = "Console__UIOnlineActions__LocalPlayerJoin" }
@@ -6089,6 +6099,8 @@
 0x82BC4210 = { name = "google__protobuf__io__ArrayOutputStream__ArrayOutputStream" }
 0x82BC42B8 = { name = "google__protobuf__io__ArrayOutputStream__dtor_ArrayOutputStream" }
 0x82BCEE28 = { name = "google__protobuf__EncodedDescriptorDatabase__Add" }
+0x82DED948 = { name = "bdCommonAddr__isLoopback" }
+0x82DF8FF0 = { name = "bdMessage__bdMessage" }
 0x82ED8278 = { name = "D3__Stats__StatCategory__GetCachedSize" }
 0x82ED8330 = { name = "D3__Stats__protobuf_ShutdownFile_Stats_2eproto" }
 0x82ED8410 = { name = "D3__Stats__StatCategory__SetCachedSize" }
