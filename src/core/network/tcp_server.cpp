@@ -136,12 +136,14 @@ bool TcpServer::HasActiveSessions()
     return !m_sessions.empty();
 }
 
-std::shared_ptr<TcpSession> TcpServer::GetFirstSession()
+std::shared_ptr<TcpSession> TcpServer::GetSession(TcpSessionId sessionId)
 {
-    // just a temp thing to get things going
+    if (!sessionId)
+        return nullptr;
+
     std::unique_lock<std::mutex> lock(m_sessionMutex);
 
-    auto it = m_sessions.begin();
+    auto it = m_sessions.find(sessionId);
     if (it == m_sessions.end())
         return nullptr;
 
@@ -188,7 +190,6 @@ void TcpServer::AcceptConnections()
             continue;
         }
 
-        LOG_INFO("Client connected");
         session->Run();
     }
 
@@ -206,7 +207,7 @@ TcpSession* TcpServer::AddSession(SOCKET socket)
     }
 
     TcpSessionId sessionId = ++m_currentSessionId;
-    auto it = m_sessions.emplace(sessionId, std::make_shared<TcpSession>(socket, m_sessionConsumer));
+    auto it = m_sessions.emplace(sessionId, std::make_shared<TcpSession>(sessionId, socket, m_sessionConsumer));
     if (!it.second)
         return nullptr;
 
@@ -248,7 +249,7 @@ void TcpServer::CleanUpSessions()
         for (auto& it : disconnectedIds)
         {
             RemoveSession(it);
-            LOG_INFO("Cleaned up disconnected session {}", static_cast<int>(it));
+            LOG_INFO("Removed disconnected session {}", static_cast<int>(it));
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1));

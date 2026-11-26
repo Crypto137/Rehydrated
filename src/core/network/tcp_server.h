@@ -8,10 +8,7 @@
 
 #include <WinSock2.h>
 
-class TcpSession;
-class ITcpSessionConsumer;
-
-typedef int TcpSessionId;
+#include "core/network/tcp_session.h"
 
 class TcpServer
 {
@@ -22,7 +19,7 @@ public:
 	bool Start(const std::string& host, const std::string& port);
 	bool Stop();
 	bool HasActiveSessions();
-	std::shared_ptr<TcpSession> GetFirstSession();
+	std::shared_ptr<TcpSession> GetSession(TcpSessionId sessionId);
 
 private:
 	void AcceptConnections();
@@ -35,7 +32,7 @@ private:
 	std::thread m_cleanupThread;
 	std::thread m_acceptThread;
 	std::atomic<SOCKET> m_listenSocket;
-	int m_currentSessionId;
+	TcpSessionId m_currentSessionId;
 	std::map<TcpSessionId, std::shared_ptr<TcpSession>> m_sessions;
 	std::mutex m_sessionMutex;
 

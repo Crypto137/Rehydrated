@@ -4,7 +4,8 @@
 
 #include "core/logging.h"
 
-TcpSession::TcpSession(SOCKET socket, ITcpSessionConsumer* consumer) :
+TcpSession::TcpSession(TcpSessionId id, SOCKET socket, ITcpSessionConsumer* consumer) :
+    m_id(id),
     m_socket(socket),
     m_state(eStateCreated),
     m_recvBuffer(),
@@ -26,6 +27,7 @@ void TcpSession::Run()
         return;
 
     m_state = eStateConnected;
+    m_consumer->OnClientConnected(m_id);
 
     m_recvThread = std::thread(&TcpSession::ReceiveLoop, this);
     m_sendThread = std::thread(&TcpSession::SendLoop, this);
@@ -47,6 +49,7 @@ void TcpSession::Disconnect()
         m_sendThread.join();
 
     m_state = eStateDisconnected;
+    m_consumer->OnClientDisconnected(m_id);
 }
 
 void TcpSession::BeginDisconnect()
@@ -106,7 +109,7 @@ void TcpSession::ReceiveLoop()
         {
             m_recvPosition += result;
 
-            int consumed = m_consumer->OnDataReceived(this, &m_recvBuffer[0], m_recvPosition);
+            int consumed = m_consumer->OnDataReceived(m_id, &m_recvBuffer[0], m_recvPosition);
 
             int newPosition = m_recvPosition - consumed;
             if (newPosition > 0)

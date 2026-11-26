@@ -7,7 +7,6 @@
 
 #include "core/types.h"
 #include "core/network/tcp_server.h"
-#include "core/network/tcp_session_consumer.h"
 
 struct GameConnection;
 
@@ -47,7 +46,10 @@ public:
 
     void OnConnectionAccepted(u32 idServerSocket);
 
-    size_t OnDataReceived(TcpSession* session, const char* buf, size_t len) override;
+    // ITcpSessionConsumer
+    void OnClientConnected(TcpSessionId sessionId) override;
+    void OnClientDisconnected(TcpSessionId sessionId) override;
+    size_t OnDataReceived(TcpSessionId sessionId, const char* buf, size_t len) override;
 
     inline bool IsEnabled() const { return m_isEnabled; }
 
@@ -57,11 +59,14 @@ private:
 
     void ReceiveMessages(const char* buf, size_t len);
     void SendSystemBroadcast(const char* gameText);
+    void BootConsoleClient();
 
     bool m_isEnabled;
     bool m_isReadingUpdate;
     std::atomic<bool> m_joinRequested;
+    std::atomic<bool> m_bootConsoleClient;
     TcpServer m_tcpServer;
+    std::atomic<TcpSessionId> m_tcpSessionId;
     u32 m_guestSocketId;
     std::list<std::unique_ptr<char[]>> m_outgoingMessages;
     std::list<std::unique_ptr<char[]>> m_incomingMessages;

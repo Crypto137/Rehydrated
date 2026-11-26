@@ -26,6 +26,7 @@ REX_IMPORT(__imp__UIMainMenu__Console__OnStartOrContinue, Guest_MainMenuStartOrC
 REX_IMPORT(__imp__NetworkGetDecodeBuffer, Guest_NetworkGetDecodeBuffer, u32());
 REX_IMPORT(__imp__ServerEventReceive, Guest_ServerEventReceive, void(u32, u32));
 REX_IMPORT(__imp__GameConnectionTryToGet, Guest_GameConnectionTryToGet, u32(u32));
+REX_IMPORT(__imp__ServerSendOutOfGameMessage, Guest_ServerSendOutOfGameMessage, void(u32, u32, u32, u32));
 
 namespace
 {
@@ -152,7 +153,7 @@ void PCProxy::OnServerSendOutgoingMessagesForGameConnection(const GameConnection
     encoder.SetUsed(0);
     encoder.Put(dwSize, 32);
 
-    std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
+    std::shared_ptr<TcpSession> session = m_tcpServer.GetSession(m_tcpSessionId);
     if (session)
         session->Send(encodeBuffer, dwSize);
 }
@@ -164,6 +165,13 @@ void PCProxy::OnPostXServerReadUpdate()
 
     if (!m_guestSocketId)
         return;
+
+    bool boot = m_bootConsoleClient.exchange(false);
+    if (boot)
+    {
+        BootConsoleClient();
+        return;
+    }
 
     m_isReadingUpdate = true;
 
@@ -240,16 +248,20 @@ void PCProxy::OnServerSocketDisconnect(u32 idServerSocket, i32 eReason)
     {
         m_guestSocketId = 0;
 
+        if (m_tcpSessionId)
+        {
+            std::shared_ptr<TcpSession> session = m_tcpServer.GetSession(m_tcpSessionId);
+            m_tcpSessionId = 0;
+            if (session)
+                session->Disconnect();
+        }
+
         m_outgoingMessages.clear();
 
         {
             std::unique_lock<std::mutex> lock(m_incomingMessageMutex);
             m_incomingMessages.clear();
         }
-
-        std::shared_ptr<TcpSession> session = m_tcpServer.GetFirstSession();
-        if (session)
-            session->Disconnect();
 
         m_joinRequested = false;
     }
@@ -271,9 +283,28 @@ void PCProxy::OnConnectionAccepted(u32 idServerSocket)
     m_guestSocketId = idServerSocket;
 }
 
-size_t PCProxy::OnDataReceived(TcpSession* session, const char* buf, size_t len)
+void PCProxy::OnClientConnected(TcpSessionId sessionId)
+{
+    LOG_INFO("Client connected");
+
+    if (!m_tcpSessionId)
+        m_tcpSessionId = sessionId;
+}
+
+void PCProxy::OnClientDisconnected(TcpSessionId sessionId)
+{
+    LOG_INFO("Client disconnected");
+
+    if (m_tcpSessionId == sessionId)
+        m_bootConsoleClient = true;
+}
+
+size_t PCProxy::OnDataReceived(TcpSessionId sessionId, const char* buf, size_t len)
 {
     if (!m_isEnabled)
+        return len;
+
+    if (sessionId != m_tcpSessionId)
         return len;
 
     // This is roughly equivalent to NetworkParseGameDataBlock().
@@ -379,4 +410,18 @@ void PCProxy::SendSystemBroadcast(const char* broadcastText)
     std::unique_ptr<char[]> ptPacketBuffer = PacketBufferAlloc(broadcastTextMessage.tHeader.dwSize);
     std::memcpy(ptPacketBuffer.get(), &broadcastTextMessage, broadcastTextMessage.tHeader.dwSize);
     m_outgoingMessages.push_back(std::move(ptPacketBuffer));
+}
+
+void PCProxy::BootConsoleClient()
+{
+    if (!m_guestSocketId)
+        return;
+
+    StackFrame frame{};
+
+    QuitGameMessage message{};
+    message.eReason = QUIT_REASON_REMOVED;
+    u32 pMessage = frame.Push(message);
+
+    Guest_ServerSendOutOfGameMessage(m_guestSocketId, pMessage, SMSG_QUIT, sizeof(message));
 }
