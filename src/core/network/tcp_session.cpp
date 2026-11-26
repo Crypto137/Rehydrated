@@ -26,8 +26,7 @@ void TcpSession::Run()
     if (m_state != eStateCreated)
         return;
 
-    m_state = eStateConnected;
-    m_consumer->OnClientConnected(m_id);
+    SetState(eStateConnected);
 
     m_recvThread = std::thread(&TcpSession::ReceiveLoop, this);
     m_sendThread = std::thread(&TcpSession::SendLoop, this);
@@ -48,8 +47,14 @@ void TcpSession::Disconnect()
     if (m_sendThread.joinable() && thisId != m_sendThread.get_id())
         m_sendThread.join();
 
-    m_state = eStateDisconnected;
-    m_consumer->OnClientDisconnected(m_id);
+    SetState(eStateDisconnected);
+}
+
+void TcpSession::SetState(TcpSession::State newState)
+{
+    TcpSession::State oldState = m_state.exchange(newState);
+    if (oldState != newState)
+        m_consumer->OnTcpSessionStateChanged(m_id, newState);
 }
 
 void TcpSession::BeginDisconnect()
@@ -57,7 +62,7 @@ void TcpSession::BeginDisconnect()
     if (m_state != eStateConnected)
         return;
 
-    m_state = eStateDisconnecting;
+    SetState(eStateDisconnecting);
 
     SOCKET socket = m_socket.exchange(INVALID_SOCKET);
     if (socket != INVALID_SOCKET)
@@ -109,7 +114,7 @@ void TcpSession::ReceiveLoop()
         {
             m_recvPosition += result;
 
-            int consumed = m_consumer->OnDataReceived(m_id, &m_recvBuffer[0], m_recvPosition);
+            int consumed = m_consumer->OnTcpSessionDataReceived(m_id, &m_recvBuffer[0], m_recvPosition);
 
             int newPosition = m_recvPosition - consumed;
             if (newPosition > 0)

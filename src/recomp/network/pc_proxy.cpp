@@ -283,23 +283,30 @@ void PCProxy::OnConnectionAccepted(u32 idServerSocket)
     m_guestSocketId = idServerSocket;
 }
 
-void PCProxy::OnClientConnected(TcpSessionId sessionId)
+void PCProxy::OnTcpSessionStateChanged(TcpSessionId sessionId, TcpSession::State newState)
 {
-    LOG_INFO("Client connected");
+    switch (newState)
+    {
+        case TcpSession::eStateConnected:
+            LOG_INFO("Client connected");
+            if (!m_tcpSessionId)
+                m_tcpSessionId = sessionId;
+            break;
 
-    if (!m_tcpSessionId)
-        m_tcpSessionId = sessionId;
+        case TcpSession::eStateDisconnected:
+            LOG_INFO("Client disconnected");
+            if (m_tcpSessionId == sessionId)
+                m_bootConsoleClient = true;
+            break;
+
+        default:
+            break;
+    }
+
+
 }
 
-void PCProxy::OnClientDisconnected(TcpSessionId sessionId)
-{
-    LOG_INFO("Client disconnected");
-
-    if (m_tcpSessionId == sessionId)
-        m_bootConsoleClient = true;
-}
-
-size_t PCProxy::OnDataReceived(TcpSessionId sessionId, const char* buf, size_t len)
+size_t PCProxy::OnTcpSessionDataReceived(TcpSessionId sessionId, const char* buf, size_t len)
 {
     if (!m_isEnabled)
         return len;

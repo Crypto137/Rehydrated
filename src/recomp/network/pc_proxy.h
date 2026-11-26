@@ -47,9 +47,8 @@ public:
     void OnConnectionAccepted(u32 idServerSocket);
 
     // ITcpSessionConsumer
-    void OnClientConnected(TcpSessionId sessionId) override;
-    void OnClientDisconnected(TcpSessionId sessionId) override;
-    size_t OnDataReceived(TcpSessionId sessionId, const char* buf, size_t len) override;
+    void OnTcpSessionStateChanged(TcpSessionId sessionId, TcpSession::State newState) override;
+    size_t OnTcpSessionDataReceived(TcpSessionId sessionId, const char* buf, size_t len) override;
 
     inline bool IsEnabled() const { return m_isEnabled; }
 

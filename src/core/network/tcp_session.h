@@ -9,14 +9,7 @@
 
 using TcpSessionId = unsigned int;
 
-class ITcpSessionConsumer
-{
-public:
-    virtual void OnClientConnected(TcpSessionId sessionId) = 0;
-    virtual void OnClientDisconnected(TcpSessionId sessionId) = 0;
-    virtual size_t OnDataReceived(TcpSessionId sessionId, const char* buf, size_t len) = 0;
-    virtual ~ITcpSessionConsumer() = default;
-};
+class ITcpSessionConsumer;
 
 class TcpSession
 {
@@ -43,6 +36,7 @@ public:
 private:
     static constexpr int kBufferSize = 1024 * 128;
 
+    void SetState(State newState);
     void BeginDisconnect();
     void ReceiveLoop();
     void SendLoop();
@@ -61,4 +55,12 @@ private:
     std::thread m_sendThread;
     std::mutex m_sendMutex;
     std::condition_variable m_sendCv;
+};
+
+class ITcpSessionConsumer
+{
+public:
+    virtual void OnTcpSessionStateChanged(TcpSessionId sessionId, TcpSession::State newState) = 0;
+    virtual size_t OnTcpSessionDataReceived(TcpSessionId sessionId, const char* buf, size_t len) = 0;
+    virtual ~ITcpSessionConsumer() = default;
 };
